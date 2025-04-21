@@ -1,0 +1,525 @@
+/* Paleta de Colores
+Azul Oscuro #0460D9
+Azul más claro #0487D9
+Blanco hueso  #F2F0E9
+Naranja claro #F28705
+Naranja Oscuro #F25C05
+
+*/
+
+
+/* Fuente Poppins
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+*/
+
+
+/* Fuente Josefin Sans
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+*/
+
+
+
+body{
+    background-color: #F2F0E9;
+    margin: 0;
+}
+
+
+/* Estilos Banner */
+.content-Banner{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;       
+    background-color: #0487D9;
+    height: 400px;
+}
+
+.content-Banner h1{
+    
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    color: #F28705;
+    margin-bottom: 15px;
+    font-size: 80px;
+    text-shadow: 1px 1px 2px #454545;
+    
+}
+
+.content-Banner p{
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 40px;
+    text-align: center;
+    color: #F2F0E9;
+    line-height: 1.6;
+    margin-bottom: 20px;
+
+}
+
+
+/* Estilos Quienes Somos */
+
+.content-Quienes-Somos {
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    gap: 40px;
+    padding: 40px;
+    height: 620px;
+    
+}
+
+.content-Quienes-Somos div {
+    flex: 1; /* Divide el espacio equitativamente entre texto e imagen */
+}
+
+@keyframes show { 
+    from {
+        opacity: 0;
+        scale: 25%; /* Animación imagenes */
+    }
+    to {
+        opacity: 1;
+        scale: 100%;
+    }
+}
+
+.content-Quienes-Somos img {
+    width: 900px;
+    height: auto;
+    margin-left: 100px; 
+
+    view-timeline-name: --image;    /* Animación imagenes */
+    view-timeline-axis: block;
+
+    animation-timeline: --image;
+    animation-name: show;
+
+    animation-range: start 35% end 80%;
+    animation-fill-mode: both;
+    
+}
+
+
+
+.content-Quienes-Somos h2{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #0460D9;
+    margin-bottom: 15px;
+    font-size: 50px;
+    text-align: center;
+
+}
+.content-Quienes-Somos p {
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 25px;
+    margin: 0 30px 10px 0;
+    text-align: center;
+    line-height: 1.6;
+}
+
+
+/* Estilos Misión */
+
+.content-Mision{
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    gap: 40px;
+    padding: 40px;
+    height: 620px;
+}
+
+.content-Mision div{
+    flex: 1;
+}
+
+.content-Mision img{
+    width: 900px;
+    height: auto;
+    margin-left: 100px; 
+
+    view-timeline-name: --image;    /* Animación imagenes */
+    view-timeline-axis: block;
+
+    animation-timeline: --image;
+    animation-name: show;
+
+    animation-range: start 35% end 80%;
+    animation-fill-mode: both;
+    
+}
+
+.content-Mision h2{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #F28705;
+    margin-bottom: 15px;
+    font-size: 50px;
+    text-align: center;
+}
+
+.content-Mision p{
+
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 25px;
+    margin: 0 30px 10px 0;
+    text-align: center;
+    line-height: 1.6;
+}
+
+
+/* Estilos Visión */
+
+
+.content-Vision{
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    gap: 40px;
+    padding: 40px;
+    height: 620px;
+}
+
+.content-Vision div{
+    flex: 1;
+
+}
+
+
+.content-Vision img{
+    width: 900px;
+    height: auto;
+    margin-left: 130px;
+    
+    view-timeline-name: --image;    /* Animación imagenes */
+    view-timeline-axis: block;
+
+    animation-timeline: --image;
+    animation-name: show;
+
+    animation-range: start 35% end 80%;
+    animation-fill-mode: both;
+    
+}
+
+.content-Vision h2{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #0460D9;
+    margin-bottom: 15px;
+    font-size: 50px;
+    text-align: center;
+
+}
+
+.content-Vision p{
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 25px;
+    margin: 0 30px 10px 0;
+    text-align: center;
+    line-height: 1.6;
+}
+
+
+/* Estilos Equipo */
+
+.content-Equipo {
+    padding: 40px;
+    background-color:  #0487D9;
+    text-align: center;
+}
+
+
+.content-Equipo h2 {
+    font-family: "Poppins", sans-serif;
+    font-size: 60px;
+    margin-bottom: 40px;
+    color: #F2F0E9;
+}
+
+/* Contenedor de fichas en grid */
+.content-Equipo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.equipo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas */    
+    gap: 50px;
+    max-width: 1800px;
+    width: 100%;    
+    margin: 0 auto;    
+}
+
+
+
+
+/* Ficha individual */
+.ficha-Persona {
+    background-color: #F28705;    
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 6px 12px 0  #616262;    
+    transition: transform 0.4s ease;
+}
+
+.ficha-Persona:hover {
+    transform: translateY(-20px); /* efecto sutil al pasar el mouse */
+}
+
+/* Imagen en la ficha */
+.ficha-Persona img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+/* Nombre y profesión */
+#equipo-Nombre {
+    color: #f7fbfc;
+    font-family: "Poppins", sans-serif;
+    font-size: 30px;
+    margin: 10px 0 5px;
+}
+
+#equipo-Profesion {
+    font-family: "Poppins", sans-serif;
+    font-size: 25px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #0460D9;
+    
+}
+
+/* Hobby y descripción */
+.ficha-Persona h4 {
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 23px;
+    margin-bottom: 10px;
+    
+}
+
+.ficha-Persona p {
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 23px;
+    line-height: 1.5;
+}
+
+
+/* Responsivo para Tablets (Ipad pro)*/
+
+
+@media (max-width: 1366px) {
+    .content-Banner h1 {
+        font-size: 65px;
+    }
+
+    .content-Banner p {
+        font-size: 32px;
+        padding: 0 40px;
+    }
+
+    .content-Quienes-Somos,
+    .content-Mision,
+    .content-Vision {
+        gap: 30px;
+        padding: 30px;
+        height: auto;
+    }
+
+    .content-Quienes-Somos img,
+    .content-Mision img,
+    .content-Vision img {
+        width: 600px;
+        margin-left: 0;
+    }
+
+    .content-Quienes-Somos h2,
+    .content-Mision h2,
+    .content-Vision h2 {
+        font-size: 50px;
+    }
+
+    .content-Quienes-Somos p,
+    .content-Mision p,
+    .content-Vision p {
+        font-size: 26px;
+    }
+
+    .equipo-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas para 1366px */
+        gap: 40px;
+    }
+
+    .ficha-Persona img {
+        max-width: 180px;
+    }
+
+    #equipo-Nombre {
+        font-size: 26px;
+    }
+
+    #equipo-Profesion {
+        font-size: 22px;
+    }
+
+    .ficha-Persona h4,
+    .ficha-Persona p {
+        font-size: 21px;
+    }
+}
+
+
+
+/* Responsivo para Tablets (Ipad mini)*/
+@media (max-width: 1024px) {
+    .content-Banner h1 {
+        font-size: 50px;
+    }
+
+    .content-Banner p {
+        font-size: 28px;
+        padding: 0 20px;
+    }
+
+    .content-Quienes-Somos,
+    .content-Mision,
+    .content-Vision {
+        flex-direction: column;
+        height: auto;
+        text-align: center;
+        padding: 20px;
+    }
+    .content-Mision{
+        flex-direction: column-reverse;
+    }
+
+    .content-Quienes-Somos img,
+    .content-Mision img,
+    .content-Vision img {
+        width: 90%;
+        margin: 20px 0;
+    }
+
+    .content-Quienes-Somos p,
+    .content-Mision p,
+    .content-Vision p {
+        font-size: 24px;
+    }
+
+    .content-Quienes-Somos h2,
+    .content-Mision h2,
+    .content-Vision h2 {
+        font-size: 40px;
+    }
+
+    .equipo-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablet */
+    }
+
+    #equipo-Nombre {
+        font-size: 26px;
+    }
+
+    #equipo-Profesion {
+        font-size: 22px;
+    }
+
+    .ficha-Persona h4,
+    .ficha-Persona p {
+        font-size: 20px;
+    }
+}
+
+
+/* Responsivo para Celulares */
+@media (max-width: 600px) {
+    .content-Banner h1 {
+        font-size: 36px;
+    }
+
+    .content-Banner p {
+        font-size: 20px;
+    }
+
+    .content-Quienes-Somos,
+    .content-Mision,
+    .content-Vision {
+        padding: 20px 10px;
+    }
+
+    .content-Quienes-Somos p,
+    .content-Mision p,
+    .content-Vision p {
+        font-size: 18px;
+        margin-top: 0;
+        
+    }
+
+    .content-Quienes-Somos h2,
+    .content-Mision h2,
+    .content-Vision h2,
+    .content-Equipo h2 {
+        font-size: 32px;
+    }
+
+    .content-Quienes-Somos img,
+    .content-Mision img,
+    .content-Vision img {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .equipo-grid {
+        grid-template-columns: 1fr; /* 1 columna en celular */
+    }
+
+    #equipo-Nombre {
+        font-size: 22px;
+    }
+
+    #equipo-Profesion {
+        font-size: 20px;
+    }
+
+    .ficha-Persona h4,
+    .ficha-Persona p {
+        font-size: 18px;
+    }
+}
+
+
