@@ -1,0 +1,64 @@
+body {
+    background-color: #f8f9fa; /* Un gris claro de fondo general */
+}
+
+.faq-section {
+    background-color: #f8f9fa; /* Aplicar el mismo fondo gris claro a la sección */
+    padding-bottom: 50px; /* Añadir un poco de espacio inferior si es necesario */
+}
+
+.component-container {
+    background-color: #343a40; /* Fondo oscuro del componente */
+    border-radius: 10px;
+    margin-top: 20px; /* Añadir un poco de espacio superior para separarlo del título */
+}
+
+.faq-button {
+    background-color: #495057; /* Fondo de los botones */
+    color: #fff; /* Texto blanco */
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.faq-button:hover {
+    background-color: #5a6268;
+}
+
+.plus-icon {
+    font-size: 1.5em;
+}
+
+.faq-content {
+    background-color: #e9ecef; /* Fondo claro del contenido */
+    color: #212529; /* Texto oscuro */
+    border-radius: 10px;
+    border: 1px solid #ced4da;
+}
+
+.contact-section {
+    background-color: #343a40; /* Fondo oscuro de la sección de contacto */
+    color: #fff; /* Texto blanco */
+    border-radius: 10px;
+    margin-top: 30px; /* Añadir espacio para separar de la sección anterior */
+}
+
+.contact-section h2 {
+    color: #fff;
+}
+
+.form-control::placeholder {
+    color: #6c757d; /* Color del placeholder */
+}
+
+.btn-primary {
+    background-color: #6f42c1; /* Color primario morado */
+    border-color: #6f42c1;
+}
+
+.btn-primary:hover {
+    background-color: #563d7c;
+    border-color: #563d7c;
+}
