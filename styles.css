@@ -1,0 +1,126 @@
+/* Estilos para el botón flotante del carrito */
+.cart-float-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(4, 96, 217, 1);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .cart-float-button:hover {
+    transform: scale(1.05);
+    background-color: rgba(3, 80, 180, 1);
+  }
+  
+  .cart-float-button i {
+    font-size: 24px;
+  }
+  
+  .cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: rgba(242, 92, 5, 1);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  
+  /* Estilos para el modal del carrito */
+  .modal-title {
+    color: rgba(4, 96, 217, 1);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+  }
+  
+  .mini-product {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s ease;
+  }
+  
+  .mini-product:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .mini-product-image {
+    width: 40px;
+    height: 40px;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+  }
+  
+  .mini-product-title {
+    color: rgba(4, 135, 217, 1);
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  
+  .mini-product-price {
+    color: rgba(242, 135, 5, 1);
+    font-size: 14px;
+  }
+  
+  .mini-product-quantity {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .mini-summary {
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+  }
+  
+  .mini-total {
+    color: rgba(242, 92, 5, 1);
+    font-weight: 700;
+  }
+  
+  .checkout-mini-btn {
+    background-color: rgba(242, 92, 5, 1);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .checkout-mini-btn:hover {
+    background-color: rgba(220, 82, 4, 1);
+    color: white;
+  }
+  
+  /* Estilos para la página de ejemplo */
+  .product-preview {
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+  }
+  
+  .product-preview:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-preview .price {
+    color: rgba(242, 135, 5, 1);
+    font-weight: 600;
+  }
