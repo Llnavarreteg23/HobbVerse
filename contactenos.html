@@ -8,80 +8,99 @@
     <link rel="stylesheet" href="contactenos.css">
 </head>
 <body>
+    <!--! Sección del Navbar-->
     <header>
-        <nav></nav>
+        <nav>
+
+        </nav>
     </header>
 
-    <div class="container py-5">
-        <section class="faq-section mb-5">
-            <h2 class="text-center mb-4">Preguntas Frecuentes</h2>
-            <div class="component-container p-3 rounded">
-                <div class="faq-item">
-                    <button class="faq-button w-100 py-3 rounded-pill d-flex justify-content-between align-items-center">
-                        Producto
-                        <span class="plus-icon">+</span>
-                    </button>
-                    <div class="faq-content p-3 mt-2 rounded" style="display: none;">
-                        <p>Respuesta detallada sobre Producto.</p>
-                    </div>
-                </div>
-                <div class="faq-item mt-3">
-                    <button class="faq-button w-100 py-3 rounded-pill d-flex justify-content-between align-items-center">
-                        Tipo de pago
-                        <span class="plus-icon">+</span>
-                    </button>
-                    <div class="faq-content p-3 mt-2 rounded" style="display: none;">
-                        <p>Respuesta detallada sobre Tipo de pago.</p>
-                    </div>
-                </div>
-                <div class="faq-item mt-3">
-                    <button class="faq-button w-100 py-3 rounded-pill d-flex justify-content-between align-items-center">
-                        Envío de productos
-                        <span class="plus-icon">+</span>
-                    </button>
-                    <div class="faq-content p-3 mt-2 rounded" style="display: none;">
-                        <p>Respuesta detallada sobre Envío de productos.</p>
-                    </div>
-                </div>
-                <div class="faq-item mt-3">
-                    <button class="faq-button w-100 py-3 rounded-pill d-flex justify-content-between align-items-center">
-                        Negocio
-                        <span class="plus-icon">+</span>
-                    </button>
-                    <div class="faq-content p-3 mt-2 rounded" style="display: none;">
-                        <p>Respuesta detallada sobre Negocio.</p>
-                    </div>
+    <!-- !Sección del titulo -->
+
+    <section class="section-title">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="titulo-faq">
+                    Preguntas Frecuentes
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
+    
 
-        <section class="contact-section rounded p-4">
-            <h2 class="text-center mb-3">Contáctenos</h2>
-            <form>
-                <div class="mb-3">
-                    <label for="nombre" class="form-label visually-hidden">Nombre</label>
-                    <input type="text" class="form-control rounded-pill" id="nombre" placeholder="Nombre">
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label visually-hidden">Email</label>
-                    <input type="email" class="form-control rounded-pill" id="email" placeholder="Email">
-                </div>
-                <div class="mb-3">
-                    <label for="telefono" class="form-label visually-hidden">Teléfono</label>
-                    <input type="tel" class="form-control rounded-pill" id="telefono" placeholder="Teléfono">
-                </div>
-                <div class="mb-3">
-                    <label for="mensaje" class="form-label visually-hidden">Mensaje</label>
-                    <textarea class="form-control rounded" id="mensaje" rows="3" placeholder="Mensaje"></textarea>
-                </div>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary rounded-pill">Enviar</button>
-                </div>
-            </form>
-        </section>
+    <!-- !Sección del acordeón -->
+    <div class="container-acordion">
+        <div class="acordion-item">
+            <!-- Checkbox: al marcarlo, se activa el contenido -->
+            <input type="checkbox" id="acordion1">
+            <!-- Label: actúa como el botón visible del acordeón -->
+            <label class="acordion-header" for="acordion1">
+                <span>Producto</span>
+                <span class="plus-icon">+</span>
+            </label>
+            <!-- Contenido: se muestra/oculta según el estado del checkbox -->
+            <div class="acordion-content">
+                Aquí va el contenido relacionado con el producto.
+            </div>
+        </div>
+        
+        <div class="acordion-item">
+            <input type="checkbox" id="acordion2">
+            <label class="acordion-header" for="acordion2">
+                <span>Tipo de pago</span>
+                <span class="plus-icon">+</span>
+            </label>
+            <div class="acordion-content">
+                Información sobre los diferentes tipos de pago aceptados.
+            </div>
+        </div>
+        
+        <div class="acordion-item">
+            <input type="checkbox" id="acordion3">
+            <label class="acordion-header" for="acordion3">
+                <span>Envío de productos</span>
+                <span class="plus-icon">+</span>
+            </label>
+            <div class="acordion-content">
+                Detalles sobre las políticas y costos de envío.
+            </div>
+        </div>
+        
+        <div class="acordion-item">
+            <input type="checkbox" id="acordion4">
+            <label class="acordion-header" for="acordion4">
+                <span>Negocio</span>
+                <span class="plus-icon">+</span>
+            </label>
+            <div class="acordion-content">
+                Información general sobre nuestro negocio.
+            </div>
+        </div>
     </div>
 
+    <!--! Sección del contáctenos-->
+    <section class="contact">
+        <div class="container-contact">
+            <h2>Contáctenos</h2>
+            <form>
+                <input type="text" placeholder="Nombre">
+                <input type="email" placeholder="Email">
+                <input type="tel" placeholder="Teléfono">
+                <textarea placeholder="Mensaje"></textarea>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </section>
+    
+    
+    <!--! Sección del footer-->
+    <footer>
 
-    <footer></footer>
+    </footer>
+
+    <!--! Sección del script-->
+    <script>
+
+    </script>
 </body>
 </html>
