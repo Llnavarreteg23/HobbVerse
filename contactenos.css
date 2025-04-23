@@ -136,6 +136,7 @@ text-align: center;
 margin-bottom: 30px;
 }
 
+/*Estilos para el input*/
 .container-contact input,
 .container-contact textarea {
 width: 100%;                
@@ -148,6 +149,7 @@ color: #333;
 font-family: var(--site-font-body);
 }
 
+/*Estilos para el área de texto*/
 .container-contact textarea {
 resize: vertical;          
 height: 120px;             
@@ -158,7 +160,7 @@ width: 50%;
 padding: 10px;           
 border: none;              
 border-radius: 5px;        
-background-color: var(--site-dark-orange);
+background-color: #f28705d8;
 color: white;                
 cursor: pointer; /* Cambiar el cursor al pasar el mouse */
 transition: background-color 0.3s; 
@@ -167,8 +169,37 @@ display: block;
 margin: 0 auto;
 }
 
+/*Estilo para el boton al pasar el mouse*/
 .container-contact button:hover {
-background-color: #999; /* Fondo gris más claro al pasar el mouse */
+background-color: var(--site-orange); /*Fondo gris más claro al pasar el mouse */
+}
+
+/* Media query para pantallas medianas */
+@media (max-width: 767px) {
+    .container-contact {
+        width: 90%;
+        margin: 20px auto;
+        padding: 20px; 
+    }
+
+    .container-contact h2 {
+        font-size: 1.5em;
+        margin-bottom: 15px;  
+    }
+
+    .container-contact input,
+    .container-contact textarea {
+        padding: 8px;
+        margin-bottom: 10px; 
+    }
+
+    .container-contact textarea {
+        height: 100px; 
+    }
+
+    .container-contact button {
+        width: 80%; 
+    }
 }
 
 
