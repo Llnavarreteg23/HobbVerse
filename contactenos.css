@@ -121,7 +121,7 @@ body {
 
 }
 .container-contact{
-    background-color:rgba(0, 0, 0, 0.777);
+    background-color:var(--site-blue);
     padding: 60px;
     width: 50%;
     margin: 50px auto;
@@ -160,7 +160,7 @@ width: 50%;
 padding: 10px;           
 border: none;              
 border-radius: 5px;        
-background-color: #f28705d8;
+background-color: var(--site-dark-orange);
 color: white;                
 cursor: pointer; /* Cambiar el cursor al pasar el mouse */
 transition: background-color 0.3s; 
