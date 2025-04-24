@@ -82,19 +82,10 @@ body{
     flex: 1; /* Divide el espacio equitativamente entre texto e imagen */
 }
 
-@keyframes show { 
-    from {
-        opacity: 0;
-        scale: 25%; /* Animación imagenes */
-    }
-    to {
-        opacity: 1;
-        scale: 100%;
-    }
-}
+
 
 .content-Quienes-Somos img {
-    width: 900px;
+    width: 800px;
     height: auto;
     margin-left: 100px; 
 
@@ -107,6 +98,16 @@ body{
     animation-range: start 35% end 80%;
     animation-fill-mode: both;
     
+}
+@keyframes show { 
+    from {
+        opacity: 0;
+        scale: 25%; /* Animación imagenes */
+    }
+    to {
+        opacity: 1;
+        scale: 100%;
+    }
 }
 
 
@@ -126,7 +127,7 @@ body{
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-    font-size: 25px;
+    font-size: 22px;
     margin: 0 30px 10px 0;
     text-align: center;
     line-height: 1.6;
@@ -149,7 +150,7 @@ body{
 }
 
 .content-Mision img{
-    width: 900px;
+    width: 800px;
     height: auto;
     margin-left: 100px; 
 
@@ -180,14 +181,14 @@ body{
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-    font-size: 25px;
+    font-size: 22px;
     margin: 0 30px 10px 0;
     text-align: center;
     line-height: 1.6;
 }
 
 
-/* Estilos Visión */
+/*----------------- Estilos Visión --------------*/
 
 
 .content-Vision{
@@ -206,7 +207,7 @@ body{
 
 
 .content-Vision img{
-    width: 900px;
+    width: 800px;
     height: auto;
     margin-left: 130px;
     
@@ -237,14 +238,14 @@ body{
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-    font-size: 25px;
+    font-size: 22px;
     margin: 0 30px 10px 0;
     text-align: center;
     line-height: 1.6;
 }
 
 
-/* Estilos Equipo */
+/*----------------- Estilos Equipo -----------------*/
 
 .content-Equipo {
     padding: 40px;
@@ -265,15 +266,16 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+    
 }
 
 .equipo-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 columnas */    
     gap: 50px;
-    max-width: 1800px;
+    max-width: 1600px;
     width: 100%;    
-    margin: 0 auto;    
+    margin: 40px auto 40px auto;   
 }
 
 
