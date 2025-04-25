@@ -1,3 +1,5 @@
+// Script de control de formulario de contacto
+
 let nameField = document.getElementById("name");
 let emailField = document.getElementById("email");
 let phoneField = document.getElementById("phone");
