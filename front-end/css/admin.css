@@ -26,11 +26,13 @@
     overflow: hidden;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .product-card img {
@@ -53,6 +55,7 @@
     gap: 8px;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 2;
 }
 
 .product-card:hover .product-actions {
@@ -199,6 +202,106 @@
 .btn-primary.btn-lg:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+/* Estilos para la subida de imágenes */
+.image-upload-container {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px dashed #dee2e6;
+}
+
+.additional-image {
+    position: relative;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.additional-image .remove-image {
+    position: absolute;
+    right: 0;
+    top: 1rem;
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+}
+
+/* Estilo para el switch de producto destacado */
+.form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    margin-top: 0.2rem;
+}
+
+.form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.form-check-label {
+    font-weight: 500;
+    padding-left: 0.5rem;
+}
+
+/* Estilos para el carrusel */
+.carousel {
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+}
+
+.carousel-item {
+    height: 200px;
+}
+
+.carousel-item img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.carousel-indicators {
+    margin-bottom: 0.5rem;
+}
+
+.carousel-indicators button {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin: 0 4px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 15%;
+    background: linear-gradient(to right, rgba(0,0,0,0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.carousel-control-next {
+    background: linear-gradient(to left, rgba(0,0,0,0.4), transparent);
+}
+
+.product-card:hover .carousel-control-prev,
+.product-card:hover .carousel-control-next {
+    opacity: 1;
+}
+
+/* Ajustes para las tarjetas de productos */
+.featured-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 193, 7, 0.9);
+    color: #000;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    backdrop-filter: blur(4px);
+    z-index: 1;
 }
 
 @media (max-width: 768px) {
