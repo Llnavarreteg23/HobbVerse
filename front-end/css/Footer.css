@@ -1,0 +1,246 @@
+/* Paleta de Colores
+Azul Oscuro #0460D9
+Azul más claro #0487D9
+Blanco hueso  #F2F0E9
+Naranja claro #F28705
+Naranja Oscuro #F25C05
+
+*/
+
+
+/* Fuente Poppins
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+*/
+
+
+/* Fuente Josefin Sans
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+*/
+
+body{
+    background-color: #F2F0E9;
+    margin: 0;
+}
+
+/* Fondo Footer Estilos */
+  
+  .footer-container {
+    background-color: #F28705;
+    padding: 16px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  /* Logo Footer Estilos*/
+  .footer-logo img {
+    width: 80px;
+    height: auto;
+    margin-left: 50px;
+  }
+  
+  .footer-logo p {
+    margin-top: 10px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 25px;
+    color: #F2F0E9;
+    margin-left: 50px;
+  }
+  .h-letter {
+    color: #0460D9; /* Color para la H */
+}
+
+.v-letter {
+    color: #0460D9; /* Color para la V */
+}
+
+ /* Links Estilos*/
+  
+  .footer-links nav {
+    display: flex;
+    gap: 80px;
+    justify-content: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    
+  }
+  
+  .footer-links a {
+    text-decoration: none;
+    color: #000;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  /* Animación links */
+  .footer-links a:hover {
+    color: #0460D9; 
+    font-size: 22px; /* ligeramente más grande */
+    transition: all 0.3s ease; /* transición suave */
+    
+  }
+ 
+  
+  .footer-links .support {
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 20px;
+    color: #0460D9;
+    margin-bottom: 40px;
+  }
+  
+  .footer-links .rights {
+    font-size: 12px;
+    color: #F2F0E9;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 15px;
+    
+    
+  }
+
+  /*  --------------Social Estilos------------ */
+  
+  .footer-social p {
+    margin-top: -20px;
+    margin-bottom: 30px;
+    margin-right: 50px;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 35px;
+    
+    color: #F2F0E9;
+  }
+  
+  .social-icons a img {
+    width: 30px;
+    margin: 0 5px;
+    margin-right: 50px;
+    transition: transform 0.2s ease; /* suaviza la animación */
+  }
+
+  .social-icons a img:hover {
+    transform: scale(1.3); /* agranda el ícono */
+  }
+
+  /* ============================
+   RESPONSIVE FOOTER
+============================ */
+
+/* Laptops y iPad Pro (hasta 1366px) */
+@media screen and (max-width: 1366px) {
+  .footer-container {
+    padding: 30px;
+    gap: 30px;
+  }
+
+  .footer-logo img {
+    width: 60px;
+  }
+
+  .footer-logo p {
+    font-size: 22px;
+  }
+
+  .footer-links nav {
+    gap: 60px;
+  }
+
+  .footer-links a {
+    font-size: 18px;
+  }
+
+  .footer-social p {
+    font-size: 30px;
+  }
+
+  .social-icons a img {
+    width: 28px;
+    margin-right: 25px;
+  }
+}
+
+
+
+/* Tablets (iPad Mini: ~768px) */
+@media screen and (max-width: 991px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px 20px;
+  }
+
+  .footer-logo img,
+  .footer-logo p {
+    margin-left: 0;
+  }
+
+  .footer-links nav {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .footer-social p {
+    margin: 20px 0 10px 0;
+    font-size: 28px;
+  }
+
+  .social-icons a img {
+    margin-right: 15px;
+  }
+}
+
+/* Celulares (hasta 600px) */
+@media screen and (max-width: 600px) {
+  .footer-logo img {
+    width: 50px;
+  }
+
+  .footer-logo p {
+    font-size: 20px;
+  }
+
+  .footer-links a {
+    font-size: 18px;
+  }
+
+  .footer-links .support {
+    font-size: 16px;
+  }
+
+  .footer-links .rights {
+    font-size: 12px;
+  }
+
+  .footer-social p {
+    font-size: 22px;
+  }
+
+  .social-icons a img {
+    width: 25px;
+    margin: 0 10px;
+  }
+}
