@@ -66,7 +66,7 @@ body{
 
 }
 
-.btn-primary{
+.content-Banner button{
     background-color: #F28705;
     font-family: "Josefin Sans", sans-serif;
     font-optical-sizing: auto;
@@ -77,13 +77,14 @@ body{
     
 }
 
-.btn-primary:hover{
+ .content-Banner button:hover{
     background-color: #F25C05;
 }
 
 /*----------------- Estilos Sección Explora Hobbies ----------------*/
 
 .content-explora-Hobbies{
+  height: 700px;
     text-align: center;
     padding: 30px;
 }
@@ -119,7 +120,6 @@ body{
     margin-bottom: 70px;
     font-size: 50px;
     text-align: center;
-
 
     }
 
@@ -180,3 +180,92 @@ body{
         font-size: 22px;
     color: #333;
   }
+
+
+  /*----------------- Estilos Sección Productos Destacdos ----------------*/
+  
+  .content-Productos-Destacados{
+    background-color: #0487D9;
+    text-align: center;
+    padding: 30px;
+
+  }
+
+
+
+  .titulo-Productos-Destacados h2{
+
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #F2F0E9;
+    margin-bottom: 70px;
+    font-size: 50px;
+    text-align: center;
+  }
+
+
+/* Estilo para cards Productos */
+  .product-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    height: 100%;
+    
+    
+  }
+  .product-card:hover {
+    transform: scale(1.02);
+    
+  }
+
+  .card-body span{
+    font-family: "Josefin Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 18px;
+  }
+
+
+  .carousel-item img{
+    height: 500px; 
+    object-fit: cover;
+    
+  }
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(42%) sepia(95%) saturate(743%) hue-rotate(359deg) brightness(97%) contrast(101%);
+}
+
+  .product-card h5{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #F25C05;
+  }
+
+  .product-card p{
+    font-family: "Josefin Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 20px;
+  }
+
+  .card-body button{
+    background-color: #F28705;
+    border: none;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+  }
+
+  .card-body button:hover{
+    background-color: #F25C05;
+}
+
+  
