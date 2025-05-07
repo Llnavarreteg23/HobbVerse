@@ -268,4 +268,172 @@ body{
     background-color: #F25C05;
 }
 
+
+
+/* ----------------- Responsive para TABLETAS ----------------- */
+@media (max-width: 991px) {
+  .content-Banner h1 {
+    font-size: 50px;
+  }
+
+  .content-Banner p {
+    font-size: 28px;
+  }
+
+  .content-Banner button {
+    font-size: 20px;
+    padding: 10px 20px;
+  }  
+
+  .search-input {
+    width: 90%;
+    font-size: 16px;
+  }
+
+  .container-explora h2,
+  .titulo-Productos-Destacados h2 {
+    font-size: 36px;
+  }
+
   
+
+  .hobby-card p {
+    font-size: 22px;
+  }
+
+  .modal-title {
+    font-size: 26px;
+  }
+
+  .modal-body {
+    font-size: 16px;
+  }
+
+  .carousel-item img {
+    height: 300px;
+  }
+}
+
+/* ----------------- Responsive para CELULARES ----------------- */
+@media (max-width: 575px) {
+  .content-Banner {
+    height: auto;
+    padding: 40px 20px;
+  }
+
+  .content-Banner h1 {
+    font-size: 36px;
+  }
+
+  .content-Banner p {
+    font-size: 20px;
+  }
+
+  .content-Banner button {
+    font-size: 18px;
+    padding: 10px 16px;
+  }
+
+  .content-explora-Hobbies {
+    height: auto;
+    padding: 20px 10px;
+  }
+
+  .search-input {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .container-explora h2,
+  .titulo-Productos-Destacados h2 {
+    font-size: 28px;
+  }
+
+  .hobby-icon {
+    font-size: 60px;
+  }
+
+  .hobby-card p {
+    font-size: 18px;
+  }
+
+  .modal-title {
+    font-size: 22px;
+  }
+
+  .modal-body {
+    font-size: 16px;
+  }
+
+  .carousel-item img {
+    height: 200px;
+  }
+
+  .product-card p,
+  .card-body button {
+    font-size: 16px;
+  }
+
+  .product-card h5 {
+    font-size: 18px;
+  }
+}
+
+
+/* ----------------- Responsive para PANTALLAS hasta 1366px ----------------- */
+@media (max-width: 1366px) {
+  .content-Banner h1 {
+    font-size: 60px;
+  }
+
+  .content-Banner p {
+    font-size: 32px;
+  }
+
+  .content-Banner button {
+    font-size: 22px;
+    padding: 12px 24px;
+  }
+
+  .search-input {
+    width: 70%;
+    font-size: 18px;
+  }
+
+  .container-explora h2,
+  .titulo-Productos-Destacados h2 {
+    font-size: 42px;
+  }
+
+  .hobby-icon {
+    font-size: 70px;
+  }
+
+  .hobby-card p {
+    font-size: 26px;
+  }
+
+  .carousel-item img {
+    height: 400px;
+  }
+
+  .product-card h5 {
+    font-size: 22px;
+  }
+
+  .product-card p {
+    font-size: 18px;
+  }
+
+  .card-body button {
+    font-size: 18px;
+  }
+
+  .modal-title {
+    font-size: 26px;
+  }
+
+  .modal-body {
+    font-size: 20px;
+  }
+}
