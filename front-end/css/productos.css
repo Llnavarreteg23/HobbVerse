@@ -1,0 +1,285 @@
+
+#discover {
+    background-color: #0460D9;
+    padding: 30px;
+}
+
+#discover h1 {
+    color: #F2F0E9;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    font-size: 50px;
+    margin-left: 480px;
+    margin-right: 480px;
+}
+
+#discover-subtitle {
+    color: #F28705;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    font-family: 'Josefin Sans', sans-serif;
+    margin-left: 480px;
+    margin-right: 480px;
+}
+
+#category-bar {
+    padding-top: 20px;
+}
+
+#category-list {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 20px;
+}
+
+.hobbie {
+    background-color: #F2F0E9;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.hobbie:hover {
+    background-color: #fce8d8;
+    transform: translateY(-3px);
+}
+
+.hobbiea {
+    text-decoration: none;
+    color: #f25c05;
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 700;
+    transition: color 0.3s ease;
+}
+
+.hobbiea.selected {
+    color: #0460D9;
+}
+
+.hobbie i {
+    font-size: 20px;
+    color: #f25c05;
+}
+
+.hobbiea:hover:not(.selected) {
+    color: #f28705;
+    transform: scale(1.05);
+}
+
+.hobbiea.selected {
+    color: #0460D9;
+    font-weight: 800;
+    border-bottom: 2px solid #0460D9;
+}
+
+#iconSelected {
+    color: #F28705;
+    font-size: 24px;
+}
+
+.hobbieaSelected {
+    color: #0460D9;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+}
+
+.hobbie i {
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.hobbie:hover i {
+    transform: rotate(5deg);
+    color: #f28705;
+}
+
+#hobbieSelectedList {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+}
+
+.hobbieSelected {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#hobbieImageContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+    padding: 0 40px;
+}
+
+.producto-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 280px;
+    height: 500px;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin: 20px;
+    transition: transform 0.3s ease;
+}
+
+.producto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.producto-card h3 {
+    margin: 10px 0 5px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #222;
+    text-align: center;
+}
+
+.producto-card p {
+    font-size: 0.95rem;
+    color: #444;
+    margin: 4px 0;
+    text-align: center;
+}
+
+.producto-card img {
+    width: 100%;
+    height: 300px; 
+    object-fit: contain;  
+    border-radius: 12px;
+}
+
+.producto-card .buy-button {
+    margin-top: auto;
+    background: linear-gradient(135deg, #ff8a00, #e52e71);
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.buy-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: transform 0.6s ease;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 0;
+}
+
+.buy-button:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.buy-button:hover {
+    transform: scale(1.05);
+}
+
+
+@media (max-width: 768px) {
+    #discover h1 {
+        font-size: 35px;
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    #discover-subtitle {
+        font-size: 14px;
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    #category-list {
+        justify-content: center;
+    }
+
+    #hobbieImageContainer {
+        padding: 0 20px;
+    }
+
+    .producto-card {
+        width: 220px;
+        height: 400px;
+    }
+
+    .buy-button {
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    #discover h1 {
+        font-size: 28px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    #discover-subtitle {
+        font-size: 12px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    #category-list {
+        flex-direction: column;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .hobbie {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    #hobbieImageContainer {
+        padding: 0;
+        justify-content: space-evenly;
+    }
+
+    .producto-card {
+        width: 90%;
+        height: 350px;
+    }
+
+    .buy-button {
+        padding: 8px 16px;
+    }
+}
+
+
+
+

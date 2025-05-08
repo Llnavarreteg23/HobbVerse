@@ -36,7 +36,7 @@ async function loadData() {
         if (storedCategories) {
             categories = JSON.parse(storedCategories);
         } else {
-            // Si no hay categorías, cargar las iniciales desde initial-data.json
+            
             const response = await fetch('/front-end/data/initial-data.json');
             const data = await response.json();
             categories = data.categories;
@@ -91,10 +91,8 @@ function addImageInput() {
 function handleProductSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-    
-    // Validar campos requeridos
-    const product = {
-        id: Date.now(),
+
+    const productData = {
         name: formData.get('name'),
         mainImage: formData.get('mainImage'),
         additionalImages: Array.from(document.querySelectorAll('[name^="additionalImage"]'))
@@ -107,41 +105,47 @@ function handleProductSubmit(e) {
         featured: formData.get('featured') === 'on'
     };
 
-    // Agregar a la lista de productos
-    products.push(product);
-    
-    // Mostrar en consola el producto creado
-    console.log('Nuevo producto creado:', JSON.stringify(product, null, 2));
-    
-    // Guardar y actualizar UI
+    if (editingProductId) {
+        const index = products.findIndex(p => p.id === editingProductId);
+        if (index !== -1) {
+            products[index] = { ...products[index], ...productData };
+        }
+        editingProductId = null;
+        e.target.querySelector('button[type="submit"]').textContent = 'Agregar Producto';
+    } else {
+        const newProduct = {
+            id: Date.now(),
+            ...productData
+        };
+        products.push(newProduct);
+        console.log('Nuevo producto creado:', JSON.stringify(newProduct, null, 2));
+    }
+
     saveData();
     updateUI();
-    
-    // Mostrar mensaje de éxito
-    console.log(`Producto "${product.name}" agregado exitosamente`);
-    
-    // Limpiar formulario
     e.target.reset();
 }
+
 
 function handleCategorySubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const categoryName = formData.get('categoryName').trim();
 
-    if (!categoryName) return;
-
-    if (categories.some(cat => cat.name.toLowerCase() === categoryName.toLowerCase())) {
-        alert('Esta categoría ya existe');
-        return;
+    if (editingCategoryId) {
+        const index = categories.findIndex(cat => cat.id === editingCategoryId);
+        if (index !== -1) {
+            categories[index].name = categoryName;
+        }
+        editingCategoryId = null;
+        e.target.querySelector('button[type="submit"]').textContent = 'Agregar Categoría';
+    } else {
+        const newCategory = {
+            id: Date.now(),
+            name: categoryName
+        };
+        categories.push(newCategory);
     }
-
-    const newCategory = {
-        id: Date.now(),
-        name: categoryName
-    };
-
-    categories.push(newCategory);
     saveData();
     updateUI();
 
@@ -172,7 +176,7 @@ function updateCategoryList() {
         </li>
     `).join('');
 }
-// Filtrado de productos por nombre y categoría
+
 function filterProducts() {
     const searchTerm = document.getElementById('searchProducts').value.toLowerCase();
     const categoryFilter = document.getElementById('categoryFilter').value;
@@ -274,24 +278,50 @@ function updateCategorySelect() {
     });
 }
 
-function editProduct(id) {
-    const product = products.find(p => p.id === id);
+function editProduct(productId) {
+    const product = products.find(p => p.id === productId);
     if (!product) return;
 
-    editingProductId = id;
     const form = document.getElementById('productForm');
-    form.querySelector('[name="name"]').value = product.name;
-    form.querySelector('[name="category"]').value = product.category;
-    form.querySelector('[name="mainImage"]').value = product.mainImage;
-    form.querySelector('[name="description"]').value = product.description;
-    form.querySelector('[name="price"]').value = product.price;
-    form.querySelector('[name="stock"]').value = product.stock;
+    form.elements['name'].value = product.name;
+    form.elements['mainImage'].value = product.mainImage;
+    form.elements['description'].value = product.description;
+    form.elements['category'].value = product.category;
+    form.elements['price'].value = product.price;
+    form.elements['stock'].value = product.stock;
+    form.elements['featured'].checked = product.featured;
+
+    const additionalImagesContainer = document.getElementById('additionalImages');
+    additionalImagesContainer.innerHTML = '';
+    imageCount = 0;
+
+    product.additionalImages.forEach(imgUrl => {
+        imageCount++;
+        const container = document.createElement('div');
+        container.className = 'additional-image';
+        container.innerHTML = `
+            <label class="form-label small text-muted">Imagen adicional ${imageCount}</label>
+            <div class="d-flex gap-2">
+                <input type="url" class="form-control" name="additionalImage${imageCount}" 
+                       placeholder="URL de la imagen adicional" value="${imgUrl}">
+                <button type="button" class="remove-image" title="Eliminar imagen">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        `;
+
+        container.querySelector('.remove-image').addEventListener('click', function () {
+            container.remove();
+        });
+
+        additionalImagesContainer.appendChild(container);
+    });
+
+    editingProductId = productId;
     form.querySelector('button[type="submit"]').textContent = 'Actualizar Producto';
-    
-    // Scroll al formulario
     form.scrollIntoView({ behavior: 'smooth' });
 }
-// Eliminar producto
+
 function deleteProduct(id) {
     if (!confirm('¿Está seguro de eliminar este producto?')) return;
 
@@ -299,23 +329,26 @@ function deleteProduct(id) {
     saveData();
     updateUI();
 }
-// Editar categorias
+
 function editCategory(id) {
     const category = categories.find(c => c.id === id);
     if (!category) return;
 
     editingCategoryId = id;
+    const form = document.getElementById('categoryForm');
+    form.elements['categoryName'].value = category.name;
+
     const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
-    document.querySelector('#categoryForm input[name="categoryName"]').value = category.name;
-    document.querySelector('#categoryForm button[type="submit"]').textContent = 'Actualizar';
     modal.show();
+
+    form.querySelector('button[type="submit"]').textContent = 'Actualizar Categoría';
 }
-// Eliminar categoria
+
 function deleteCategory(id) {
     if (!confirm('¿Está seguro de eliminar esta categoría? Los productos asociados quedarán sin categoría.')) return;
 
     categories = categories.filter(c => c.id !== id);
-    // Actualizar productos que tenían esta categoría
+
     products = products.map(p => {
         if (p.category === id) {
             return { ...p, category: null };
