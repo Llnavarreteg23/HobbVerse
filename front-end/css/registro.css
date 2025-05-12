@@ -132,6 +132,14 @@ body {
     text-decoration: underline;
 }
 
+p.error-message {
+    font-size: 10px;
+    color: red;
+    text-align: left;
+    margin: 0.25em 0;
+    margin-top: -8px;
+}
+
 
 /**Sección del titulo*/
 
@@ -179,6 +187,7 @@ body {
 
 
 /* Responsive */
+
 @media (max-width: 720.98px) {
     .row {
         flex-direction: column;

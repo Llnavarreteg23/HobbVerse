@@ -98,10 +98,16 @@
                         <img class="imgUser" width="40" height="40" src="/Imagenes/mdi_user.png" alt="user" />
                         <h1 class="titulo-Register">Crear una cuenta</h1>
                         <input id="nombreCompleto" type="text" placeholder="Nombre Completo">
+                        <p id="errorNombre" class="error-message"></p>
+                        <input id="telefono" type="tel"  placeholder="Número de teléfono">
+                        <p id="errorTelefono" class="error-message"></p>
                         <input id="email" type="email" placeholder="Correo Electrónico">
+                        <p id="errorEmail" class="error-message"></p>
                         <input id="password" type="password" placeholder="Contraseña">
+                        <p id="errorPassword" class="error-message"></p>
                         <input id="password2" type="password" placeholder="Confirmar contraseña">
-                        <button>Registrarse</button>
+                        <p id="errorPassword2" class="error-message"></p>
+                        <button id="btnRegistrarse">Registrarse</button>
                         <p>¿Ya tienes cuenta? <a href="#">Inicia Sesión</a></p>
                 </div>
             </div>
@@ -123,8 +129,8 @@
 
     <!--! Sección de Script -->
 
-    <script src="/front-end/js/registro.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script src="/front-end/js/registro.js"></script>
+
 </body>
 </html>
