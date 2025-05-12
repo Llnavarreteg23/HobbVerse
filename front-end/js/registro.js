@@ -38,7 +38,7 @@ function validarTelefono() {
     }
     const regex = /^\d{7,10}$/;
     if (!regex.test(valor)) {
-        errorTelefono.textContent = 'El teléfono debe tener entre 6 y 10 dígitos numéricos.';
+        errorTelefono.textContent = 'El teléfono debe tener entre 7 y 10 dígitos numéricos.';
         return false;
     }
     errorTelefono.textContent = '';
@@ -90,6 +90,26 @@ function validarPassword2() {
 
 //* Limpiar mensajes al cargar DOM
 
+window.addEventListener('DOMContentLoaded', () => {
+
+    // Limpiar campos
+
+    nombreInput.value = '';
+    telefonoInput.value = '';
+    emailInput.value = '';
+    passwordInput.value = '';
+    password2Input.value = '';
+
+    // Limpiar mensajes de error
+
+    errorNombre.textContent = '';
+    errorTelefono.textContent = '';
+    errorEmail.textContent = '';
+    errorPassword.textContent = '';
+    errorPassword2.textContent = '';
+});
+
+
 
 
 //* Encriptación de la contraseña
@@ -125,15 +145,6 @@ function guardarEnLocalStorage(data) {
     return true; // Indica que se guardó correctamente
 }
 
-
-
-//* Validación en tiempo real
-
-nombreInput.addEventListener('blur', validarNombre);
-telefonoInput.addEventListener('blur', validarTelefono);
-emailInput.addEventListener('blur', validarEmail);
-passwordInput.addEventListener('blur', validarPassword);
-password2Input.addEventListener('blur', validarPassword2);
 
 //* Boton registro
 
