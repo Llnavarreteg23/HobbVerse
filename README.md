@@ -1,4 +1,5 @@
-# Proyecto de Grado - Red Social
+# Proyecto de Grado - Eccomerce
+
 
 ## Descripción
 Este es el repositorio oficial del proyecto de grado, una red social enfocada en conectar a personas con intereses similares mediante un sistema de interacción basado en contenido y gamificación.
