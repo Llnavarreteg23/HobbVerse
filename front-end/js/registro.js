@@ -1,4 +1,4 @@
-//*  Referencio a los elementos del formulario
+//*  Elementos del formulario
 
 const nombreInput = document.getElementById('nombreCompleto');
 const telefonoInput = document.getElementById('telefono');
