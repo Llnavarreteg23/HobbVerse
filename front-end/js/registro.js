@@ -88,29 +88,6 @@ function validarPassword2() {
     return true;
 }
 
-//* Limpiar mensajes al cargar DOM
-
-window.addEventListener('DOMContentLoaded', () => {
-
-    // Limpiar campos
-
-    nombreInput.value = '';
-    telefonoInput.value = '';
-    emailInput.value = '';
-    passwordInput.value = '';
-    password2Input.value = '';
-
-    // Limpiar mensajes de error
-
-    errorNombre.textContent = '';
-    errorTelefono.textContent = '';
-    errorEmail.textContent = '';
-    errorPassword.textContent = '';
-    errorPassword2.textContent = '';
-});
-
-
-
 
 //* Encriptación de la contraseña
 

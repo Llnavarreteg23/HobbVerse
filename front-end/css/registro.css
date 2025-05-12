@@ -21,6 +21,12 @@ body {
 
 /** Estilos del formulario*/
 
+.container-register {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
 .iconHobbVerse{
     width: 200px;
     margin-bottom: 1.5rem;
@@ -186,36 +192,53 @@ p.error-message {
 
 
 
-/* Responsive */
+/** Responsive */
 
+/* Desktop (default) */
+.card-register {
+    width: 450px;
+    max-width: 100%;
+}
+
+/* Tablets */
+@media (max-width: 991.98px) {
+    .card-register {
+        width: 400px;
+    }
+    .titulo1 {
+        font-size: 42px;
+        
+    }
+    .titulo2 {
+        font-size: 32px;
+    }
+}
+
+/* Móviles */
 @media (max-width: 720.98px) {
     .row {
         flex-direction: column;
     }
-    .form-register.col-6, .col-6 {
-        max-width: 100%;
-        flex: 1 1 100%;
+    .card-register {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto 30px;
     }
-    .iconHobbVerse{
+    .card-register button {
+        width: 100%;
+    }
+    .iconHobbVerse {
         width: 170px;
     }
-    .container-register {
-        min-height: auto;
-        padding: 30px 0;
+    .titulo1 {
+        font-size: 36px;
+        margin-top: 30px;
+    }
+    .titulo2 {
+        font-size: 24px;
     }
     .imgHobbies {
         width: 100%;
         max-width: 300px;
-    }
-    .card-register {
-        max-width: 80%;
-        width: 350px;
-    }
-    .titulo1{
-        margin-top: 30px;
-        font-size: 40px;
-    }
-    .titulo2{
-        font-size: 30px;
     }
 }
