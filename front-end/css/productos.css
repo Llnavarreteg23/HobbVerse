@@ -1,23 +1,25 @@
 
 #discover {
-    background-color: #0460D9;
+    background-color:#0487D9;
     padding: 30px;
 }
 
 #discover h1 {
-    color: #F2F0E9;
-    font-family: 'Poppins', sans-serif;
+    color: #F28705;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
     text-align: center;
     font-size: 50px;
     margin-left: 480px;
     margin-right: 480px;
+    text-shadow: 1px 1px 2px #454545;
 }
 
 #discover-subtitle {
-    color: #F28705;
+    color: #F2F0E9;
     text-align: center;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 500;
     padding-top: 20px;
     padding-bottom: 40px;
     font-family: 'Josefin Sans', sans-serif;
@@ -170,22 +172,37 @@
     border-radius: 12px;
 }
 
+.producto-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+}
+
 .producto-card .buy-button {
-    margin-top: auto;
-    background: linear-gradient(135deg, #ff8a00, #e52e71);
+    display: block;
+    margin: 20px auto 0 auto; /* margen superior y centrado horizontal */
+    background: #f25c05;
     color: #fff;
-    border: none;
-    border-radius: 25px;
-    padding: 12px 24px;
+    border: 2px solid #d94f04;
+    border-radius: 30px;
+    padding: 12px 28px;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
+    font-family: 'Josefin Sans', sans-serif;
     cursor: pointer;
-    align-self: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    z-index: 1;
+    width: fit-content;
 }
+
 
 .buy-button::before {
     content: '';
@@ -207,6 +224,8 @@
 
 .buy-button:hover {
     transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    background: #e55000;
 }
 
 
@@ -236,9 +255,7 @@
         height: 400px;
     }
 
-    .buy-button {
-        padding: 10px 20px;
-    }
+
 }
 
 @media (max-width: 480px) {
@@ -273,10 +290,6 @@
     .producto-card {
         width: 90%;
         height: 350px;
-    }
-
-    .buy-button {
-        padding: 8px 16px;
     }
 }
 
