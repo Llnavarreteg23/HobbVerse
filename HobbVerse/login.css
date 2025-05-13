@@ -95,6 +95,19 @@ body {
     color: #0460D9;
 }
 
+.input-error {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red !important;
+  font-size: 14px;
+  margin: 1px;
+  display: none;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+
 .card-login button {
     width: 100%;
     padding: 12px;
