@@ -1,4 +1,7 @@
 
+main{
+    background-color: #F2F0E9;
+}
 #discover {
     background-color:#0487D9;
     padding: 30px;
@@ -69,7 +72,7 @@
 
 .hobbie i {
     font-size: 20px;
-    color: #f25c05;
+    color: #0487D9;
 }
 
 .hobbiea:hover:not(.selected) {
@@ -135,7 +138,7 @@
     flex-direction: column;
     justify-content: space-between;
     width: 280px;
-    height: 500px;
+    height: 600px;
     background: #fff;
     border-radius: 16px;
     overflow: hidden;
@@ -153,16 +156,16 @@
 .producto-card h3 {
     margin: 10px 0 5px;
     font-size: 1.2rem;
-    font-weight: 600;
-    color: #222;
+    font-weight: 700;
+    color: #f25c05;
     text-align: center;
 }
 
 .producto-card p {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     color: #444;
     margin: 4px 0;
-    text-align: center;
+    text-align: justify;
 }
 
 .producto-card img {
@@ -179,6 +182,9 @@
     align-items: center;
     padding: 20px;
     border-radius: 16px;
+    border-style: solid;
+    border-color: #0487D9;
+    border-width: 10px 20px 10px 5px; 
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     background-color: #fff;
 }
@@ -186,10 +192,10 @@
 .producto-card .buy-button {
     display: block;
     margin: 20px auto 0 auto; /* margen superior y centrado horizontal */
-    background: #f25c05;
+    background: #F28705;
     color: #fff;
-    border: 2px solid #d94f04;
-    border-radius: 30px;
+    border: 2px solid #F28705;
+    border-radius: 10px;
     padding: 12px 28px;
     font-size: 1rem;
     font-weight: 700;

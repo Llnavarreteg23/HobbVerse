@@ -58,7 +58,8 @@ export default function renderCategory(category, name) {
                     <h3>${producto.nombre || producto.name}</h3>
                     ${producto.autor ? `<p><strong>Autor:</strong> ${producto.autor}</p>` : ""}
                     <p><strong>Precio:</strong> $${(producto.precio || producto.price).toLocaleString()}</p>
-                    <button class="buy-button">Comprar</button>
+                    <p><strong>Descripción:</strong>${(producto.descripcion || producto.description).toLocaleString()}</p>
+                    <button class="buy-button">Agregar al carrito</button>
                 </div>
             `;
             hobbieImageContainer.appendChild(card);
