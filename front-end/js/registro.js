@@ -1,4 +1,4 @@
-//*  Elementos del formulario
+// Archivo: registro.js
 
 const nombreInput = document.getElementById('nombreCompleto');
 const telefonoInput = document.getElementById('telefono');
@@ -66,7 +66,7 @@ function validarPassword() {
         errorPassword.textContent = '*La contraseña es obligatoria.';
         return false;
     }
-    if (valor.length < 6) { // Cambiado a 6 para mantener consistencia con login.js
+    if (valor.length < 6) {
         errorPassword.textContent = 'La contraseña debe tener al menos 6 caracteres.';
         return false;
     }
@@ -88,10 +88,137 @@ function validarPassword2() {
     return true;
 }
 
+
+function mostrarAlertaPersonalizada(mensaje, tipo, callback) {
+    const alertContainer = document.createElement('div');
+    alertContainer.style.position = 'fixed';
+    alertContainer.style.top = '20%';
+    alertContainer.style.left = '50%';
+    alertContainer.style.transform = 'translate(-50%, -50%)';
+    alertContainer.style.padding = '20px';
+    alertContainer.style.background = tipo === 'success' ? '#4CAF50' : '#f44336';
+    alertContainer.style.color = 'white';
+    alertContainer.style.borderRadius = '5px';
+    alertContainer.style.textAlign = 'center';
+    alertContainer.style.zIndex = '1000';
+    alertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+    
+    alertContainer.innerHTML = `
+        <p style="margin: 0; font-size: 18px;">${mensaje}</p>
+    `;
+    
+    document.body.appendChild(alertContainer);
+    
+    setTimeout(() => {
+        document.body.removeChild(alertContainer);
+        if (callback && typeof callback === 'function') {
+            callback();
+        }
+    }, 2000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const registroForm = document.getElementById('registroForm');
+    const btnRegistrarse = document.getElementById('btnRegistrarse');
+    
+    // Comprobar si los elementos existen
+    if (!btnRegistrarse) {
+        console.error('No se encontró el botón de registro');
+        return;
+    }
+
+    btnRegistrarse.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Validar todos los campos
+        const isNombreValid = validarNombre();
+        const isTelefonoValid = validarTelefono();
+        const isEmailValid = validarEmail();
+        const isPasswordValid = validarPassword();
+        const isPassword2Valid = validarPassword2();
+
+        
+        if (isNombreValid && isTelefonoValid && isEmailValid && isPasswordValid && isPassword2Valid) {
+            const userData = {
+                id: Date.now(),
+                nombre: nombreInput.value.trim(),
+                email: emailInput.value.trim(),
+                telefono: telefonoInput.value.trim(),
+                password: passwordInput.value,
+                fechaRegistro: new Date().toISOString()
+            };
+
+            // Obtener usuarios existentes
+            let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
+
+            // Verificar si el email ya existe
+            if (usuarios.some(user => user.email === userData.email)) {
+                errorEmail.textContent = 'Este correo ya está registrado';
+                return;
+            }
+
+            // Agregar nuevo usuario
+            usuarios.push(userData);
+
+            // Guardar en localStorage
+            localStorage.setItem('hobbverse_usuarios', JSON.stringify(usuarios));
+
+            // Mostrar en consola el nuevo usuario
+            console.log('Nuevo usuario registrado:', JSON.stringify(userData, null, 2));
+
+            // Deshabilitar el botón de registro
+            btnRegistrarse.disabled = true;
+
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Registro Exitoso!',
+                    text: 'Redirigiendo al login...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => {
+                    redirigirAlLogin();
+                }).catch(error => {
+                    console.error('Error con SweetAlert:', error);
+                    redirigirAlLogin();
+                });
+            } else {
+                
+                mostrarAlertaPersonalizada('¡Registro Exitoso! Redirigiendo al login...', 'success', redirigirAlLogin);
+            }
+        }
+    });
+
+    // Función para redirigir al login
+    function redirigirAlLogin() {
+        // Probar diferentes rutas posibles
+        const posiblesRutas = [
+            './login.html',             
+            '../html/login.html',       
+            '/login.html',              
+            '/front-end/html/login.html', 
+            '/html/login.html'          
+        ];
+        
+        
+        window.location.href = posiblesRutas[0];
+    }
+
+    // Agregar validación en tiempo real
+    nombreInput.addEventListener('input', validarNombre);
+    telefonoInput.addEventListener('input', validarTelefono);
+    emailInput.addEventListener('input', validarEmail);
+    passwordInput.addEventListener('input', validarPassword);
+    password2Input.addEventListener('input', validarPassword2);
+});
+
 function mostrarError(elementId, mensaje) {
     const errorElement = document.getElementById(elementId);
     if (errorElement) {
         errorElement.textContent = mensaje;
+        errorElement.style.color = '#dc3545';
     }
 }
 
@@ -99,56 +226,3 @@ function limpiarErrores() {
     const errorElements = document.querySelectorAll('.error-message');
     errorElements.forEach(element => element.textContent = '');
 }
-
-//* Boton registro
-
-document.addEventListener('DOMContentLoaded', function() {
-    const btnRegistrarse = document.getElementById('btnRegistrarse');
-    
-    if (!btnRegistrarse) {
-        console.error('No se encontró el botón de registro');
-        return;
-    }
-    
-    btnRegistrarse.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // Validar campos usando las funciones individuales
-        const nombreValido = validarNombre();
-        const telefonoValido = validarTelefono();
-        const emailValido = validarEmail();
-        const passwordValido = validarPassword();
-        const password2Valido = validarPassword2();
-
-        // Solo continuar si todos los campos son válidos
-        if (!(nombreValido && telefonoValido && emailValido && passwordValido && password2Valido)) {
-            return;
-        }
-
-        // Crear objeto de usuario
-        const usuario = {
-            nombre: nombreInput.value.trim(),
-            telefono: telefonoInput.value.trim(),
-            email: emailInput.value.trim(),
-            password: passwordInput.value,
-            fechaRegistro: new Date().toISOString()
-        };
-
-        // Obtener usuarios existentes o inicializar array
-        let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
-
-        // Verificar si el email ya está registrado
-        if (usuarios.some(user => user.email === usuario.email)) {
-            errorEmail.textContent = 'Este correo ya está registrado';
-            return;
-        }
-
-        // Agregar nuevo usuario
-        usuarios.push(usuario);
-        localStorage.setItem('hobbverse_usuarios', JSON.stringify(usuarios));
-
-        // Mostrar mensaje de éxito
-        alert('¡Registro exitoso! Por favor, inicia sesión.');
-        window.location.href = 'login.html';
-    });
-});
