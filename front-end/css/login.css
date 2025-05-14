@@ -184,6 +184,31 @@ footer {
     text-decoration: underline;
 }
 
+/* Estilos para las alertas */
+#alert-container {
+    position: relative;
+    z-index: 1000;
+}
+
+.alert {
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border-left: 4px solid #198754;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #842029;
+    border-left: 4px solid #dc3545;
+}
+
 /* Responsive */
 @media (min-width: 768px) {
     .container {

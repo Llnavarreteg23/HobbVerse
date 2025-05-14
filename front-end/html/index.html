@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home HobbVerse</title>
+
+     <!-- Bootstrap y otros estilos -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+     <link rel="stylesheet" href="/front-end/css/nav.css">
+     <link rel="stylesheet" href="/front-end/css/Footer.css">
+    <link rel="stylesheet" href="/front-end/css/index.css">
+
+      <!-- Fuentes -->
+
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+ 
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <nav></nav>
+    </header>
+
+
+    <!-- Sección Banner -->
+
+     <section class="content-Banner">
+        <h1>Descubre Tu <br> Próximo Hobby</h1>
+        <p>Explora nuevas pasiones y encuentra productos únicos <br> que se adaptan a lo que te gusta.</p>
+        <button type="button" class="btn btn-primary btn-lg">Comprar Ahora</button>
+
+     </section>
+
+     <!-- Sección Explora Hobbies -->
+      <section class="content-explora-Hobbies">
+        <div class="container-explora">
+            <input type="search" placeholder="Buscar..." class="search-input">
+            <h2>Explora Hobbies</h2>
+            
+        </div>
+
+         <!-- Cards Hobbies -->
+
+         <div class="row justify-content-center mt-4">
+
+            <!-- Card 1 -->
+            <div class="col-6 col-md-3 mb-4">
+              <div class="hobby-card" data-bs-toggle="modal" data-bs-target="#librosModal">
+                <div class="hobby-icon">📖</div>
+                <p>Libros</p>
+              </div>
+            </div>
+        
+            <!-- Card 2 -->
+            <div class="col-6 col-md-3 mb-4">
+              <div class="hobby-card" data-bs-toggle="modal" data-bs-target="#pinturaModal">
+                <div class="hobby-icon">🎨</div>
+                <p>Pintura</p>
+              </div>
+            </div>
+        
+            <!-- Card 3 -->
+            <div class="col-6 col-md-3 mb-4">
+              <div class="hobby-card" data-bs-toggle="modal" data-bs-target="#musicaModal">
+                <div class="hobby-icon">🎵</div>
+                <p>Música</p>
+              </div>
+            </div>
+        
+            <!-- Card 4 -->
+            <div class="col-6 col-md-3 mb-4">
+              <div class="hobby-card" data-bs-toggle="modal" data-bs-target="#videojuegosModal">
+                <div class="hobby-icon">🎮</div>
+                <p>Video Juegos</p>
+              </div>
+            </div>
+        
+          </div>
+
+
+          <!-- Modales -->
+
+<!-- Modal Libros -->
+<div class="modal fade" id="librosModal" tabindex="-1" aria-labelledby="librosModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="librosModalLabel">Libros</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          Leer libros expande tus conocimientos, mejora tu imaginación y te transporta a nuevos mundos.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Pintura -->
+  <div class="modal fade" id="pinturaModal" tabindex="-1" aria-labelledby="pinturaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pinturaModalLabel">Pintura</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          La pintura es una forma artística de expresar emociones, ideas y percepciones visuales.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Musica -->
+  <div class="modal fade" id="musicaModal" tabindex="-1" aria-labelledby="musicaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="musicaModalLabel">Música</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          La música conecta a las personas, eleva el estado de ánimo y estimula la creatividad.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Video Juegos -->
+  <div class="modal fade" id="videojuegosModal" tabindex="-1" aria-labelledby="videojuegosModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="videojuegosModalLabel">Video Juegos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          Los videojuegos ofrecen entretenimiento, desarrollo de habilidades cognitivas y conexión social.
+        </div>
+      </div>
+    </div>
+  </div>
+
+      </section>
+
+      <!------------------- Sección Productos destacados --------------------->
+      <section class="content-Productos-Destacados">
+        <div class="titulo-Productos-Destacados">
+          <h2>Productos destacados</h2>
+        </div>
+
+        <div class="row g-4">
+    
+          <!-- Producto 1 -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card">
+                
+
+              <div id="carouselProducto1" class="carousel slide" data-bs-ride="carousel">
+                
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="./imagenes_Home/HV_Producto 1_1.jpg" class="d-block w-100" alt="Producto 1 Imagen 1">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 1_2.jpg" class="d-block w-100" alt="Producto 1 Imagen 2">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 1_3.jpg" class="d-block w-100" alt="Producto 1 Imagen 3">
+                  </div>
+                </div>
+                <!-- Controles Carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto1" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto1" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+          
+              <div class="card-body d-flex flex-column">
+                <!-- Badge categoría -->
+               <span class="badge bg-primary position-absolute top-0 start-0 m-3">Crochet</span>
+
+                <h5 class="card-title">Bowser a Crochet</h5>
+                <p class="card-text"><strong>$ 180.000</strong></p>
+                <p class="card-text">Amigurumi de Bowser tejido a Crochet</p>
+                <button class="btn btn-primary mt-auto">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Producto 2 -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card">
+              <div id="carouselProducto2" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="./imagenes_Home/HV_Producto 2_1.jpg" class="d-block w-100" alt="Producto 2 Imagen 1">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 2_2.jpg" class="d-block w-100" alt="Producto 2 Imagen 2">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 2_3.jpg" class="d-block w-100" alt="Producto 2 Imagen 3">
+                  </div>
+                </div>
+                <!-- Controles Carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto2" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto2" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+          
+              <div class="card-body d-flex flex-column">
+                <!-- Badge categoría -->
+               <span class="badge bg-primary position-absolute top-0 start-0 m-3">Libros</span>
+
+                <h5 class="card-title">Book set Saga Mistborn</h5>
+                <p class="card-text"><strong>$ 580.000</strong></p>
+                <p class="card-text">7 libros de la saga Mistborn de Brandon Sanderson</p>
+                <button class="btn btn-primary mt-auto">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Producto 3 -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card">
+              <div id="carouselProducto3" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="./imagenes_Home/HV_Producto 3_1.jpg" class="d-block w-100" alt="Producto 3 Imagen 1">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 3_2.jpg" class="d-block w-100" alt="Producto 3 Imagen 2">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 3_3.jpg" class="d-block w-100" alt="Producto 3 Imagen 3">
+                  </div>
+                </div>
+                <!-- Controles Carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto3" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto3" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+          
+              <div class="card-body d-flex flex-column">
+                <!-- Badge categoría -->
+               <span class="badge bg-primary position-absolute top-0 start-0 m-3">Pintura</span>
+
+                <h5 class="card-title">Tableta Digitalizadora Wacom</h5>
+                <p class="card-text"><strong>$ 1'450.000</strong></p>
+                <p class="card-text"> Modelo One. DTC-133W0A black y white. Expresividad en tus creaciones</p>
+                <button class="btn btn-primary mt-auto">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Producto 4 -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card">
+              <div id="carouselProducto4" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="./imagenes_Home/HV_Producto 4_1.jpg" class="d-block w-100" alt="Producto 4 Imagen 1">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 4_2.jpg" class="d-block w-100" alt="Producto 4 Imagen 2">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 4_3.jpg" class="d-block w-100" alt="Producto 4 Imagen 3">
+                  </div>
+                </div>
+                <!-- Controles Carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto4" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto4" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+          
+              <div class="card-body d-flex flex-column">
+                <!-- Badge categoría -->
+               <span class="badge bg-primary position-absolute top-0 start-0 m-3">Música</span>
+
+                <h5 class="card-title">1989 (Taylor's Version) Vinilo</h5>
+                <p class="card-text"><strong>$ 192.000</strong></p>
+                <p class="card-text"> 1989 (Taylor's Version) es el cuarto álbum de estudio regrabado Taylor Swift</p>
+                <button class="btn btn-primary mt-auto">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Producto 5 -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card">
+              <div id="carouselProducto5" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="./imagenes_Home/HV_Producto 5_1.jpg" class="d-block w-100" alt="Producto 5 Imagen 1">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 5_2.jpg" class="d-block w-100" alt="Producto 5 Imagen 2">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 5_3.jpg" class="d-block w-100" alt="Producto 5 Imagen 3">
+                  </div>
+                </div>
+                <!-- Controles Carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto5" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto5" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+          
+              <div class="card-body d-flex flex-column">
+                <!-- Badge categoría -->
+               <span class="badge bg-primary position-absolute top-0 start-0 m-3">Videojuegos</span>
+
+                <h5 class="card-title">Nintendo Switch 2(Pre-venta)</h5>
+                <p class="card-text"><strong>$ 2'859.900</strong></p>
+                <p class="card-text"> ¡Con la consola NINTENDO Switch 2, corre en pistas de todo el mundo con gráficos en 4K y hasta 120 fps!</p>
+                <button class="btn btn-primary mt-auto">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+      
+           <!-- Producto 6 -->
+           <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card">
+              <div id="carouselProducto6" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="./imagenes_Home/HV_Producto 6_1.jpg" class="d-block w-100" alt="Producto 6 Imagen 1">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 6_2.jpg" class="d-block w-100" alt="Producto 6 Imagen 2">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 6_3.jpg" class="d-block w-100" alt="Producto 6 Imagen 3">
+                  </div>
+                </div>
+                <!-- Controles Carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto6" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto6" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+          
+              <div class="card-body d-flex flex-column">
+                <!-- Badge categoría -->
+               <span class="badge bg-primary position-absolute top-0 start-0 m-3">Deportes</span>
+
+                <h5 class="card-title">Raqueta de Tenis Wilson Blade 100L V9</h5>
+                <p class="card-text"><strong>$ 1'429.900</strong></p>
+                <p class="card-text"> Esta raqueta ofrece a los jugadores una combinación óptima de control, sensación y potencia</p>
+                <button class="btn btn-primary mt-auto">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Producto 7 -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card">
+              <div id="carouselProducto7" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="./imagenes_Home/HV_Producto 7_1.jpg" class="d-block w-100" alt="Producto 7 Imagen 1">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 7_2.jpg" class="d-block w-100" alt="Producto 7 Imagen 2">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 7_3.jpg" class="d-block w-100" alt="Producto 7 Imagen 3">
+                  </div>
+                </div>
+                <!-- Controles Carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto7" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto7" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+          
+              <div class="card-body d-flex flex-column">
+                <!-- Badge categoría -->
+               <span class="badge bg-primary position-absolute top-0 start-0 m-3">Peliculas</span>
+
+                <h5 class="card-title">Unidad Blu Ray Externa</h5>
+                <p class="card-text"><strong>$ 477.900</strong></p>
+                <p class="card-text"> Lector De Escritor Portátil Bluray, grabadora de CD con puerto USB 3.0 typc C y tarjeta SD</p>
+                <button class="btn btn-primary mt-auto">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Producto 8 -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card product-card">
+              <div id="carouselProducto7" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="./imagenes_Home/HV_Producto 8_1.jpg" class="d-block w-100" alt="Producto 8 Imagen 1">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 8_2.jpg" class="d-block w-100" alt="Producto 8 Imagen 2">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="./imagenes_Home/HV_Producto 8_3.jpg" class="d-block w-100" alt="Producto 8 Imagen 3">
+                  </div>
+                </div>
+                <!-- Controles Carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto8" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto8" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+          
+              <div class="card-body d-flex flex-column">
+                <!-- Badge categoría -->
+               <span class="badge bg-primary position-absolute top-0 start-0 m-3">Crochet</span>
+
+                <h5 class="card-title">Kit Agujas Crochet</h5>
+                <p class="card-text"><strong>$ 32.900</strong></p>
+                <p class="card-text"> Este Kit ofrece una colección completa de herramientas perfecta tanto para principiantes como para tejerdores experimentados</p>
+                <button class="btn btn-primary mt-auto">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+
+      </section>
+
+      <footer></footer>
+
+        <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/front-end/js/loadNavbar.js"></script>
+    <script src="/front-end/js/loadFooter.js"></script>
+</body>
+</html>

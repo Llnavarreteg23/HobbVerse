@@ -66,8 +66,8 @@ function validarPassword() {
         errorPassword.textContent = '*La contraseña es obligatoria.';
         return false;
     }
-    if (valor.length < 7) {
-        errorPassword.textContent = 'La contraseña debe tener al menos 7 caracteres.';
+    if (valor.length < 6) { // Cambiado a 6 para mantener consistencia con login.js
+        errorPassword.textContent = 'La contraseña debe tener al menos 6 caracteres.';
         return false;
     }
     errorPassword.textContent = '';
@@ -88,82 +88,67 @@ function validarPassword2() {
     return true;
 }
 
-
-//* Encriptación de la contraseña
-
-function encriptar(texto) {
-    let resultado = '';
-    for (let i = 0; i < texto.length; i++) {
-        resultado += String.fromCharCode(texto.charCodeAt(i));
+function mostrarError(elementId, mensaje) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.textContent = mensaje;
     }
-    return resultado;
 }
 
-
-
-//* Guardar y mostrar datos en localStorage
-
-function guardarEnLocalStorage(data) {
-
-    let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-
-    // Evitar duplicados por email
-    const existeUsuario = usuarios.some(u => u.email === data.email);
-    if (existeUsuario) {
-        alert('El correo ya está registrado.');
-        return false; 
-    }
-
-    // Agregar nuevo usuario
-    usuarios.push(data);
-
-    // Guardar arreglo actualizado en localStorage
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    return true; // Indica que se guardó correctamente
+function limpiarErrores() {
+    const errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(element => element.textContent = '');
 }
-
 
 //* Boton registro
 
-registrarBtn.addEventListener('click', function(event) {
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    const btnRegistrarse = document.getElementById('btnRegistrarse');
+    
+    if (!btnRegistrarse) {
+        console.error('No se encontró el botón de registro');
+        return;
+    }
+    
+    btnRegistrarse.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Validar campos usando las funciones individuales
+        const nombreValido = validarNombre();
+        const telefonoValido = validarTelefono();
+        const emailValido = validarEmail();
+        const passwordValido = validarPassword();
+        const password2Valido = validarPassword2();
 
-    const esNombreValido = validarNombre();
-    const esTelefonoValido = validarTelefono();
-    const esEmailValido = validarEmail();
-    const esPasswordValido = validarPassword();
-    const esPassword2Valido = validarPassword2();
+        // Solo continuar si todos los campos son válidos
+        if (!(nombreValido && telefonoValido && emailValido && passwordValido && password2Valido)) {
+            return;
+        }
 
-    if (esNombreValido && esTelefonoValido && esEmailValido && esPasswordValido && esPassword2Valido) {
-        const userData = {
+        // Crear objeto de usuario
+        const usuario = {
             nombre: nombreInput.value.trim(),
             telefono: telefonoInput.value.trim(),
             email: emailInput.value.trim(),
-            password: encriptar(passwordInput.value)
+            password: passwordInput.value,
+            fechaRegistro: new Date().toISOString()
         };
 
-        const guardado = guardarEnLocalStorage(userData);
-        if (guardado) {
+        // Obtener usuarios existentes o inicializar array
+        let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
 
-            alert('¡Registro completado! El universo de tus hobbies te espera. ¡Descúbrelo!.');
-
-            // Limpiar campos 
-            nombreInput.value = '';
-            telefonoInput.value = '';
-            emailInput.value = '';
-            passwordInput.value = '';
-            password2Input.value = '';
-            errorNombre.textContent = '';
-            errorTelefono.textContent = '';
-            errorEmail.textContent = '';
-            errorPassword.textContent = '';
-            errorPassword2.textContent = '';
+        // Verificar si el email ya está registrado
+        if (usuarios.some(user => user.email === usuario.email)) {
+            errorEmail.textContent = 'Este correo ya está registrado';
+            return;
         }
-        
-    } else {
-        alert('¡Ups! Parece que olvidamos algo. Por favor, asegúrate de llenar todos los campos.');
-    }
+
+        // Agregar nuevo usuario
+        usuarios.push(usuario);
+        localStorage.setItem('hobbverse_usuarios', JSON.stringify(usuarios));
+
+        // Mostrar mensaje de éxito
+        alert('¡Registro exitoso! Por favor, inicia sesión.');
+        window.location.href = 'login.html';
+    });
 });
-
-
-

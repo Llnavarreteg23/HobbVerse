@@ -1,59 +1,139 @@
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-  event.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const alertContainer = document.getElementById('alert-container');
+    
+    if (!loginForm) {
+        console.error('No se encontró el formulario de login');
+        return;
+    }
+    
+    if (!alertContainer) {
+        console.error('No se encontró el contenedor de alertas');
+        // Crear el contenedor si no existe
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'alert-container';
+        loginForm.parentNode.insertBefore(alertDiv, loginForm);
+    }
+    
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-  const email = document.getElementById('email');
-  const password = document.getElementById('password');
-  const emailError = document.getElementById('email-error');
-  const passwordError = document.getElementById('password-error');
+        // Limpiar mensajes previos
+        limpiarErrores();
+        limpiarAlertas();
 
-  let hasError = false;
+        // Validar campos
+        if (!validarCampos(email, password)) {
+            return;
+        }
 
-  // Ocultar errores al inicio
-  emailError.style.display = 'none';
-  passwordError.style.display = 'none';
+        try {
+            // Obtener usuarios registrados
+            const usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
+            
+            console.log('Usuarios en localStorage:', usuarios);
+            console.log('Intentando login con:', { email, password });
 
-  // Validar email
-  if (email.value.trim() === '') {
-    emailError.textContent = '*Este campo es obligatorio';
-    emailError.style.display = 'block';
-    hasError = true;
-  }
+            // Buscar usuario
+            const usuario = usuarios.find(user => user.email === email);
 
-  // Validar password
-  if (password.value.trim() === '') {
-    passwordError.textContent = '*Este campo es obligatorio';
-    passwordError.style.display = 'block';
-    hasError = true;
-  }
+            if (!usuario) {
+                mostrarAlerta('Usuario no registrado. Por favor, regístrate primero.', 'danger');
+                return;
+            }
 
-  if (hasError) return;
+            if (usuario.password !== password) {
+                mostrarAlerta('Contraseña incorrecta. Por favor, intenta nuevamente.', 'danger');
+                return;
+            }
 
+            // Guardar sesión
+            localStorage.setItem('hobbverse_sesion_actual', JSON.stringify({
+                email: usuario.email,
+                nombre: usuario.nombre,
+                fechaLogin: new Date().toISOString()
+            }));
 
-  
+            // Mostrar mensaje de éxito
+            mostrarAlerta('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
 
-  // Validar si ya está registrado
-  let users = JSON.parse(localStorage.getItem('usuarios')) || [];
-  const userExists = users.some(user => user.email === email.value.trim());
+            // Esperar a que se muestre el mensaje antes de redireccionar
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-  if (userExists) {
-    emailError.textContent = 'Este correo ya está registrado';
-    emailError.style.display = 'block';
-    return;
-  }
+            // Redireccionar
+            window.location.href = '../html/index.html';
 
-  // Guardar usuario si todo está bien
-  const newUser = {
-    email: email.value.trim(),
-    password: password.value.trim()
-  };
-  users.push(newUser);
-  localStorage.setItem('usuarios', JSON.stringify(users));
-
-  const alertContainer = document.getElementById('alert-container');
-alertContainer.innerHTML = `
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
-    ¡Nos encanta tenerte aquí de nuevo!
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-  </div>
-`;
+        } catch (error) {
+            console.error('Error en el inicio de sesión:', error);
+            mostrarAlerta('Ocurrió un error. Por favor, intenta nuevamente.', 'danger');
+        }
+    });
 });
+
+function mostrarAlerta(mensaje, tipo) {
+    const alertContainer = document.getElementById('alert-container');
+    if (!alertContainer) {
+        console.error('No se encontró el contenedor de alertas');
+        alert(mensaje);
+        return;
+    }
+    
+    alertContainer.innerHTML = ''; // Limpiar alertas previas
+    
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${tipo} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    alertContainer.appendChild(alert);
+
+    // Asegurar que la alerta sea visible
+    alert.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function limpiarAlertas() {
+    const alertContainer = document.getElementById('alert-container');
+    if (alertContainer) {
+        alertContainer.innerHTML = '';
+    }
+}
+
+function validarCampos(email, password) {
+    let isValid = true;
+
+    if (!email) {
+        mostrarError('email-error', 'El correo electrónico es requerido');
+        isValid = false;
+    } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+        mostrarError('email-error', 'Ingresa un correo electrónico válido');
+        isValid = false;
+    }
+
+    if (!password) {
+        mostrarError('password-error', 'La contraseña es requerida');
+        isValid = false;
+    } else if (password.length < 6) {
+        mostrarError('password-error', 'La contraseña debe tener al menos 6 caracteres');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function mostrarError(elementId, mensaje) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.textContent = mensaje;
+    } else {
+        console.error(`Elemento de error no encontrado: ${elementId}`);
+    }
+}
+
+function limpiarErrores() {
+    const errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(element => element.textContent = '');
+}
