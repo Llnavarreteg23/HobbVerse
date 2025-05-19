@@ -11,6 +11,7 @@ let editingProductId = null;
 let imageCount = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar datos
     loadData();
     setupEventListeners();
 });
@@ -25,31 +26,78 @@ function setupEventListeners() {
 
 async function loadData() {
     try {
+        // Unificar productos de ambas fuentes
+        const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
+        const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
         
-        const storedProducts = localStorage.getItem('hobbverse_products');
+        // Combinar y eliminar duplicados
+        products = [...productosNuevos, ...productosAntiguos].reduce((acc, producto) => {
+            // Verificar si ya existe un producto con el mismo ID
+            const existingIndex = acc.findIndex(p => p.id === producto.id);
+            
+            
+            if (existingIndex >= 0) {
+                
+                const isFromProductos = productosNuevos.some(p => p.id === producto.id);
+                if (isFromProductos) {
+                    acc[existingIndex] = producto;
+                }
+                return acc;
+            }
+            
+            // Normalizar formato
+            acc.push({
+                id: producto.id || Date.now().toString(),
+                name: producto.name || producto.nombre || '',
+                category: producto.category || '',
+                description: producto.description || '',
+                price: parseFloat(producto.price || producto.precio || 0),
+                stock: parseInt(producto.stock || 0),
+                mainImage: producto.mainImage || producto.imagen || '',
+                additionalImages: producto.additionalImages || [],
+                featured: producto.featured || false
+            });
+            return acc;
+        }, []);
+        
+       
+        localStorage.setItem('productos', JSON.stringify(products));
+        
+        // Cargar categorías
         const storedCategories = localStorage.getItem('hobbverse_categories');
-
-        if (storedProducts) {
-            products = JSON.parse(storedProducts);
-        }
 
         if (storedCategories) {
             categories = JSON.parse(storedCategories);
         } else {
-            
-            const response = await fetch('/front-end/data/initial-data.json');
-            const data = await response.json();
-            categories = data.categories;
+            try {
+                const response = await fetch('/front-end/data/initial-data.json');
+                const data = await response.json();
+                categories = data.categories;
+            } catch (fetchError) {
+                console.error('Error fetching initial data:', fetchError);
+                categories = [
+                    { id: 1, name: "Deportes" },
+                    { id: 2, name: "Arte" },
+                    { id: 3, name: "Música" }
+                ];
+            }
             localStorage.setItem('hobbverse_categories', JSON.stringify(categories));
         }
     } catch (error) {
         console.error('Error loading data:', error);
         
-        categories = [
-            { id: 1, name: "Deportes" },
-            { id: 2, name: "Arte" },
-            { id: 3, name: "Música" }
-        ];
+        // Valores por defecto
+        if (!products || !Array.isArray(products)) {
+            products = [];
+        }
+        
+        if (!categories || !Array.isArray(categories)) {
+            categories = [
+                { id: 1, name: "Deportes" },
+                { id: 2, name: "Arte" },
+                { id: 3, name: "Música" }
+            ];
+        }
     }
 
     updateUI();
@@ -57,10 +105,10 @@ async function loadData() {
 
 function saveData() {
     try {
+        
+        localStorage.setItem('productos', JSON.stringify(products));
         localStorage.setItem('hobbverse_products', JSON.stringify(products));
         localStorage.setItem('hobbverse_categories', JSON.stringify(categories));
-        
-        
     } catch (error) {
         console.error('Error saving data:', error);
     }
@@ -92,34 +140,52 @@ function handleProductSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     
-    const producto = {
-        id: Date.now().toString(),
+    const productData = {
+        id: editingProductId || Date.now().toString(),
         name: formData.get('name'),
+        category: formData.get('category'),
+        description: formData.get('description'),
+        price: parseFloat(formData.get('price')),
+        stock: parseInt(formData.get('stock')),
         mainImage: formData.get('mainImage'),
         additionalImages: Array.from(document.querySelectorAll('[name^="additionalImage"]'))
             .map(input => input.value)
             .filter(url => url),
-        description: formData.get('description'),
-        category: formData.get('category'),
-        price: parseFloat(formData.get('price')),
-        stock: parseInt(formData.get('stock')),
-        featured: formData.get('featured') === 'on'  // Aseguramos que sea booleano
+        featured: formData.get('featured') === 'on'
     };
 
-    // Obtener productos existentes
-    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
-    productos.push(producto);
+    if (editingProductId) {
+        // Actualizar en la variable products
+        const index = products.findIndex(p => p.id === editingProductId);
+        if (index !== -1) {
+            products[index] = productData;
+        } else {
+            // Si no se encuentra, agregarlo
+            products.push(productData);
+        }
+    } else {
+        // Agregar nuevo producto
+        products.push(productData);
+    }
     
-    // Guardar en localStorage
-    localStorage.setItem('productos', JSON.stringify(productos));
+    // Guardar en localStorage (ambos)
+    saveData();
     
-    console.log('Producto guardado:', producto);
-    
-    // Actualizar UI
     updateProductList();
     e.target.reset();
-}
+    
+    // Resetear estado de edición
+    editingProductId = null;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.textContent = 'Agregar Producto';
 
+    // Mostrar mensaje de éxito
+    if (typeof mostrarAlerta === 'function') {
+        mostrarAlerta('Producto guardado exitosamente', 'success');
+    } else {
+        alert('Producto guardado exitosamente');
+    }
+}
 
 function handleCategorySubmit(e) {
     e.preventDefault();
@@ -156,6 +222,8 @@ function updateUI() {
 
 function updateCategoryList() {
     const categoryList = document.getElementById('categoryList');
+    if (!categoryList) return;
+    
     categoryList.innerHTML = categories.map(category => `
         <li class="category-item">
             ${category.name}
@@ -177,85 +245,72 @@ function filterProducts() {
     
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
-                            product.description.toLowerCase().includes(searchTerm);
-        const matchesCategory = !categoryFilter || product.category === categoryFilter;
+                            (product.description && product.description.toLowerCase().includes(searchTerm));
+        const matchesCategory = !categoryFilter || 
+                              (product.category && product.category.toLowerCase() === categoryFilter.toLowerCase());
         return matchesSearch && matchesCategory;
     });
     
     updateProductList(filteredProducts);
-    document.getElementById('productCount').textContent = filteredProducts.length;
 }
 
-function updateProductList(productsToShow = products) {
+function updateProductList(filteredProducts = null) {
     const productList = document.getElementById('productList');
-    productList.innerHTML = productsToShow.map(product => `
+    const productsToDisplay = filteredProducts || products;
+    
+    if (!productList) return;
+
+    if (productsToDisplay.length === 0) {
+        productList.innerHTML = `
+            <div class="col-12 text-center">
+                <p class="text-muted">No hay productos registrados</p>
+            </div>
+        `;
+        return;
+    }
+
+    productList.innerHTML = productsToDisplay.map(producto => `
         <div class="col">
-            <div class="card product-card h-100">
-                <!-- Carrusel de imágenes -->
-                <div id="carousel-${product.id}" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carousel-${product.id}" data-bs-slide-to="0" class="active"></button>
-                        ${product.additionalImages.map((_, index) => `
-                            <button type="button" data-bs-target="#carousel-${product.id}" data-bs-slide-to="${index + 1}"></button>
-                        `).join('')}
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="${product.mainImage}" class="d-block w-100" alt="${product.name}"
-                                 onerror="this.src='/Imagenes/placeholder.png'">
-                        </div>
-                        ${product.additionalImages.map(img => `
-                            <div class="carousel-item">
-                                <img src="${img}" class="d-block w-100" alt="${product.name}"
-                                     onerror="this.src='/Imagenes/placeholder.png'">
-                            </div>
-                        `).join('')}
-                    </div>
-                    ${(product.additionalImages.length > 0) ? `
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon"></span>
-                            <span class="visually-hidden">Anterior</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
-                            <span class="carousel-control-next-icon"></span>
-                            <span class="visually-hidden">Siguiente</span>
-                        </button>
-                    ` : ''}
+            <div class="card h-100 ${producto.featured ? 'border-warning' : ''}">
+                <div class="position-relative">
+                    <img src="${producto.mainImage}" class="card-img-top" alt="${producto.name}" 
+                         style="height: 200px; object-fit: contain;">
+                    ${producto.featured ? 
+                        '<span class="badge bg-warning position-absolute top-0 end-0 m-2">Destacado</span>' 
+                        : ''}
                 </div>
-
-                <!-- Botones de acción -->
-                <div class="product-actions">
-                    <button class="action-btn edit-btn" onclick="editProduct(${product.id})" title="Editar">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})" title="Eliminar">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-
                 <div class="card-body">
-                    <h5 class="card-title">${product.name}</h5>
-                    <span class="badge bg-secondary mb-2">${product.category || 'Sin categoría'}</span>
-                    <p class="card-text">${product.description}</p>
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <span class="price-tag">${new Intl.NumberFormat('es-CO', {
-                            style: 'currency',
-                            currency: 'COP',
-                            minimumFractionDigits: 0
-                        }).format(product.price)}</span>
-                        <span class="badge bg-${product.stock > 0 ? 'success' : 'danger'}">
-                            Stock: ${product.stock}
-                        </span>
+                    <h5 class="card-title">${producto.name}</h5>
+                    <p class="card-text small">${producto.description || ''}</p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-primary">${producto.category || 'Sin categoría'}</span>
+                        <span class="text-success fw-bold">$${producto.price.toLocaleString()}</span>
                     </div>
-                    ${product.featured ? `
-                        <div class="featured-badge">
-                            <i class="bi bi-star-fill"></i> Destacado
-                        </div>
-                    ` : ''}
+                    <div class="btn-group w-100">
+                        <button class="btn btn-sm btn-outline-primary" onclick="editProduct('${producto.id}')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${producto.id}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="toggleFeatured('${producto.id}')">
+                            <i class="bi bi-star${producto.featured ? '-fill' : ''}"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     `).join('');
+}
+
+function toggleFeatured(productId) {
+    const index = products.findIndex(p => p.id === productId);
+    
+    if (index !== -1) {
+        products[index].featured = !products[index].featured;
+        saveData(); 
+        updateProductList();
+    }
 }
 
 function updateCategorySelect() {
@@ -273,55 +328,107 @@ function updateCategorySelect() {
 }
 
 function editProduct(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
+    
+    let producto = products.find(p => p.id === productId);
+    
+    if (!producto) {
+        
+        try {
+            const productosAlmacenados = localStorage.getItem('productos');
+            if (productosAlmacenados) {
+                const productosArray = JSON.parse(productosAlmacenados);
+                producto = productosArray.find(p => p.id === productId);
+                
+                
+                if (producto && !products.some(p => p.id === productId)) {
+                    products.push(producto);
+                    saveData();
+                }
+            }
+            
+           
+            if (!producto) {
+                const hobbverseProductos = localStorage.getItem('hobbverse_products');
+                if (hobbverseProductos) {
+                    const hobbverseArray = JSON.parse(hobbverseProductos);
+                    producto = hobbverseArray.find(p => p.id === productId);
+                    
+                    
+                    if (producto && !products.some(p => p.id === productId)) {
+                        products.push(producto);
+                        saveData();
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error buscando producto:', error);
+        }
+    }
+    
+    if (!producto) {
+        console.error('Producto no encontrado:', productId);
+        return;
+    }
 
     const form = document.getElementById('productForm');
-    form.elements['name'].value = product.name;
-    form.elements['mainImage'].value = product.mainImage;
-    form.elements['description'].value = product.description;
-    form.elements['category'].value = product.category;
-    form.elements['price'].value = product.price;
-    form.elements['stock'].value = product.stock;
-    form.elements['featured'].checked = product.featured;
+    if (!form) {
+        console.error('Formulario no encontrado');
+        return;
+    }
+    
+    // Llenar el formulario con los datos del producto
+    form.elements['name'].value = producto.name || producto.nombre || '';
+    form.elements['category'].value = producto.category || '';
+    form.elements['description'].value = producto.description || '';
+    form.elements['price'].value = producto.price || producto.precio || 0;
+    form.elements['stock'].value = producto.stock || 0;
+    form.elements['mainImage'].value = producto.mainImage || producto.imagen || '';
+    form.elements['featured'].checked = producto.featured || false;
 
+    // Limpiar y agregar imágenes adicionales
     const additionalImagesContainer = document.getElementById('additionalImages');
     additionalImagesContainer.innerHTML = '';
     imageCount = 0;
 
-    product.additionalImages.forEach(imgUrl => {
-        imageCount++;
-        const container = document.createElement('div');
-        container.className = 'additional-image';
-        container.innerHTML = `
-            <label class="form-label small text-muted">Imagen adicional ${imageCount}</label>
-            <div class="d-flex gap-2">
-                <input type="url" class="form-control" name="additionalImage${imageCount}" 
-                       placeholder="URL de la imagen adicional" value="${imgUrl}">
-                <button type="button" class="remove-image" title="Eliminar imagen">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-        `;
+    if (producto.additionalImages && producto.additionalImages.length > 0) {
+        producto.additionalImages.forEach(imgUrl => {
+            imageCount++;
+            const container = document.createElement('div');
+            container.className = 'additional-image';
+            container.innerHTML = `
+                <label class="form-label small text-muted">Imagen adicional ${imageCount}</label>
+                <div class="d-flex gap-2">
+                    <input type="url" class="form-control" name="additionalImage${imageCount}" 
+                           value="${imgUrl}" placeholder="URL de la imagen adicional">
+                    <button type="button" class="remove-image" title="Eliminar imagen">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            `;
 
-        container.querySelector('.remove-image').addEventListener('click', function () {
-            container.remove();
+            container.querySelector('.remove-image').addEventListener('click', function() {
+                container.remove();
+            });
+
+            additionalImagesContainer.appendChild(container);
         });
+    }
 
-        additionalImagesContainer.appendChild(container);
-    });
-
+    // Actualizar el estado de edición
     editingProductId = productId;
-    form.querySelector('button[type="submit"]').textContent = 'Actualizar Producto';
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.textContent = 'Actualizar Producto';
+    
+    // Scroll al formulario
     form.scrollIntoView({ behavior: 'smooth' });
 }
 
-function deleteProduct(id) {
-    if (!confirm('¿Está seguro de eliminar este producto?')) return;
-
-    products = products.filter(p => p.id !== id);
-    saveData();
-    updateUI();
+function deleteProduct(productId) {
+    if (confirm('¿Estás seguro de eliminar este producto?')) {
+        products = products.filter(p => p.id !== productId);
+        saveData(); 
+        updateProductList();
+    }
 }
 
 function editCategory(id) {

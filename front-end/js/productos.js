@@ -16,55 +16,87 @@ const categoryIcons = {
 };
 
 export default function renderCategory(category, name) {
-    const localProducts = JSON.parse(localStorage.getItem('hobbverse_products')) || [];
+    // Obtener productos
+    const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
+    const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
 
-    const filteredLocalProducts = localProducts.filter(p => p.category === name);
+    // Combinar productos y eliminar duplicados por ID
+    const todosLosProductos = [...productosNuevos, ...productosAntiguos].reduce((acc, producto) => {
+        if (!acc.find(p => p.id === producto.id)) {
+            acc.push(producto);
+        }
+        return acc;
+    }, []);
+
+    // Filtrar por categoría si se especifica
+    const productosFiltrados = name ? 
+        todosLosProductos.filter(p => p.category.toLowerCase() === name.toLowerCase()) : 
+        todosLosProductos;
 
     hobbieImageContainer.innerHTML = "";
 
-    if (filteredLocalProducts.length > 0) {
-        filteredLocalProducts.forEach(producto => {
+    if (productosFiltrados.length > 0) {
+        productosFiltrados.forEach(producto => {
             const card = document.createElement("div");
             card.className = "producto-card";
             card.innerHTML = `
                 <div id="carousel-${producto.id}" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carousel-${producto.id}" data-bs-slide-to="0" class="active"></button>
-        ${(producto.additionalImages || []).map((_, index) => `
-            <button type="button" data-bs-target="#carousel-${producto.id}" data-bs-slide-to="${index + 1}"></button>
-        `).join('')}
-    </div>
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img src="${producto.mainImage}" class="d-block w-100" alt="Imagen principal">
-        </div>
-        ${(producto.additionalImages || []).map(img => `
-            <div class="carousel-item">
-                <img src="${img}" class="d-block w-100" alt="Imagen adicional">
-            </div>
-        `).join('')}
-        </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${producto.id}" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-                <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel-${producto.id}" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-                <span class="visually-hidden">Siguiente</span>
-            </button>
-        </div>
-
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carousel-${producto.id}" 
+                                data-bs-slide-to="0" class="active"></button>
+                        ${(producto.additionalImages || []).map((_, index) => `
+                            <button type="button" data-bs-target="#carousel-${producto.id}" 
+                                    data-bs-slide-to="${index + 1}"></button>
+                        `).join('')}
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="${producto.mainImage || producto.imagen}" class="d-block w-100" 
+                                 alt="${producto.name || producto.nombre}">
+                        </div>
+                        ${(producto.additionalImages || []).map(img => `
+                            <div class="carousel-item">
+                                <img src="${img}" class="d-block w-100" alt="Imagen adicional">
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${(producto.additionalImages || []).length > 0 ? `
+                        <button class="carousel-control-prev" type="button" 
+                                data-bs-target="#carousel-${producto.id}" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" 
+                                data-bs-target="#carousel-${producto.id}" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </button>
+                    ` : ''}
+                </div>
                 <div class="product-details">
-                    <h3>${producto.nombre || producto.name}</h3>
-                    ${producto.autor ? `<p><strong>Autor:</strong> ${producto.autor}</p>` : ""}
-                    <p><strong>Precio:</strong> $${(producto.precio || producto.price).toLocaleString()}</p>
-                    <button class="buy-button">Comprar</button>
+                    <h3>${producto.name || producto.nombre}</h3>
+                    ${producto.description ? `<p>${producto.description}</p>` : ''}
+                    <p class="price">$${(producto.price || producto.precio).toLocaleString()}</p>
+                    ${producto.featured ? '<span class="badge bg-warning">Destacado</span>' : ''}
+                    <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
+                        Agregar al carrito
+                    </button>
                 </div>
             `;
             hobbieImageContainer.appendChild(card);
         });
     } else {
-        hobbieImageContainer.innerHTML = "<p>No hay productos disponibles para esta categoría.</p>";
+        hobbieImageContainer.innerHTML = `
+            <div class="no-products">
+                <p>No hay productos disponibles en esta categoría</p>
+            </div>
+        `;
+    }
+
+    // Actualizar ícono y título de categoría seleccionada
+    if (category && name) {
+        iconSelected.className = `bi ${categoryIcons[name.toLowerCase()] || 'bi-tag'}`;
+        hobbieaSelected.textContent = name;
     }
 }
 
@@ -107,10 +139,10 @@ document.addEventListener("DOMContentLoaded", function () {
  * @returns {Array} Array de productos destacados
  */
 export function cargarProductosDestacados() {
-    // Intenta obtener productos de 'productos' (usado en indexProductos.js)
+    // Obtener productos del almacenamiento local
     let productos = JSON.parse(localStorage.getItem('productos') || '[]');
     
-    // Si no hay productos, intenta obtenerlos de 'hobbverse_products' (usado en admin.js)
+    
     if (!productos.length) {
         productos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
     }
@@ -174,5 +206,51 @@ export function formatearPrecioCOP(precio) {
         currency: 'COP',
         minimumFractionDigits: 0
     }).format(precio);
+}
+
+/**
+ * Carga todos los productos desde el almacenamiento local
+ * @returns {Array} Array de todos los productos
+ */
+export function cargarTodosLosProductos() {
+    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
+    return productos;
+}
+
+/**
+ * Renderiza los productos en el contenedor especificado
+ * @param {string} categoria - Categoría para filtrar los productos (opcional)
+ */
+export function renderizarProductos(categoria = null) {
+    const productos = cargarTodosLosProductos();
+    const productosFiltrados = categoria ? 
+        productos.filter(p => p.category.toLowerCase() === categoria.toLowerCase()) : 
+        productos;
+
+    const contenedor = document.getElementById('hobbieImageContainer');
+    
+    if (!productosFiltrados.length) {
+        contenedor.innerHTML = '<p class="text-center">No hay productos disponibles</p>';
+        return;
+    }
+
+    contenedor.innerHTML = productosFiltrados.map(producto => `
+        <div class="producto-card ${producto.featured ? 'featured' : ''}">
+            <div class="position-relative">
+                <img src="${producto.mainImage}" alt="${producto.name}">
+                ${producto.featured ? 
+                    '<span class="badge bg-warning position-absolute top-0 end-0 m-2">Destacado</span>' 
+                    : ''}
+            </div>
+            <div class="product-details">
+                <h3>${producto.name}</h3>
+                <p>${producto.description}</p>
+                <p class="price">$${producto.price.toLocaleString()}</p>
+                <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
+                    Agregar al carrito
+                </button>
+            </div>
+        </div>
+    `).join('');
 }
 
