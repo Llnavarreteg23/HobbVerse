@@ -1,4 +1,4 @@
-import * as adminFunctions from './admin.js';
+import * as adminFunctions from '/front-end/js/admin.js';
 
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
@@ -101,4 +101,78 @@ document.addEventListener("DOMContentLoaded", function () {
 
     renderCategory("lectura", "Lectura");
 });
+
+/**
+ * Carga los productos destacados desde el almacenamiento local
+ * @returns {Array} Array de productos destacados
+ */
+export function cargarProductosDestacados() {
+    // Intenta obtener productos de 'productos' (usado en indexProductos.js)
+    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
+    
+    // Si no hay productos, intenta obtenerlos de 'hobbverse_products' (usado en admin.js)
+    if (!productos.length) {
+        productos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
+    }
+    
+    // Filtra solo los productos destacados
+    const destacados = productos.filter(producto => 
+        producto.featured === true || producto.featured === 'on' || producto.featured === 'true'
+    );
+    
+    return destacados;
+}
+
+/**
+ * Agrega un producto al carrito de compras
+ * @param {string} productoId - ID del producto a agregar
+ */
+export function agregarAlCarrito(productoId) {
+    // Obtener el carrito actual o crear uno nuevo
+    const carrito = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
+    
+    // Obtener todos los productos
+    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
+    if (!productos.length) {
+        productos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
+    }
+    
+    // Buscar el producto por ID
+    const producto = productos.find(p => p.id == productoId);
+    
+    if (producto) {
+        // Verificar si el producto ya está en el carrito
+        const itemExistente = carrito.find(item => item.productoId == productoId);
+        
+        if (itemExistente) {
+            itemExistente.cantidad += 1;
+        } else {
+            carrito.push({
+                productoId: productoId,
+                nombre: producto.name,
+                precio: producto.price,
+                imagen: producto.mainImage,
+                cantidad: 1
+            });
+        }
+        
+        localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
+        alert('Producto agregado al carrito');
+    } else {
+        console.error('Producto no encontrado:', productoId);
+    }
+}
+
+/**
+ * Formatea un precio como moneda colombiana
+ * @param {number} precio - El precio a formatear
+ * @returns {string} El precio formateado
+ */
+export function formatearPrecioCOP(precio) {
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0
+    }).format(precio);
+}
 

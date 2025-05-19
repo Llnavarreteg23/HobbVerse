@@ -212,6 +212,28 @@ document.addEventListener('DOMContentLoaded', function() {
     emailInput.addEventListener('input', validarEmail);
     passwordInput.addEventListener('input', validarPassword);
     password2Input.addEventListener('input', validarPassword2);
+
+    // Funcionalidad mostrar/ocultar contraseña para ambos campos
+    const togglePassword = document.getElementById('togglePassword');
+    const togglePassword2 = document.getElementById('togglePassword2');
+    const passwordInput = document.getElementById('password');
+    const password2Input = document.getElementById('password2');
+
+    // Función reutilizable para alternar visibilidad de contraseña
+    function togglePasswordVisibility(toggleButton, inputField) {
+        toggleButton.addEventListener('click', function() {
+            const type = inputField.getAttribute('type') === 'password' ? 'text' : 'password';
+            inputField.setAttribute('type', type);
+            
+            const icon = this.querySelector('i');
+            icon.classList.toggle('bi-eye');
+            icon.classList.toggle('bi-eye-slash');
+        });
+    }
+
+    // Aplicar la funcionalidad a ambos campos
+    togglePasswordVisibility(togglePassword, passwordInput);
+    togglePasswordVisibility(togglePassword2, password2Input);
 });
 
 function mostrarError(elementId, mensaje) {

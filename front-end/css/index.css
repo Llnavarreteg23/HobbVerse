@@ -268,7 +268,34 @@ body{
     background-color: #F25C05;
 }
 
+/* Estilos para las secciones de categoría */
+.categoria-section {
+    padding: 2rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
 
+.categoria-section:last-child {
+    border-bottom: none;
+}
+
+.categoria-title {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 4px solid #0460D9;
+}
+
+/* Ajustes para las cards */
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
 
 /* ----------------- Responsive para TABLETAS ----------------- */
 @media (max-width: 991px) {

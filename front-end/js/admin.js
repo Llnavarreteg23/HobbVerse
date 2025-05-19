@@ -91,8 +91,9 @@ function addImageInput() {
 function handleProductSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-
-    const productData = {
+    
+    const producto = {
+        id: Date.now().toString(),
         name: formData.get('name'),
         mainImage: formData.get('mainImage'),
         additionalImages: Array.from(document.querySelectorAll('[name^="additionalImage"]'))
@@ -102,27 +103,20 @@ function handleProductSubmit(e) {
         category: formData.get('category'),
         price: parseFloat(formData.get('price')),
         stock: parseInt(formData.get('stock')),
-        featured: formData.get('featured') === 'on'
+        featured: formData.get('featured') === 'on'  // Aseguramos que sea booleano
     };
 
-    if (editingProductId) {
-        const index = products.findIndex(p => p.id === editingProductId);
-        if (index !== -1) {
-            products[index] = { ...products[index], ...productData };
-        }
-        editingProductId = null;
-        e.target.querySelector('button[type="submit"]').textContent = 'Agregar Producto';
-    } else {
-        const newProduct = {
-            id: Date.now(),
-            ...productData
-        };
-        products.push(newProduct);
-        console.log('Nuevo producto creado:', JSON.stringify(newProduct, null, 2));
-    }
-
-    saveData();
-    updateUI();
+    // Obtener productos existentes
+    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
+    productos.push(producto);
+    
+    // Guardar en localStorage
+    localStorage.setItem('productos', JSON.stringify(productos));
+    
+    console.log('Producto guardado:', producto);
+    
+    // Actualizar UI
+    updateProductList();
     e.target.reset();
 }
 

@@ -36,10 +36,23 @@
                         <p id="errorTelefono" class="error-message"></p>
                         <input id="email" type="email" placeholder="Correo Electrónico">
                         <p id="errorEmail" class="error-message"></p>
-                        <input id="password" type="password" placeholder="Contraseña">
-                        <p id="errorPassword" class="error-message"></p>
-                        <input id="password2" type="password" placeholder="Confirmar contraseña">
-                        <p id="errorPassword2" class="error-message"></p>
+
+                        <div class="password-container position-relative">
+                            <input type="password" id="password" placeholder="Contraseña">
+                            <span class="password-toggle" id="togglePassword">
+                                <i class="bi bi-eye-slash"></i>
+                            </span>
+                        </div>
+                        <p id="password-error" class="error-message"></p>
+
+                        <div class="password-container position-relative">
+                            <input type="password" id="password2" placeholder="Confirmar Contraseña">
+                            <span class="password-toggle" id="togglePassword2">
+                                <i class="bi bi-eye-slash"></i>
+                            </span>
+                        </div>
+                        <p id="password2-error" class="error-message"></p>
+
                         <button id="btnRegistrarse">Registrarse</button>
                         <p>¿Ya tienes cuenta? <a href="/front-end/html/login.html">Inicia Sesión</a></p>
                 </div>

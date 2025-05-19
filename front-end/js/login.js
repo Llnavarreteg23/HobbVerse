@@ -71,6 +71,51 @@ document.addEventListener('DOMContentLoaded', function() {
             mostrarAlerta('Ocurrió un error. Por favor, intenta nuevamente.', 'danger');
         }
     });
+
+    // Funcionalidad mostrar/ocultar contraseña
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function() {
+        // Cambiar el tipo de input
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Cambiar el icono
+        const icon = this.querySelector('i');
+        icon.classList.toggle('bi-eye');
+        icon.classList.toggle('bi-eye-slash');
+    });
+
+    // Función de validación de contraseña modificada
+    function validarPassword(password) {
+        const errorElement = document.getElementById('password-error');
+        
+        if (!password) {
+            errorElement.textContent = 'La contraseña es requerida';
+            return false;
+        }
+        
+        if (password.length < 6) {
+            errorElement.textContent = 'La contraseña debe tener al menos 6 caracteres';
+            return false;
+        }
+
+        // Validar que contenga al menos una mayúscula
+        if (!/[A-Z]/.test(password)) {
+            errorElement.textContent = 'La contraseña debe contener al menos una mayúscula';
+            return false;
+        }
+
+        // Validar que contenga al menos un número
+        if (!/\d/.test(password)) {
+            errorElement.textContent = 'La contraseña debe contener al menos un número';
+            return false;
+        }
+
+        errorElement.textContent = '';
+        return true;
+    }
 });
 
 function mostrarAlerta(mensaje, tipo) {
