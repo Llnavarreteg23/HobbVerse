@@ -254,3 +254,20 @@ export function renderizarProductos(categoria = null) {
     `).join('');
 }
 
+function renderProducts(products) {
+    const container = document.getElementById('hobbieImageContainer');
+    container.innerHTML = products.map(product => `
+        <div class="producto-card">
+            <img src="${product.mainImage || product.imagen}" alt="${product.name || product.nombre}">
+            <div class="product-details">
+                <h3>${product.name || product.nombre}</h3>
+                <p>${product.description || ''}</p>
+                <p class="price">$${(product.price || product.precio).toLocaleString()}</p>
+                <button class="buy-button" onclick="window.floatingCart.addToCart(${JSON.stringify(product)})">
+                    Agregar al carrito
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+

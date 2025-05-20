@@ -256,51 +256,66 @@ function filterProducts() {
 
 function updateProductList(filteredProducts = null) {
     const productList = document.getElementById('productList');
-    const productsToDisplay = filteredProducts || products;
-    
-    if (!productList) return;
+    const productos = JSON.parse(localStorage.getItem('productos') || '[]');
 
-    if (productsToDisplay.length === 0) {
-        productList.innerHTML = `
-            <div class="col-12 text-center">
-                <p class="text-muted">No hay productos registrados</p>
-            </div>
-        `;
-        return;
-    }
-
-    productList.innerHTML = productsToDisplay.map(producto => `
+    productList.innerHTML = productos.map(product => `
         <div class="col">
-            <div class="card h-100 ${producto.featured ? 'border-warning' : ''}">
-                <div class="position-relative">
-                    <img src="${producto.mainImage}" class="card-img-top" alt="${producto.name}" 
-                         style="height: 200px; object-fit: contain;">
-                    ${producto.featured ? 
-                        '<span class="badge bg-warning position-absolute top-0 end-0 m-2">Destacado</span>' 
-                        : ''}
+            <div class="card h-100 ${product.featured ? 'border-warning' : ''}">
+                <div id="carousel-${product.id}" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carousel-${product.id}" data-bs-slide-to="0" class="active"></button>
+                        ${(product.additionalImages || []).map((_, index) => `
+                            <button type="button" data-bs-target="#carousel-${product.id}" data-bs-slide-to="${index + 1}"></button>
+                        `).join('')}
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="${product.mainImage}" class="d-block w-100" alt="${product.name}">
+                        </div>
+                        ${(product.additionalImages || []).map(img => `
+                            <div class="carousel-item">
+                                <img src="${img}" class="d-block w-100" alt="Imagen adicional">
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${(product.additionalImages || []).length > 0 ? `
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    ` : ''}
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">${producto.name}</h5>
-                    <p class="card-text small">${producto.description || ''}</p>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-primary">${producto.category || 'Sin categoría'}</span>
-                        <span class="text-success fw-bold">$${producto.price.toLocaleString()}</span>
-                    </div>
+                    <h5 class="card-title">${product.name}</h5>
+                    <p class="card-text">${product.description}</p>
+                    <p class="card-text"><strong>Precio: </strong>$${product.price.toLocaleString()}</p>
+                    <p class="card-text"><strong>Categoría: </strong>${product.category}</p>
                     <div class="btn-group w-100">
-                        <button class="btn btn-sm btn-outline-primary" onclick="editProduct('${producto.id}')">
+                        <button class="btn btn-sm btn-outline-primary" onclick="editProduct('${product.id}')">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${producto.id}')">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${product.id}')">
                             <i class="bi bi-trash"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-warning" onclick="toggleFeatured('${producto.id}')">
-                            <i class="bi bi-star${producto.featured ? '-fill' : ''}"></i>
+                        <button class="btn btn-sm btn-outline-warning" onclick="toggleFeatured('${product.id}')">
+                            <i class="bi bi-star${product.featured ? '-fill' : ''}"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
     `).join('');
+
+    // Inicializar todos los carruseles
+    productos.forEach(product => {
+        if (product.additionalImages?.length > 0) {
+            new bootstrap.Carousel(document.getElementById(`carousel-${product.id}`), {
+                interval: 3000
+            });
+        }
+    });
 }
 
 function toggleFeatured(productId) {

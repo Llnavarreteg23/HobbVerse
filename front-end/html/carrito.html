@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inter:700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="/front-end/css/carrito.css" rel="stylesheet">
+    <link rel="stylesheet" href="/front-end/css/nav.css">
+    <link rel="stylesheet" href="/front-end/css/footer.css">
+</head>
+<body>
+    <!-- Navbar será cargado aquí -->
+    <header>
+        <nav></nav>
+    </header>
+
+    <!-- Contenido existente del carrito -->
+    <div class="container py-5">
+        <!-- Título -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1 class="mb-0">Tu Carrito de Compras</h1>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Carrito</li>
+            </ol>
+          </nav>
+        </div>
+        
+        <div class="row">
+          <!-- Columna de productos -->
+          <div class="col-lg-8 mb-4 mb-lg-0">
+            <div class="card cart-container shadow-sm">
+              <div class="card-body">
+                <!-- Encabezados de la tabla -->
+                <div class="d-none d-md-flex border-bottom pb-2 mb-3">
+                  <div class="col-6">
+                    <span class="fw-bold">Producto</span>
+                  </div>
+                  <div class="col-2 text-center">
+                    <span class="fw-bold">Precio</span>
+                  </div>
+                  <div class="col-2 text-center">
+                    <span class="fw-bold">Cantidad</span>
+                  </div>
+                  <div class="col-2 text-end">
+                    <span class="fw-bold">Subtotal</span>
+                  </div>
+                </div>
+                
+                <!-- Producto 1 -->
+                <div class="card product-card mb-3">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="d-flex align-items-center">
+                          <div class="product-image-container me-3">
+                            <div class="product-image"></div>
+                          </div>
+                          <div class="product-details">
+                            <h3 class="product-title">Producto 1</h3>
+                            <small class="text-muted d-md-none">Precio: $25.000</small>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 text-md-center mb-2 mb-md-0">
+                        <span class="d-inline d-md-none fw-bold">Precio: </span>
+                        <span class="product-price">$25.000</span>
+                      </div>
+                      <div class="col-md-2 text-md-center mb-2 mb-md-0">
+                        <div class="quantity-control d-flex align-items-center justify-content-md-center">
+                          <button class="btn btn-sm btn-outline-secondary">-</button>
+                          <input type="text" class="form-control mx-2" value="2" style="width: 50px; text-align: center;">
+                          <button class="btn btn-sm btn-outline-secondary">+</button>
+                        </div>
+                      </div>
+                      <div class="col-md-2 text-md-end">
+                        <span class="d-inline d-md-none fw-bold">Subtotal: </span>
+                        <span class="product-subtotal">$50.000</span>
+                        <div class="mt-2 text-end">
+                          <button class="btn btn-sm text-danger">
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Producto 2 -->
+                <div class="card product-card mb-3">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="d-flex align-items-center">
+                          <div class="product-image-container me-3">
+                            <div class="product-image"></div>
+                          </div>
+                          <div class="product-details">
+                            <h3 class="product-title">Producto 2</h3>
+                            <small class="text-muted d-md-none">Precio: $45.000</small>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 text-md-center mb-2 mb-md-0">
+                        <span class="d-inline d-md-none fw-bold">Precio: </span>
+                        <span class="product-price">$45.000</span>
+                      </div>
+                      <div class="col-md-2 text-md-center mb-2 mb-md-0">
+                        <div class="quantity-control d-flex align-items-center justify-content-md-center">
+                          <button class="btn btn-sm btn-outline-secondary">-</button>
+                          <input type="text" class="form-control mx-2" value="1" style="width: 50px; text-align: center;">
+                          <button class="btn btn-sm btn-outline-secondary">+</button>
+                        </div>
+                      </div>
+                      <div class="col-md-2 text-md-end">
+                        <span class="d-inline d-md-none fw-bold">Subtotal: </span>
+                        <span class="product-subtotal">$45.000</span>
+                        <div class="mt-2 text-end">
+                          <button class="btn btn-sm text-danger">
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="d-flex justify-content-between mt-4">
+                  <a href="index.html" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Seguir comprando
+                  </a>
+                  <button class="btn btn-outline-danger">
+                    <i class="fas fa-trash me-2"></i>Vaciar carrito
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Columna de resumen y checkout -->
+          <div class="col-lg-4">
+            <div class="card order-summary sticky-top" style="top: 20px;">
+              <div class="card-body">
+                <h3 class="card-title mb-4">Resumen de compra</h3>
+                
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Subtotal:</span>
+                  <span>$95.000</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  <span>Envío:</span>
+                  <span>$5.000</span>
+                </div>
+                
+                <!-- Código promocional -->
+                <div class="mb-3">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Cupón de descuento">
+                    <button class="btn btn-outline-secondary" type="button">Aplicar</button>
+                  </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-4">
+                  <span class="total-label">Total:</span>
+                  <span class="total-amount">$100.000</span>
+                </div>
+                
+                <button class="btn checkout-btn w-100 mb-3">
+                  <i class="fas fa-lock me-2"></i>Finalizar Compra
+                </button>
+                
+                <div class="payment-methods mt-4 text-center">
+                  <small class="text-muted d-block mb-2">Métodos de pago aceptados</small>
+                  <div class="d-flex justify-content-center gap-2">
+                    <i class="fab fa-cc-visa fa-2x"></i>
+                    <i class="fab fa-cc-mastercard fa-2x"></i>
+                    <i class="fab fa-cc-amex fa-2x"></i>
+                    <i class="fab fa-cc-paypal fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <footer></footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/front-end/js/carritoPage.js"></script>
+    <script src="/front-end/js/loadNavbar.js"></script>
+    <script src="/front-end/js/loadFooter.js"></script>
+</body>
+</html>
