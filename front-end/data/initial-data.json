@@ -1,0 +1,27 @@
+{
+    "categories": [
+        {
+            "id": 1,
+            "name": "Deportes"
+        },
+        {
+            "id": 2,
+            "name": "Arte"
+        },
+        {
+            "id": 3,
+            "name": "Música"
+        }
+    ],
+    "products": [
+        {
+            "id": 1,
+            "name": "Pelota de Fútbol",
+            "category": "Deportes",
+            "img": "https://ejemplo.com/pelota.jpg",
+            "description": "Pelota oficial de fútbol",
+            "price": 120000,
+            "stock": 100
+        }
+    ]
+}

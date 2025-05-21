@@ -1,0 +1,466 @@
+/* Paleta de Colores
+Azul Oscuro #0460D9
+Azul más claro #0487D9
+Blanco hueso  #F2F0E9
+Naranja claro #F28705
+Naranja Oscuro #F25C05
+
+*/
+
+
+/* Fuente Poppins
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+*/
+
+
+/* Fuente Josefin Sans
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+*/
+
+
+
+body{
+    background-color: #F2F0E9;
+    margin: 0;
+}
+
+
+/*----------------- Estilos Banner ----------------*/
+.content-Banner{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    text-align: center;      
+    background-color: #0487D9;
+    height: 500px;
+}
+
+.content-Banner h1{
+    
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    color: #F28705;
+    margin-bottom: 15px;
+    font-size: 80px;
+    text-shadow: 1px 1px 2px #454545;
+    
+}
+
+.content-Banner p{
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 40px;
+    text-align: center;
+    color: #F2F0E9;
+    line-height: 1.6;
+    margin-bottom: 20px;
+
+}
+
+.content-Banner button{
+    background-color: #F28705;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 25px;
+    
+    
+}
+
+ .content-Banner button:hover{
+    background-color: #F25C05;
+}
+
+/*----------------- Estilos Sección Explora Hobbies ----------------*/
+
+.content-explora-Hobbies{
+  height: 700px;
+    text-align: center;
+    padding: 30px;
+}
+
+.search-input {
+    width: 400px; 
+    padding: 0.5rem;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 2px solid #2795d9; /* Define estilo, ancho y color de borde en una sola línea */
+    margin-bottom: 40px;        
+    
+  }
+
+  .search-input:focus {
+    outline: none; /* Quita el borde negro por defecto que aparece en focus */
+    border: 2px solid #0460D9; 
+}
+
+  .search-input::placeholder{
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+  }
+
+.container-explora h2{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #0460D9;
+    margin-bottom: 70px;
+    font-size: 50px;
+    text-align: center;
+
+    }
+
+    
+
+    .hobby-card {
+        height: 100%;
+        background-color: #0487D9;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        transition: transform 0.3s;
+        cursor: pointer;
+      }
+     
+      .hobby-card:hover {
+        transform: scale(1.05);
+      }
+      .hobby-icon {
+        font-size: 90px;
+        margin-bottom: 10px;
+      }
+
+      .hobby-card p{
+        font-family: "Josefin Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 30px;
+
+      }
+
+
+      /* Estilo para cambiar el fondo y bordes del modal */
+  .modal-content {
+    background-color: #F2F0E9; 
+    border-radius: 12px; 
+    padding: 1.5rem;
+    border: none; 
+    box-shadow: 0 5px 15px rgba(223, 222, 222, 0.3); /* Sombra bonita */
+  }
+
+  
+  .modal-title {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 30px;
+    color: #F28705;
+  }
+
+  /* Estilo para el cuerpo del modal */
+  .modal-body {
+    font-family: "Josefin Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 22px;
+    color: #333;
+  }
+
+
+  /*----------------- Estilos Sección Productos Destacdos ----------------*/
+  
+  .content-Productos-Destacados{
+    background-color: #0487D9;
+    text-align: center;
+    padding: 30px;
+
+  }
+
+
+
+  .titulo-Productos-Destacados h2{
+
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #F2F0E9;
+    margin-bottom: 70px;
+    font-size: 50px;
+    text-align: center;
+  }
+
+
+/* Estilo para cards Productos */
+  .product-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    height: 100%;
+    
+    
+  }
+  .product-card:hover {
+    transform: scale(1.02);
+    
+  }
+
+  .card-body span{
+    font-family: "Josefin Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 18px;
+  }
+
+
+  .carousel-item img{
+    height: 500px; 
+    object-fit: cover;
+    
+  }
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(42%) sepia(95%) saturate(743%) hue-rotate(359deg) brightness(97%) contrast(101%);
+}
+
+  .product-card h5{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #F25C05;
+  }
+
+  .product-card p{
+    font-family: "Josefin Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 20px;
+  }
+
+  .card-body button{
+    background-color: #F28705;
+    border: none;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+  }
+
+  .card-body button:hover{
+    background-color: #F25C05;
+}
+
+/* Estilos para las secciones de categoría */
+.categoria-section {
+    padding: 2rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.categoria-section:last-child {
+    border-bottom: none;
+}
+
+.categoria-title {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 4px solid #0460D9;
+}
+
+/* Ajustes para las cards */
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* ----------------- Responsive para TABLETAS ----------------- */
+@media (max-width: 991px) {
+  .content-Banner h1 {
+    font-size: 50px;
+  }
+
+  .content-Banner p {
+    font-size: 28px;
+  }
+
+  .content-Banner button {
+    font-size: 20px;
+    padding: 10px 20px;
+  }  
+
+  .search-input {
+    width: 90%;
+    font-size: 16px;
+  }
+
+  .container-explora h2,
+  .titulo-Productos-Destacados h2 {
+    font-size: 36px;
+  }
+
+  
+
+  .hobby-card p {
+    font-size: 22px;
+  }
+
+  .modal-title {
+    font-size: 26px;
+  }
+
+  .modal-body {
+    font-size: 16px;
+  }
+
+  .carousel-item img {
+    height: 300px;
+  }
+}
+
+/* ----------------- Responsive para CELULARES ----------------- */
+@media (max-width: 575px) {
+  .content-Banner {
+    height: auto;
+    padding: 40px 20px;
+  }
+
+  .content-Banner h1 {
+    font-size: 36px;
+  }
+
+  .content-Banner p {
+    font-size: 20px;
+  }
+
+  .content-Banner button {
+    font-size: 18px;
+    padding: 10px 16px;
+  }
+
+  .content-explora-Hobbies {
+    height: auto;
+    padding: 20px 10px;
+  }
+
+  .search-input {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .container-explora h2,
+  .titulo-Productos-Destacados h2 {
+    font-size: 28px;
+  }
+
+  .hobby-icon {
+    font-size: 60px;
+  }
+
+  .hobby-card p {
+    font-size: 18px;
+  }
+
+  .modal-title {
+    font-size: 22px;
+  }
+
+  .modal-body {
+    font-size: 16px;
+  }
+
+  .carousel-item img {
+    height: 200px;
+  }
+
+  .product-card p,
+  .card-body button {
+    font-size: 16px;
+  }
+
+  .product-card h5 {
+    font-size: 18px;
+  }
+}
+
+
+/* ----------------- Responsive para PANTALLAS hasta 1366px ----------------- */
+@media (max-width: 1366px) {
+  .content-Banner h1 {
+    font-size: 60px;
+  }
+
+  .content-Banner p {
+    font-size: 32px;
+  }
+
+  .content-Banner button {
+    font-size: 22px;
+    padding: 12px 24px;
+  }
+
+  .search-input {
+    width: 70%;
+    font-size: 18px;
+  }
+
+  .container-explora h2,
+  .titulo-Productos-Destacados h2 {
+    font-size: 42px;
+  }
+
+  .hobby-icon {
+    font-size: 70px;
+  }
+
+  .hobby-card p {
+    font-size: 26px;
+  }
+
+  .carousel-item img {
+    height: 400px;
+  }
+
+  .product-card h5 {
+    font-size: 22px;
+  }
+
+  .product-card p {
+    font-size: 18px;
+  }
+
+  .card-body button {
+    font-size: 18px;
+  }
+
+  .modal-title {
+    font-size: 26px;
+  }
+
+  .modal-body {
+    font-size: 20px;
+  }
+}

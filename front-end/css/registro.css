@@ -1,0 +1,321 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka&family=Quicksand&display=swap');
+:root {
+    --site-dark-blue: #0460D9;
+    --site-blue: #0487D9;
+    --site-white: rgb(255, 255, 255);
+    --site-orange: #F28705;
+    --site-dark-orange: #f25c05;
+
+    --site-font-title: 'Poppins', sans-serif;
+    --site-font-body: 'Josefin Sans', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: var(--site-white);
+}
+
+
+
+/** Estilos del formulario*/
+
+.container-register {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.iconHobbVerse{
+    width: 200px;
+    margin-bottom: 1.5rem;
+    margin-left: 0px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+.card-register {
+    background-color: var(--site-white);
+    padding: 30px;         /* Menos padding */
+    border-radius: 15px;
+    box-shadow: 0px 8px 16px rgba(21, 88, 212, 0.25);
+    width: 450px;
+    height: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;                  /* Menos espacio entre elementos */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform: scale(1);
+    margin: 0 auto;
+    margin-bottom: 50px;
+    
+}
+
+.titulo-Register {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    font-size: 22px;
+    color: var(--site-dark-blue);
+}
+
+
+.imgUser {
+    background-color: var(--site-dark-blue);
+    border-radius: 50%;
+    padding: 8px;
+    margin-bottom: 8px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 60px;
+    height: 60px;
+    
+}
+
+.card-register:hover {
+    transform: scale(1.05); 
+    box-shadow: 0px 8px 16px rgba(21, 88, 212, 0.25);
+}
+
+.card-register input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--site-dark-blue);
+    border-radius: 8px;
+    font-family: var(--site-font-body);
+    outline: none;
+
+}
+
+.card-register input::placeholder {
+    color: var(--site-dark-blue);
+    font-size: 14px; 
+}
+
+
+.card-register button {
+    width: 70%;
+    padding: 8px;
+    background-color: var(--site-orange);
+    color: var(--site-white);
+    border: solid;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card-register button:hover {
+    background-color: var(--site-dark-orange);
+}
+
+
+.card-register p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.card-register a {
+    color: var(--site-blue);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.card-register a:hover {
+    text-decoration: underline;
+}
+
+p.error-message {
+    font-size: 10px;
+    color: red;
+    text-align: left;
+    margin: 0.25em 0;
+    margin-top: -8px;
+}
+
+
+/**Sección del titulo*/
+
+.titulo1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-size: 50px;
+    font-family: var(--site-font-title);
+    text-align: center;
+    color: var(--site-dark-orange);
+}
+
+.titulo2{
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    margin: 10px;
+    font-size: 40px;
+    font-family: var(--site-font-title);
+    text-align: center;
+    color: var(--site-dark-orange);
+
+}
+
+
+.imgHobbies {
+    width: 80%;
+    max-width: 350px;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+/* Estilos para los contenedores de contraseña */
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-container input {
+    width: 100%;
+    padding-right: 35px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 1rem;
+}
+
+.password-toggle:hover {
+    color: #0460D9;
+}
+
+.password-toggle i {
+    transition: color 0.2s ease;
+}
+
+/** Responsive */
+
+/* Desktop (default) */
+.card-register {
+    width: 450px;
+    max-width: 100%;
+}
+
+/* Tablets */
+@media (max-width: 991.98px) {
+    .card-register {
+        width: 400px;
+    }
+    .titulo1 {
+        font-size: 42px;
+        
+    }
+    .titulo2 {
+        font-size: 32px;
+    }
+}
+
+/* Móviles */
+@media (max-width: 720.98px) {
+    .row {
+        flex-direction: column;
+    }
+    .card-register {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto 30px;
+    }
+    .card-register button {
+        width: 100%;
+    }
+    .iconHobbVerse {
+        width: 170px;
+    }
+    .titulo1 {
+        font-size: 36px;
+        margin-top: 30px;
+    }
+    .titulo2 {
+        font-size: 24px;
+    }
+    .imgHobbies {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+/* Estilos para los requisitos de la contraseña */
+.password-requirements {
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 5px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.requirement {
+    font-size: 0.85rem;
+    margin: 5px 0;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.requirement i {
+    font-size: 1rem;
+}
+
+.requirement.valid {
+    color: #198754;
+}
+
+.requirement.valid i {
+    color: #198754;
+}
+
+.requirement.valid i.bi-x-circle::before {
+    content: "\f26b";
+}
+
+.password-container input:focus + .password-requirements {
+    display: block;
+}

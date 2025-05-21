@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home HobbVerse</title>
+
+     <!-- Bootstrap y otros estilos -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+     <link rel="stylesheet" href="/front-end/css/nav.css">
+     <link rel="stylesheet" href="/front-end/css/Footer.css">
+    <link rel="stylesheet" href="/front-end/css/index.css">
+    <link rel="stylesheet" href="/front-end/css/floating-cart.css">
+
+      <!-- Fuentes -->
+
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+ 
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <nav></nav>
+    </header>
+
+
+    <!-- Sección Banner -->
+
+     <section class="content-Banner">
+        <h1>Descubre Tu <br> Próximo Hobby</h1>
+        <p>Explora nuevas pasiones y encuentra productos únicos <br> que se adaptan a lo que te gusta.</p>
+        <button type="button" class="btn btn-primary btn-lg">Comprar Ahora</button>
+
+     </section>
+
+     <!-- Sección Explora Hobbies -->
+      <section class="content-explora-Hobbies">
+        <div class="container-explora">
+            <input type="search" placeholder="Buscar..." class="search-input">
+            <h2>Explora Hobbies</h2>
+            
+        </div>
+
+         <!-- Cards Hobbies -->
+
+         <div class="row justify-content-center mt-4">
+
+            <!-- Card 1 -->
+            <div class="col-6 col-md-3 mb-4">
+              <div class="hobby-card" data-bs-toggle="modal" data-bs-target="#librosModal">
+                <div class="hobby-icon">📖</div>
+                <p>Libros</p>
+              </div>
+            </div>
+        
+            <!-- Card 2 -->
+            <div class="col-6 col-md-3 mb-4">
+              <div class="hobby-card" data-bs-toggle="modal" data-bs-target="#pinturaModal">
+                <div class="hobby-icon">🎨</div>
+                <p>Pintura</p>
+              </div>
+            </div>
+        
+            <!-- Card 3 -->
+            <div class="col-6 col-md-3 mb-4">
+              <div class="hobby-card" data-bs-toggle="modal" data-bs-target="#musicaModal">
+                <div class="hobby-icon">🎵</div>
+                <p>Música</p>
+              </div>
+            </div>
+        
+            <!-- Card 4 -->
+            <div class="col-6 col-md-3 mb-4">
+              <div class="hobby-card" data-bs-toggle="modal" data-bs-target="#videojuegosModal">
+                <div class="hobby-icon">🎮</div>
+                <p>Video Juegos</p>
+              </div>
+            </div>
+        
+          </div>
+
+
+          <!-- Modales -->
+
+<!-- Modal Libros -->
+<div class="modal fade" id="librosModal" tabindex="-1" aria-labelledby="librosModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="librosModalLabel">Libros</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          Leer libros expande tus conocimientos, mejora tu imaginación y te transporta a nuevos mundos.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Pintura -->
+  <div class="modal fade" id="pinturaModal" tabindex="-1" aria-labelledby="pinturaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pinturaModalLabel">Pintura</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          La pintura es una forma artística de expresar emociones, ideas y percepciones visuales.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Musica -->
+  <div class="modal fade" id="musicaModal" tabindex="-1" aria-labelledby="musicaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="musicaModalLabel">Música</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          La música conecta a las personas, eleva el estado de ánimo y estimula la creatividad.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Video Juegos -->
+  <div class="modal fade" id="videojuegosModal" tabindex="-1" aria-labelledby="videojuegosModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="videojuegosModalLabel">Video Juegos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          Los videojuegos ofrecen entretenimiento, desarrollo de habilidades cognitivas y conexión social.
+        </div>
+      </div>
+    </div>
+  </div>
+
+      </section>
+
+      <!------------------- Sección Productos destacados --------------------->
+      <section class="content-Productos-Destacados">
+    <div class="titulo-Productos-Destacados">
+        <h2>Productos destacados</h2>
+    </div>
+    <!-- Contenedor para productos destacados por categoría -->
+    <div id="productos-destacados-container">
+        <!-- Las categorías se generarán dinámicamente aquí -->
+    </div>
+</section>
+
+      <footer></footer>
+
+        <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/front-end/js/loadNavbar.js"></script>
+    <script src="/front-end/js/loadFooter.js"></script>
+    <script type="module" src="/front-end/js/indexProductos.js"></script>
+    <script src="/front-end/js/floating-cart.js"></script>
+</body>
+</html>

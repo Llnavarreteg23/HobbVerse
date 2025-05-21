@@ -1,0 +1,311 @@
+#discover {
+    background-color:#0487D9;
+    padding: 30px;
+}
+
+#discover h1 {
+    color: #F28705;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    text-align: center;
+    font-size: 50px;
+    margin-left: 480px;
+    margin-right: 480px;
+    text-shadow: 1px 1px 2px #454545;
+}
+
+#discover-subtitle {
+    color: #F2F0E9;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    font-family: 'Josefin Sans', sans-serif;
+    margin-left: 480px;
+    margin-right: 480px;
+}
+
+#category-bar {
+    padding-top: 20px;
+}
+
+#category-list {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 20px;
+}
+
+.hobbie {
+    background-color: #F2F0E9;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.hobbie:hover {
+    background-color: #fce8d8;
+    transform: translateY(-3px);
+}
+
+.hobbiea {
+    text-decoration: none;
+    color: #f25c05;
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 700;
+    transition: color 0.3s ease;
+}
+
+.hobbiea.selected {
+    color: #0460D9;
+}
+
+.hobbie i {
+    font-size: 20px;
+    color: #f25c05;
+}
+
+.hobbiea:hover:not(.selected) {
+    color: #f28705;
+    transform: scale(1.05);
+}
+
+.hobbiea.selected {
+    color: #0460D9;
+    font-weight: 800;
+    border-bottom: 2px solid #0460D9;
+}
+
+#iconSelected {
+    color: #F28705;
+    font-size: 24px;
+}
+
+.hobbieaSelected {
+    color: #0460D9;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+}
+
+.hobbie i {
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.hobbie:hover i {
+    transform: rotate(5deg);
+    color: #f28705;
+}
+
+#hobbieSelectedList {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+}
+
+.hobbieSelected {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#hobbieImageContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+    padding: 0 40px;
+}
+
+.producto-card {
+    position: relative;
+    margin: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.producto-card:hover {
+    transform: translateY(-5px);
+}
+
+.producto-card h3 {
+    margin: 10px 0 5px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #222;
+    text-align: center;
+}
+
+.producto-card p {
+    font-size: 0.95rem;
+    color: #444;
+    margin: 4px 0;
+    text-align: center;
+}
+
+.producto-card img {
+    width: 100%;
+    height: 300px; 
+    object-fit: contain;  
+    border-radius: 12px;
+}
+
+.producto-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+}
+
+.producto-card .buy-button {
+    display: block;
+    margin: 20px auto 0 auto; /* margen superior y centrado horizontal */
+    background: #f25c05;
+    color: #fff;
+    border: 2px solid #d94f04;
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Josefin Sans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    z-index: 1;
+    width: fit-content;
+}
+
+
+.buy-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: transform 0.6s ease;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 0;
+}
+
+.buy-button:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.buy-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    background: #e55000;
+}
+
+.producto-card.featured {
+    border: 2px solid #ffc107;
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+}
+
+.featured .product-details {
+    background: linear-gradient(to bottom, rgba(255, 193, 7, 0.1), transparent);
+}
+
+
+@media (max-width: 768px) {
+    #discover h1 {
+        font-size: 35px;
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    #discover-subtitle {
+        font-size: 14px;
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    #category-list {
+        justify-content: center;
+    }
+
+    #hobbieImageContainer {
+        padding: 0 20px;
+    }
+
+    .producto-card {
+        width: 220px;
+        height: 400px;
+    }
+
+
+}
+
+@media (max-width: 480px) {
+    #discover h1 {
+        font-size: 28px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    #discover-subtitle {
+        font-size: 12px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    #category-list {
+        flex-direction: column;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .hobbie {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    #hobbieImageContainer {
+        padding: 0;
+        justify-content: space-evenly;
+    }
+
+    .producto-card {
+        width: 90%;
+        height: 350px;
+    }
+}
+
+.badge.bg-warning {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+.no-products {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+
+
+
+

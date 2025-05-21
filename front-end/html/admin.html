@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HobbVerse Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/front-end/css/nav.css">
+    <link rel="stylesheet" href="/front-end/css/Footer.css">
+    <link rel="stylesheet" href="/front-end/css/admin.css">
+</head>
+<body>
+    <header>
+        <nav></nav>
+    </header>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Sidebar para categorías -->
+            <div class="col-lg-3 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-grid-3x3-gap me-2"></i>Gestión de Categorías</h5>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" title="Añadir nueva categoría">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">Organiza tus productos por categorías para una mejor gestión</p>
+                        <ul id="categoryList" class="list-group">
+                            <!-- Las categorías se cargarán dinámicamente -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área principal -->
+            <div class="col-lg-9">
+                <!-- Formulario de producto -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Crear Nuevo Producto</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-4">Complete los detalles del producto para agregarlo al catálogo</p>
+                        <form id="productForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">
+                                        <i class="bi bi-tag me-1"></i>Nombre del Producto
+                                    </label>
+                                    <input type="text" class="form-control" name="name" placeholder="Ej: Balón de Fútbol Profesional" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">
+                                        <i class="bi bi-folder me-1"></i>Categoría
+                                    </label>
+                                    <select class="form-select" name="category" required>
+                                        <option value="" disabled selected>Seleccione una categoría</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-image me-1"></i>URL de la Imagen
+                                </label>
+                                <input type="url" class="form-control" name="img" placeholder="https://ejemplo.com/imagen.jpg" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-file-text me-1"></i>Descripción
+                                </label>
+                                <textarea class="form-control" name="description" rows="3" 
+                                          placeholder="Describe las características principales del producto" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-images me-1"></i>Imágenes del Producto
+                                </label>
+                                <div class="image-upload-container">
+                                    <div class="main-image mb-2">
+                                        <label class="form-label small text-muted">Imagen Principal</label>
+                                        <input type="url" class="form-control" name="mainImage" 
+                                               placeholder="URL de la imagen principal" required>
+                                    </div>
+                                    <div id="additionalImages">
+                                        <!-- Contenedor para imágenes adicionales -->
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary mt-2" id="addImageBtn">
+                                        <i class="bi bi-plus-lg me-1"></i>Agregar más imágenes
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="featured" id="featuredCheck">
+                                    <label class="form-check-label" for="featuredCheck">
+                                        <i class="bi bi-star-fill text-warning me-1"></i>
+                                        Marcar como producto destacado
+                                    </label>
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    Los productos destacados aparecerán en la página principal y tendrán mayor visibilidad
+                                </small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">
+                                        <i class="bi bi-currency-dollar me-1"></i>Precio (COP)
+                                    </label>
+                                    <input type="number" class="form-control" name="price" placeholder="Ej: 120000" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">
+                                        <i class="bi bi-box me-1"></i>Stock Disponible
+                                    </label>
+                                    <input type="number" class="form-control" name="stock" placeholder="Ej: 100" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle me-2"></i>Publicar Producto
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Filtros y búsqueda -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <div class="search-box">
+                                    <i class="bi bi-search"></i>
+                                    <input type="text" class="form-control" id="searchProducts" 
+                                           placeholder="Buscar por nombre o descripción...">
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">Ver todas las categorías</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-md-end">
+                                    <span class="text-muted">
+                                        <i class="bi bi-archive me-1"></i>
+                                        Inventario: <span id="productCount" class="fw-bold">0</span> productos
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de productos -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Productos</h5>
+                        
+                    </div>
+                    <div class="card-body">
+                        <div id="productList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <!-- Los productos se cargarán dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar categoría -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Gestionar Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de la Categoría</label>
+                            <input type="text" class="form-control" name="categoryName" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/front-end/js/loadNavbar.js"></script>
+    <script src="/front-end/js/loadFooter.js"></script>
+    <script src="/front-end/js/admin.js"></script>
+</body>
+</html>

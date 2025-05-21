@@ -1,0 +1,311 @@
+.card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%);
+    color: white;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.btn-primary {
+    background: #2196F3;
+    border-color: #2196F3;
+}
+
+.btn-primary:hover {
+    background: #1976D2;
+    border-color: #1976D2;
+}
+
+/* Estilos para las minitarjetas de productos */
+.product-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    border-radius: 8px 8px 0 0;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Estilos para los botones de acción */
+.product-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.product-card:hover .product-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.edit-btn {
+    background: rgba(33, 150, 243, 0.9);
+    color: white;
+}
+
+.edit-btn:hover {
+    background: #1976D2;
+    transform: scale(1.1);
+}
+
+.delete-btn {
+    background: rgba(244, 67, 54, 0.9);
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #d32f2f;
+    transform: scale(1.1);
+}
+
+/* Estilos para la barra de búsqueda */
+.search-box {
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.search-box input {
+    padding-left: 35px;
+    border-radius: 20px;
+}
+
+/* Estilos para los precios */
+.price-tag {
+    background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilos para la lista de categorías */
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.category-item:hover {
+    background-color: #e9ecef;
+}
+
+/* Mejoras en tipografía y encabezados */
+.card-header h5 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+}
+
+.card-header h5 i {
+    margin-right: 8px;
+    font-size: 1.2em;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.form-label i {
+    color: #ff8f00;
+    margin-right: 6px;
+}
+
+.text-muted {
+    font-size: 0.9rem;
+    color: #6c757d !important;
+}
+
+/* Inputs y controles */
+.form-control, .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.625rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #ff8f00;
+    box-shadow: 0 0 0 0.2rem rgba(255, 143, 0, 0.25);
+}
+
+.form-control::placeholder {
+    color: #adb5bd;
+    font-size: 0.9rem;
+}
+
+/* Estilo para el botón principal */
+.btn-primary.btn-lg {
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+/* Estilos para la subida de imágenes */
+.image-upload-container {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px dashed #dee2e6;
+}
+
+.additional-image {
+    position: relative;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.additional-image .remove-image {
+    position: absolute;
+    right: 0;
+    top: 1rem;
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+}
+
+/* Estilo para el switch de producto destacado */
+.form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    margin-top: 0.2rem;
+}
+
+.form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.form-check-label {
+    font-weight: 500;
+    padding-left: 0.5rem;
+}
+
+/* Estilos para el carrusel */
+.carousel {
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+}
+
+.carousel-item {
+    height: 200px;
+}
+
+.carousel-item img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.carousel-indicators {
+    margin-bottom: 0.5rem;
+}
+
+.carousel-indicators button {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin: 0 4px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 15%;
+    background: linear-gradient(to right, rgba(0,0,0,0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.carousel-control-next {
+    background: linear-gradient(to left, rgba(0,0,0,0.4), transparent);
+}
+
+.product-card:hover .carousel-control-prev,
+.product-card:hover .carousel-control-next {
+    opacity: 1;
+}
+
+/* Ajustes para las tarjetas de productos */
+.featured-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 193, 7, 0.9);
+    color: #000;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    backdrop-filter: blur(4px);
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .card-header h5 {
+        font-size: 1.1rem;
+    }
+}
