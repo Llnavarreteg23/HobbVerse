@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 './login.html',             
                 '../html/login.html',       
                 '/login.html',              
-                '/front-end/html/login.html', 
+                '../html/login.html', 
                 '/html/login.html'          
             ];
             
