@@ -15,7 +15,7 @@
             <!-- Logo y Nombre -->
             <div class="d-flex align-items-center">
                 <img class="navbar-brand me-2" src="/Imagenes/LogoHobbVersion2 (1).png" alt="HobbVerse" style="width: 60px; height: auto;">
-                <a class="nav-link brand-text" href="/front-end/html/index.html">
+                <a class="nav-link brand-text" href="/index.html">
                     <span class="text-white fw-bold">H</span>
                     <span class="text-primary fw-bold">obb</span>
                     <span class="text-white fw-bold">V</span>
@@ -30,7 +30,7 @@
             
             <!-- Menú colapsable -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                <ul class="navbar-nav ms-auto">
                     <!-- Botones de autenticación (visible solo en PC) -->
                     <div class="auth-buttons d-none d-lg-flex gap-3">
                         <a class="btn btn-outline-light px-4 fw-semibold" href="/front-end/html/login.html">Entrar</a>
@@ -51,7 +51,7 @@
                             <i class="bi bi-grid-3x3-gap-fill fs-4"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/front-end/html/index.html">
+                            <li><a class="dropdown-item" href="/index.html">
                                 <i class="bi bi-house-door me-2"></i>Inicio
                             </a></li>
                             <li><a class="dropdown-item" href="/front-end/html/productos.html">
@@ -63,13 +63,17 @@
                             <li><a class="dropdown-item" href="/front-end/html/sobreNosotros.html">
                                 <i class="bi bi-people me-2"></i>Sobre Nosotros
                             </a></li>
+                            <li><a class="dropdown-item" href="/front-end/html/formularioProducto.html">
+                                <i class="bi bi-people me-2"></i>FeedBack
+                            </a></li>
+                            
                         </ul>
                     </div>
 
                     <!-- Menú móvil -->
                     <div class="mobile-menu d-lg-none w-100">
                         <div class="d-flex flex-column gap-2">
-                            <a class="mobile-menu-item" href="/front-end/html/index.html">
+                            <a class="mobile-menu-item" href="/index.html">
                                 <i class="bi bi-house-door me-2"></i>Inicio
                             </a>
                             <a class="mobile-menu-item" href="/front-end/html/productos.html">
@@ -81,9 +85,25 @@
                             <a class="mobile-menu-item" href="/front-end/html/sobreNosotros.html">
                                 <i class="bi bi-people me-2"></i>Sobre Nosotros
                             </a>
+                            <a class="mobile-menu-item" href="/front-end/html/formularioProducto.html">
+                                <i class="bi bi-people me-2"></i>FeedBack
+                            </a>
                             <div class="border-top my-3"></div>
                             <a class="btn btn-outline-light w-100" href="/front-end/html/login.html">Entrar</a>
                             <a class="btn btn-primary w-100" href="/front-end/html/registro.html">Registrarse</a>
+                        </div>
+                    </div>
+
+                    <div id="auth-buttons">
+                        <button class="btn btn-outline-primary me-2" id="loginBtn">Iniciar Sesión</button>
+                        <button class="btn btn-primary" id="registerBtn">Registrarse</button>
+                    </div>
+                    <div id="profile-section" style="display: none;">
+                        <div class="dropdown">
+                            <img src="/Imagenes/default-profile.png" alt="Perfil" class="profile-img dropdown-toggle" data-bs-toggle="dropdown">
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><button class="dropdown-item" id="logoutBtn">Cerrar Sesión</button></li>
+                            </ul>
                         </div>
                     </div>
                 </ul>

@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }));
                 
                 mostrarAlertaPersonalizada('¡Inicio de sesión exitoso!', 'success', () => {
-                    window.location.href = '/front-end/html/index.html';
+                    window.location.href = '/index.html';
                 });
             } else {
                 console.log('Credenciales incorrectas');
