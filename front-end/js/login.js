@@ -74,14 +74,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (usuario) {
                 console.log('Usuario encontrado, iniciando sesión...');
                 // Guardar sesión actual
-                localStorage.setItem('current_user', JSON.stringify({
+                const sessionData = {
                     id: usuario.id,
                     nombre: usuario.nombre,
                     email: usuario.email,
-                    telefono: usuario.telefono
-                }));
+                    telefono: usuario.telefono,
+                    isLoggedIn: true
+                };
+                
+                localStorage.setItem('current_user', JSON.stringify(sessionData));
                 
                 mostrarAlertaPersonalizada('¡Inicio de sesión exitoso!', 'success', () => {
+                    // Emitir evento de login exitoso
+                    const loginEvent = new Event('userLoggedIn');
+                    document.dispatchEvent(loginEvent);
+                    
                     window.location.href = '/index.html';
                 });
             } else {

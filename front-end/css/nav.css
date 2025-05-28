@@ -115,6 +115,51 @@
     cursor: pointer;
 }
 
+.user-profile {
+    margin-left: 1rem;
+}
+
+.user-profile .dropdown-toggle {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-profile .dropdown-toggle:after {
+    margin-left: 0.5rem;
+}
+
+.user-profile .bi-person-circle {
+    font-size: 1.2rem;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.profile-button .dropdown-menu {
+    background-color: var(--bs-dark);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.profile-button .dropdown-item {
+    color: white;
+}
+
+.profile-button .dropdown-item:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.auth-section {
+    transition: all 0.3s ease;
+}
+
+.profile-button {
+    transition: all 0.3s ease;
+}
+
 @media (max-width: 991.98px) {
     .navbar-collapse {
         padding: 1rem;
