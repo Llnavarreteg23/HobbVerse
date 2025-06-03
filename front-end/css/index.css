@@ -36,20 +36,25 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center; 
-    text-align: center;      
-    background-color: #0487D9;
-    height: 500px;
-}
+    text-align: center;
+    width: 100%;
+    height: 500px;   
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    background-image: linear-gradient(45deg, rgba(242, 92, 5, 0.414), rgba(242, 135, 5, 0.478), rgba(4, 135, 217, 0.467), rgba(4, 96, 217, 0.443)), url('/imagenes_Home/Imagen_fondo Banner.jpg');
+   }
+
 
 .content-Banner h1{
     
     font-family: "Poppins", sans-serif;
     font-weight: 700;
     font-style: normal;
-    color: #F28705;
+    color: #F25C05;
     margin-bottom: 15px;
-    font-size: 80px;
-    text-shadow: 1px 1px 2px #454545;
+    font-size: 70px;
+    text-shadow: 1.5px 1.5px 2px #f7ebeb;
     
 }
 
@@ -58,9 +63,10 @@ body{
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
-    font-size: 40px;
+    font-size: 35px;
     text-align: center;
-    color: #F2F0E9;
+    color: #fdfdfd;
+    text-shadow: 1px 1px 2px #454545;
     line-height: 1.6;
     margin-bottom: 20px;
 
@@ -73,6 +79,8 @@ body{
     font-weight: 400;
     font-style: normal;
     font-size: 25px;
+    border: none;
+    
     
     
 }
@@ -80,6 +88,8 @@ body{
  .content-Banner button:hover{
     background-color: #F25C05;
 }
+
+
 
 /*----------------- Estilos Sección Explora Hobbies ----------------*/
 
@@ -187,10 +197,11 @@ body{
   .content-Productos-Destacados{
     background-color: #0487D9;
     text-align: center;
-    padding: 30px;
+    padding-top: 50px;
+    padding-left: 50px;
+    padding-right: 50px;    
 
   }
-
 
 
   .titulo-Productos-Destacados h2{
@@ -210,7 +221,8 @@ body{
     border-radius: 15px;
     overflow: hidden;
     transition: transform 0.2s;
-    height: 100%;
+    width: 400px;
+    height: 100%;   
     
     
   }
@@ -270,8 +282,9 @@ body{
 
 /* Estilos para las secciones de categoría */
 .categoria-section {
-    padding: 2rem 0;
-    border-bottom: 1px solid #e9ecef;
+    padding: 2rem 2rem 5rem 2rem;
+    border-bottom: 2px solid #e9ecef;
+    
 }
 
 .categoria-section:last-child {
@@ -279,12 +292,17 @@ body{
 }
 
 .categoria-title {
-    color: #2c3e50;
-    font-size: 1.5rem;
-    font-weight: 600;
+  font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    color: #F28705;
+    text-shadow: 1px 1px 2px #454545;
+    font-size: 40px;    
     margin-left: 1rem;
     padding-left: 1rem;
+    padding-bottom: 40px;
     border-left: 4px solid #0460D9;
+    
 }
 
 /* Ajustes para las cards */
@@ -296,6 +314,93 @@ body{
     transform: translateY(-5px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
+
+/*----------------- Estilos Sección Clientes ----------------*/
+
+.content-clientes{
+    text-align: center;
+    padding: 30px;
+}
+
+.content-clientes h2{
+  font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #0460D9;
+    margin-bottom: 70px;
+    font-size: 50px;
+    text-align: center;
+
+}
+
+.content-clientes h5{
+  font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+
+}
+
+.flip-card {
+  background-color: transparent;
+  width: 100%;
+  height: 250px;
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  backface-visibility: hidden;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.flip-card-front {
+  background-color: #0460D9;
+  color: white;
+  font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 20px;
+}
+
+.flip-card-front img.flip-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.flip-card-back {
+  background-color: #F28705;
+  color: #fff;
+  font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 20px;
+  transform: rotateY(180deg);
+}
+
 
 /* ----------------- Responsive para TABLETAS ----------------- */
 @media (max-width: 991px) {
@@ -349,11 +454,11 @@ body{
   }
 
   .content-Banner h1 {
-    font-size: 36px;
+    font-size: 25px;
   }
 
   .content-Banner p {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .content-Banner button {

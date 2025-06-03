@@ -19,18 +19,25 @@ body {
 /** Sección FQA*/
 
 .section-title{
-    background: var(--site-blue);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;     
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    background-image: linear-gradient(45deg, transparent, rgba(242, 92, 5, 0.414), rgba(242, 135, 5, 0.478), rgba(4, 135, 217, 0.467), rgba(4, 96, 217, 0.443)), url('/imagenes_Home/Imagen_fondo\ Banner_Contacto.jpg');
 
 }
 .titulo-faq {
-    color: var(--site-white);
-    font-family: var(--site-font-title) ;
-    text-align: center;
-    font-size: 2.2rem;
-    font-weight: 600;
-    margin: 50px 0;
-    padding: 24px 0;
-    border-radius: 0;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    color: #F25C05;
+    margin-bottom: 15px;
+    font-size: 70px;
+    text-shadow: 1.5px 1.5px 2px #f7ebeb;
 }
 
 .faq-section {
