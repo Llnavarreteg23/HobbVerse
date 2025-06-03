@@ -14,9 +14,18 @@
         <div class="container-fluid px-4">
             <!-- Logo y Nombre -->
             <div class="d-flex align-items-center">
+<<<<<<< HEAD
                 <img class="navbar-brand me-2" src="/Imagenes/LogoHobbVersion2 (1).png" alt="HobbVerse" style="width: 70px; height: auto;">
                 <a class="nav-link brand-text" href="/front-end/html/index.html">
                     <span class="text-orange fw-bold">H</span><span class="text-primary fw-bold">obb</span><span class="text-orange fw-bold">V</span><span class="text-primary fw-bold">erse</span>
+=======
+                <img class="navbar-brand me-2" src="/Imagenes/LogoHobbVersion2 (1).png" alt="HobbVerse" style="width: 60px; height: auto;">
+                <a class="nav-link brand-text" href="/index.html">
+                    <span class="text-white fw-bold">H</span>
+                    <span class="text-primary fw-bold">obb</span>
+                    <span class="text-white fw-bold">V</span>
+                    <span class="text-primary fw-bold">erse</span>
+>>>>>>> f1e6109fd395dcafdd95c74ff467ae5b8aa89126
                 </a>
             </div>
             
@@ -27,20 +36,13 @@
             
             <!-- Menú colapsable -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                <ul class="navbar-nav ms-auto">
                     <!-- Botones de autenticación (visible solo en PC) -->
                     <div class="auth-buttons d-none d-lg-flex gap-3">
                         <a class="btn btn-orange px-4 fw-semibold" href="/front-end/html/login.html">Entrar</a>
                         <a class="btn btn-primary px-4 fw-semibold" href="/front-end/html/registro.html">Registrarse</a>
                     </div>
                     
-                    <!-- Botón de perfil (oculto por defecto) -->
-                    <div class="profile-button d-none">
-                        <a class="btn btn-outline-light d-flex align-items-center gap-2" href="/perfil">
-                            <i class="bi bi-person-circle fs-5"></i>
-                            <span class="fw-semibold">Mi Perfil</span>
-                        </a>
-                    </div>
 
                     <!-- Menú desplegable -->
                     <div class="dropdown d-none d-lg-block">
@@ -48,7 +50,7 @@
                             <i class="bi bi-grid-3x3-gap-fill fs-4"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/front-end/html/index.html">
+                            <li><a class="dropdown-item" href="/index.html">
                                 <i class="bi bi-house-door me-2"></i>Inicio
                             </a></li>
                             <li><a class="dropdown-item" href="/front-end/html/productos.html">
@@ -60,13 +62,17 @@
                             <li><a class="dropdown-item" href="/front-end/html/sobreNosotros.html">
                                 <i class="bi bi-people me-2"></i>Sobre Nosotros
                             </a></li>
+                            <li><a class="dropdown-item" href="/front-end/html/formularioProducto.html">
+                                <i class="bi bi-people me-2"></i>FeedBack
+                            </a></li>
+                            
                         </ul>
                     </div>
 
                     <!-- Menú móvil -->
                     <div class="mobile-menu d-lg-none w-100">
                         <div class="d-flex flex-column gap-2">
-                            <a class="mobile-menu-item" href="/front-end/html/index.html">
+                            <a class="mobile-menu-item" href="/index.html">
                                 <i class="bi bi-house-door me-2"></i>Inicio
                             </a>
                             <a class="mobile-menu-item" href="/front-end/html/productos.html">
@@ -78,9 +84,52 @@
                             <a class="mobile-menu-item" href="/front-end/html/sobreNosotros.html">
                                 <i class="bi bi-people me-2"></i>Sobre Nosotros
                             </a>
-                            <div class="border-top my-3"></div>
-                            <a class="btn btn-outline-light w-100" href="/front-end/html/login.html">Entrar</a>
-                            <a class="btn btn-primary w-100" href="/front-end/html/registro.html">Registrarse</a>
+                            <a class="mobile-menu-item" href="/front-end/html/formularioProducto.html">
+                                <i class="bi bi-people me-2"></i>FeedBack
+                            </a>
+                            
+                            <div class="auth-section">
+                                <div class="border-top my-3"></div>
+                                <a class="btn btn-outline-light w-100" href="/front-end/html/login.html">Entrar</a>
+                                <a class="btn btn-primary w-100" href="/front-end/html/registro.html">Registrarse</a>
+                            </div>
+                            
+                            <!-- Botón de perfil para móvil (oculto por defecto) -->
+                            <div class="profile-button d-none">
+                                <div class="border-top my-3"></div>
+                                <button class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2" 
+                                        type="button" 
+                                        data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span class="user-name">Usuario</span>
+                                    <i class="bi bi-chevron-down ms-2"></i>
+                                </button>
+                                <ul class="dropdown-menu w-100">
+                                    <li><a class="dropdown-item" href="/front-end/html/perfil.html">Mi Perfil</a></li>
+                                    <li><a class="dropdown-item" href="/front-end/html/mis-pedidos.html">Mis Pedidos</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" id="logoutBtnMobile">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                        
+                        <!-- Perfil de usuario (inicialmente oculto) -->
+                        <div class="user-profile" style="display: none;">
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle text-light" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <span class="user-name">Usuario</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="/front-end/html/perfil.html">Mi Perfil</a></li>
+                                    <li><a class="dropdown-item" href="/front-end/html/mis-pedidos.html">Mis Pedidos</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" id="logoutBtn">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </ul>

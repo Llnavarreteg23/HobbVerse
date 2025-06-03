@@ -218,6 +218,7 @@ function updateUI() {
     updateCategoryList();
     updateProductList();
     updateCategorySelect();
+    updateProductCount();
 }
 
 function updateCategoryList() {
@@ -252,11 +253,13 @@ function filterProducts() {
     });
     
     updateProductList(filteredProducts);
+    updateProductCount(filteredProducts.length);
 }
 
 function updateProductList(filteredProducts = null) {
     const productList = document.getElementById('productList');
-    const productos = JSON.parse(localStorage.getItem('productos') || '[]');
+    // CORRECIÓN: Usar filteredProducts si se proporciona, si no usar products
+    const productos = filteredProducts || products;
 
     productList.innerHTML = productos.map(product => `
         <div class="col">
@@ -270,11 +273,11 @@ function updateProductList(filteredProducts = null) {
                     </div>
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="${product.mainImage}" class="d-block w-100" alt="${product.name}">
+                            <img src="${product.mainImage}" class="d-block w-100" alt="${product.name}" style="height: 200px; object-fit: cover;">
                         </div>
                         ${(product.additionalImages || []).map(img => `
                             <div class="carousel-item">
-                                <img src="${img}" class="d-block w-100" alt="Imagen adicional">
+                                <img src="${img}" class="d-block w-100" alt="Imagen adicional" style="height: 200px; object-fit: cover;">
                             </div>
                         `).join('')}
                     </div>
@@ -292,6 +295,7 @@ function updateProductList(filteredProducts = null) {
                     <p class="card-text">${product.description}</p>
                     <p class="card-text"><strong>Precio: </strong>$${product.price.toLocaleString()}</p>
                     <p class="card-text"><strong>Categoría: </strong>${product.category}</p>
+                    <p class="card-text"><strong>Stock: </strong>${product.stock}</p>
                     <div class="btn-group w-100">
                         <button class="btn btn-sm btn-outline-primary" onclick="editProduct('${product.id}')">
                             <i class="bi bi-pencil"></i>
@@ -311,11 +315,21 @@ function updateProductList(filteredProducts = null) {
     // Inicializar todos los carruseles
     productos.forEach(product => {
         if (product.additionalImages?.length > 0) {
-            new bootstrap.Carousel(document.getElementById(`carousel-${product.id}`), {
-                interval: 3000
-            });
+            const carouselElement = document.getElementById(`carousel-${product.id}`);
+            if (carouselElement) {
+                new bootstrap.Carousel(carouselElement, {
+                    interval: 3000
+                });
+            }
         }
     });
+}
+
+function updateProductCount(count = null) {
+    const productCountElement = document.getElementById('productCount');
+    if (productCountElement) {
+        productCountElement.textContent = count !== null ? count : products.length;
+    }
 }
 
 function toggleFeatured(productId) {
@@ -443,6 +457,7 @@ function deleteProduct(productId) {
         products = products.filter(p => p.id !== productId);
         saveData(); 
         updateProductList();
+        updateProductCount();
     }
 }
 

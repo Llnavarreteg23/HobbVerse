@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/front-end/css/nav.css">
     <link rel="stylesheet" href="/front-end/css/contactenos.css">
     <link rel="stylesheet" href="/front-end/css/Footer.css">
+    <script src="/front-end/js/auth.js" defer></script>
 </head>
 <body>
     <header>
@@ -36,45 +37,76 @@
             <input type="checkbox" id="acordion1">
             <!-- Label: actúa como el botón visible del acordeón -->
             <label class="acordion-header" for="acordion1">
-                <span>Producto</span>
+                <span>Productos y Hobbies</span>
                 <span class="plus-icon">+</span>
             </label>
             <!-- Contenido: se muestra/oculta según el estado del checkbox -->
             <div class="acordion-content">
-                Aquí va el contenido relacionado con el producto.
+                <ul>
+                    <li>Ofrecemos productos para diversos hobbies: lectura, música, pintura, deportes, crochet y más.</li>
+                    <li>Todos nuestros productos son cuidadosamente seleccionados para garantizar la mejor calidad.</li>
+                    <li>Contamos con guías y kits de inicio para principiantes.</li>
+                    <li>Actualizamos nuestro catálogo regularmente con nuevos productos y tendencias.</li>
+                    <li>Brindamos asesoría especializada para ayudarte a elegir los productos adecuados para tu hobby.</li>
+                </ul>
             </div>
         </div>
         
         <div class="acordion-item">
             <input type="checkbox" id="acordion2">
             <label class="acordion-header" for="acordion2">
-                <span>Tipo de pago</span>
+                <span>Métodos de Pago</span>
                 <span class="plus-icon">+</span>
             </label>
             <div class="acordion-content">
-                Información sobre los diferentes tipos de pago aceptados.
+                <p>Aceptamos diversos métodos de pago para tu comodidad:</p>
+                <ul>
+                    <li>Tarjetas de crédito y débito (Visa, Mastercard, American Express)</li>
+                    <li>PayPal</li>
+                    <li>Transferencia bancaria</li>
+                    <li>Pago contra entrega (solo en algunas zonas)</li>
+                    <li>Pagos en cuotas disponibles con tarjetas seleccionadas</li>
+                </ul>
+                
             </div>
         </div>
         
         <div class="acordion-item">
             <input type="checkbox" id="acordion3">
             <label class="acordion-header" for="acordion3">
-                <span>Envío de productos</span>
+                <span>Envíos y Entregas</span>
                 <span class="plus-icon">+</span>
             </label>
             <div class="acordion-content">
-                Detalles sobre las políticas y costos de envío.
+                <h4>Información de Envíos:</h4>
+                <ul>
+                    <li>Envíos a todo el país en 3-5 días hábiles</li>
+                    <li>Envío gratis en compras superiores a $100.000</li>
+                    <li>Seguimiento en tiempo real de tu pedido</li>
+                    <li>Embalaje especial para productos delicados</li>
+                    <li>Opciones de envío express disponibles</li>
+                </ul>
+                
             </div>
         </div>
         
         <div class="acordion-item">
             <input type="checkbox" id="acordion4">
             <label class="acordion-header" for="acordion4">
-                <span>Negocio</span>
+                <span>Sobre HobbVerse</span>
                 <span class="plus-icon">+</span>
             </label>
             <div class="acordion-content">
-                Información general sobre nuestro negocio.
+                <h4>¿Quiénes Somos?</h4>
+                <p>HobbVerse es tu destino único para descubrir y desarrollar nuevas pasiones. Nos especializamos en:</p>
+                <ul>
+                    <li>Curación experta de productos para diferentes hobbies</li>
+                    <li>Comunidad activa de entusiastas</li>
+                    <li>Atención al cliente personalizada</li>
+                    <li>Garantía de satisfacción en todos nuestros productos</li>
+                    
+                   
+                </ul>
             </div>
         </div>
     </div>
@@ -102,6 +134,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/front-end/js/loadNavbar.js"></script>
     <script src="/front-end/js/loadFooter.js"></script>
-    <script src="contactenos.js"></script>
+    <script src="/front-end/js/contactenos.js"></script>
 </body>
 </html>

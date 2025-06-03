@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - HobbVerse</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/front-end/css/nav.css">
+    <link rel="stylesheet" href="/front-end/css/footer.css">
+    <link rel="stylesheet" href="/front-end/css/perfil.css">
+</head>
+<body>
+    <header>
+        <nav></nav>
+    </header>
+
+    <main class="container py-5">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 mb-4">
+                <div class="profile-sidebar">
+                    <div class="profile-header text-center p-4">
+                        <div class="profile-image mb-3">
+                            <i class="bi bi-person-circle display-1"></i>
+                        </div>
+                        <h4 class="user-name mb-0"></h4>
+                        <p class="user-email text-muted"></p>
+                    </div>
+                    <div class="profile-menu">
+                        <button class="menu-item active" data-section="info">
+                            <i class="bi bi-person me-2"></i>Información Personal
+                        </button>
+                        <button class="menu-item" data-section="addresses">
+                            <i class="bi bi-geo-alt me-2"></i>Direcciones
+                        </button>
+                        <button class="menu-item" data-section="orders">
+                            <i class="bi bi-box me-2"></i>Mis Pedidos
+                        </button>
+                        <button class="menu-item" data-section="security">
+                            <i class="bi bi-shield-lock me-2"></i>Seguridad
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="col-md-9">
+                <!-- Información Personal -->
+                <section id="info" class="profile-section active">
+                    <h3>Información Personal</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="profileForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="profileName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Teléfono</label>
+                                        <input type="tel" class="form-control" id="profilePhone">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="profileEmail" readonly>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Direcciones -->
+                <section id="addresses" class="profile-section">
+                    <h3>Mis Direcciones</h3>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <button class="btn btn-primary mb-3" id="addAddressBtn">
+                                <i class="bi bi-plus-circle me-2"></i>Agregar Nueva Dirección
+                            </button>
+                            <div id="addressesList" class="addresses-container">
+                                <!-- Direcciones se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pedidos -->
+                <section id="orders" class="profile-section">
+                    <h3>Historial de Pedidos</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="ordersList" class="orders-container">
+                                <!-- Pedidos se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Seguridad -->
+                <section id="security" class="profile-section">
+                    <h3>Seguridad de la Cuenta</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="securityForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Contraseña Actual</label>
+                                    <input type="password" class="form-control" id="currentPassword">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Nueva Contraseña</label>
+                                    <input type="password" class="form-control" id="newPassword">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Confirmar Nueva Contraseña</label>
+                                    <input type="password" class="form-control" id="confirmPassword">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <!-- Modal para agregar/editar dirección -->
+    <div class="modal fade" id="addressModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Dirección</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addressForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de la dirección</label>
+                            <input type="text" class="form-control" id="addressName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="addressStreet" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Ciudad</label>
+                                <input type="text" class="form-control" id="addressCity" required>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Código Postal</label>
+                                <input type="text" class="form-control" id="addressZip" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono de contacto</label>
+                            <input type="tel" class="form-control" id="addressPhone" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveAddress">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/front-end/js/loadNavbar.js"></script>
+    <script src="/front-end/js/loadFooter.js"></script>
+    <script src="/front-end/js/perfil.js"></script>
+</body>
+</html>

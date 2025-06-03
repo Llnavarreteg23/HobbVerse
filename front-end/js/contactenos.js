@@ -6,6 +6,36 @@ let phoneField = document.getElementById("phone");
 let messageField = document.getElementById("message");
 let submitButton = document.getElementById("submitButton");
 
+// Agregar función para mostrar mensajes
+function showMessage(message, type = 'success') {
+    // Eliminar mensaje anterior si existe
+    const oldMessage = document.querySelector('.alert-message');
+    if (oldMessage) {
+        oldMessage.remove();
+    }
+
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert-message ${type}`;
+    alertDiv.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+
+    // Insertar después del formulario
+    const form = document.querySelector('form');
+    form.insertAdjacentElement('afterend', alertDiv);
+
+    // Animación de entrada
+    setTimeout(() => alertDiv.classList.add('show'), 10);
+
+    // Remover después de 5 segundos
+    setTimeout(() => {
+        alertDiv.classList.remove('show');
+        setTimeout(() => alertDiv.remove(), 300);
+    }, 5000);
+}
+
+// Modificar el evento submit
 submitButton.addEventListener("click", function (event) {
     event.preventDefault();
 
@@ -29,15 +59,9 @@ submitButton.addEventListener("click", function (event) {
         })
         .then(response => {
             if (response.ok) {
-                let submitMessage = document.createElement("p");
-                submitMessage.textContent = `${nameField.value}, gracias por contactarnos. Te responderemos lo más pronto posible.`;
-                submitMessage.classList.add("submit-message");
-                document.body.appendChild(submitMessage);
-
-                setTimeout(() => {
-                    submitMessage.remove();
-                }, 5000);
-
+                showMessage(`${nameField.value}, gracias por contactarnos. Te responderemos lo más pronto posible.`, 'success');
+                
+                // Limpiar campos
                 nameField.value = "";
                 emailField.value = "";
                 phoneField.value = "";
@@ -49,25 +73,10 @@ submitButton.addEventListener("click", function (event) {
             }
         })
         .catch(error => {
-            let errorMessage = document.createElement("p");
-            errorMessage.textContent = "Ocurrió un error al enviar el formulario. Intenta nuevamente.";
-            errorMessage.style.color = "red";
-            document.body.appendChild(errorMessage);
-
-            setTimeout(() => {
-                errorMessage.remove();
-            }, 5000);
+            showMessage("Ocurrió un error al enviar el formulario. Intenta nuevamente.", 'error');
         });
-
     } else {
-        let errorMessage = document.createElement("p");
-        errorMessage.textContent = "Por favor, completa todos los campos requeridos.";
-        errorMessage.style.color = "red";
-        document.body.appendChild(errorMessage);
-
-        setTimeout(() => {
-            errorMessage.remove();
-        }, 5000);
+        showMessage("Por favor, completa todos los campos requeridos.", 'error');
     }
 });
 

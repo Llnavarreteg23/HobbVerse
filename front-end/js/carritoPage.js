@@ -25,7 +25,7 @@ class CarritoPage {
             continuarComprando.addEventListener('click', (e) => {
                 
                 e.currentTarget.href = window.location.pathname.includes('/front-end/') 
-                    ? '/front-end/html/index.html' 
+                    ? '/index.html'
                     : 'index.html';
             });
         }
