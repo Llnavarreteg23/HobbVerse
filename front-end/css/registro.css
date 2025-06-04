@@ -57,13 +57,17 @@ body {
 
 .titulo-Register {
     display: flex;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
     align-items: center;
     justify-content: center;
     text-align: center;
     width: 100%;
     margin-left: 0;
     margin-right: 0;
-    font-size: 22px;
+    font-size: 25px;
     color: var(--site-dark-blue);
 }
 
@@ -95,6 +99,12 @@ body {
     outline: none;
 
 }
+.card-register input:focus {
+    outline: none;
+    border-color: #F28705;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(242, 135, 5, 0.1);
+}
 
 .card-register input::placeholder {
     color: var(--site-dark-blue);
@@ -123,8 +133,13 @@ body {
 
 
 .card-register p {
-    font-size: 14px;
-    color: #555;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 16px;
+    color: #6c757d;
+    margin-top: 15px;
     margin-bottom: 5px;
 }
 
@@ -182,8 +197,8 @@ p.error-message {
 
 
 .imgHobbies {
-    width: 80%;
-    max-width: 350px;
+     width: 100%;
+    max-width: 700px;
     height: auto;
     display: block;
     margin-left: auto;

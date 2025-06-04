@@ -1,51 +1,70 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
   
   body {
-    background-color: #fff;
-    color: #333;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     background-color: #F2F0E9;
   }
   
   .TituloForm {
+     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;     
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    background-image: linear-gradient(45deg, rgba(242, 92, 5, 0.414), rgba(242, 135, 5, 0.478), rgba(4, 135, 217, 0.467), rgba(4, 96, 217, 0.443)), url('/imagenes_Home/Imagen_fondo Banner_Feedback.jpg');
+  }
+
+  .TituloForm h1{
     font-family: "Poppins", sans-serif;
-    background-color: #0487D9;
-    padding: 5rem;
-    text-align: center;
-    margin-bottom: 70px;
-    font-size: 2rem;
-    text-shadow: 1px 1px 2px #454545;
-    color: #F28705;
-    box-shadow: 0px 8px 16px rgba(21, 88, 212, 0.25);
+    font-weight: 700;
+    font-style: normal;
+    color: #F25C05;
+    margin-bottom: 15px;
+    font-size: 70px;
+    text-shadow: 1.5px 1.5px 2px #f7ebeb;
   }
 
   .TituloForm p {
-    color: white;
-    text-shadow: none;
-    font-family: "Josefin Sans", sans-serif;
+
+     font-family: "Josefin Sans", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 400;
+    font-weight: 500;
     font-style: normal;
-    font-size: 25px;
+    font-size: 35px;
     text-align: center;
+    color: #fdfdfd;
+    text-shadow: 1px 1px 2px #454545;
     line-height: 1.6;
+    margin-bottom: 20px;
+
     
   }
+
+  /* Seccion Estilos Formulario */
   
-  .TituloForm2{
-    font-family: "Poppins", sans-serif;
-    color: #0460D9;
-  }
+  
+
   .container {
     display: flex;
     justify-content: space-between;
-    padding: 2rem;
+    padding: 3rem;
     gap: 2rem;
     flex-wrap: wrap;
   }
+
+  .TituloForm2 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    color: #0460D9;
+    margin-bottom: 2rem;
+  }
+
+   
   
   .card-form, .card-datos {
     flex: 1;
@@ -53,6 +72,8 @@
     font-family: "Josefin Sans", sans-serif;
     line-height: 1.6;
   }
+
+  
   
   .card-form h2, .card-datos h2 {
     margin-bottom: 1rem;
@@ -62,24 +83,39 @@
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
+    margin-top: 2.5rem;
+   
   }
   
   .input-group input {
     flex: 1;
   }
+
+  .input-group input::placeholder {
+    color: #0460D9;
+  }
+  
   
   input, textarea {
     font-family: "Josefin Sans", sans-serif;
     width: 100%;
-    padding: 0.7rem;
+    padding: 0.7rem;    
     border: 1px solid #0460D9;
     border-radius: 5px;
-    font-size: 1rem;
+    font-size: 1rem; 
+    margin-top: 1rem !important;   
+    
+  } 
+
+  textarea::placeholder {
+    color: #0460D9;
   }
+
   input:focus ,textarea:focus{
-    outline: none;
-    border: 2px solid #0460D9; /* Cambia el borde al hacer foco */
-    box-shadow: 0px 8px 16px rgba(21, 88, 212, 0.25); /* O agrega un efecto suave */
+     outline: none;
+    border-color: #F28705;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(242, 135, 5, 0.1);
   }
   
   
@@ -87,6 +123,7 @@
     font-family: "Josefin Sans", sans-serif;
     resize: none;
     margin-bottom: 1rem;
+    
   }
   
   button {
@@ -94,25 +131,115 @@
     background-color: #F28705;;
     border: none;
     padding: 0.7rem 1.5rem;
-    font-size: 1rem;
+    font-size: 1.2rem !important;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 10px !important;
     transition: background-color 0.3s;
     padding-left: 80px;
     padding-right: 80px;
+    margin-top: 1rem !important;
+    
 }
   
   button:hover {
-    background-color: #f58f30;
+    background-color: #F25C05;
   }
   
   .card-datos ul {
     list-style: none;
-    margin-top: 1rem;
-    line-height: 2;
+    margin-top: 2rem;
+    line-height: 3;
   }
   
   .card-datos li {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   
+
+  /* Responsive Pantallas medianas  */
+@media (max-width: 1024px) {
+  .TituloForm h1 {
+    font-size: 50px;
+  }
+
+  .TituloForm p {
+    font-size: 28px;
+  }
+
+  .container {
+    flex-direction: column;
+    padding: 2rem;
+  }
+
+  button {
+    padding-left: 60px;
+    padding-right: 60px;
+    font-size: 1.1rem;
+  }
+}
+
+/* Responsive Tablets */
+@media (max-width: 768px) {
+  .TituloForm {
+    height: 300px;
+  }
+
+  .TituloForm h1 {
+    font-size: 40px;
+    text-align: center;
+  }
+
+  .TituloForm p {
+    font-size: 22px;
+  }
+
+  .input-group {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Responsive Celulares */
+@media (max-width: 480px) {
+  .TituloForm {
+    height: auto;
+    padding: 2rem 1rem;
+    text-align: center;
+    
+  }
+
+  .TituloForm h1 {
+    
+    font-size: 30px;
+    
+  }
+
+  .TituloForm p {
+    font-size: 18px;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .card-form, .card-datos {
+    min-width: 100%;
+  }
+
+  .input-group {
+    flex-direction: column;
+  }
+
+  button {
+    font-size: 1rem !important;
+  }
+
+  .card-datos li {
+    font-size: 1rem;
+  }
+}

@@ -73,6 +73,7 @@ body{
 /* Estilos Quienes Somos */
 
 .content-Quienes-Somos {
+    
     display: flex;
     align-items: center; 
     justify-content: center; 

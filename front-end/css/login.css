@@ -68,25 +68,41 @@ footer {
 .titulo1 {
     margin-top: 60px;
     font-size: 40px;
-    margin-bottom: 20px;
+    margin-bottom: 10%;
     font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    color: #f25c05;
+    text-align: center;
+
 }
 
 .imgHobbies {
     width: 100%;
     max-width: 700px;
     height: auto;
+    margin-right: 8rem;
 }
 .titulo-login {
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 25px;
     color: #0460D9;
+    
 }
 
 .imgUser {
     background-color: #0460D9;
     border-radius: 50%;
-    padding: 10px;
-    margin-bottom: 10px;
-    margin-left: 130px;
+    padding: 8px;
+    margin-bottom: 8px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 60px;
+    height: 60px;
 }
 
 .card-login {
@@ -111,11 +127,13 @@ footer {
 .card-login input {
     width: 100%;
     padding: 12px 16px;
-    margin-bottom: 10px;
-    background-color: #f8f9fa;
-    border: 2px solid #e9ecef;
+    margin-bottom: 10px;    
+    border: 1px solid #0460D9;
     border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
     font-size: 14px;
     color: #495057;
     transition: all 0.3s ease;
@@ -129,7 +147,8 @@ footer {
 }
 
 .card-login input::placeholder {
-    color: #adb5bd;
+    color: #0460D9;
+    font-size: 14px;
 }
 
 .input-error {
@@ -161,7 +180,7 @@ footer {
 }
 
 .card-login button:hover {
-    background: linear-gradient(135deg, #d9801a, #F28705);
+    background: #F25C05;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(242, 135, 5, 0.2);
 }
@@ -169,6 +188,11 @@ footer {
 .card-login p {
     margin-top: 15px;
     text-align: center;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 16px;
     color: #6c757d;
 }
 

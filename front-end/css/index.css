@@ -72,29 +72,31 @@ body{
 
 }
 
-.content-Banner button{
+.content-Banner .custom-button {
     background-color: #F28705;
     font-family: "Josefin Sans", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
     font-size: 25px;
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
     border: none;
-    
-    
-    
+    border-radius: 8px;
+    display: inline-block;
+    transition: background-color 0.3s ease;
 }
 
- .content-Banner button:hover{
+.content-Banner .custom-button:hover {
     background-color: #F25C05;
 }
-
 
 
 /*----------------- Estilos Sección Explora Hobbies ----------------*/
 
 .content-explora-Hobbies{
-  height: 700px;
+  height: 600px;
     text-align: center;
     padding: 30px;
 }
@@ -127,6 +129,7 @@ body{
     font-weight: 600;
     font-style: normal;
     color: #0460D9;
+    margin-top: 20px;
     margin-bottom: 70px;
     font-size: 50px;
     text-align: center;
@@ -197,9 +200,7 @@ body{
   .content-Productos-Destacados{
     background-color: #0487D9;
     text-align: center;
-    padding-top: 50px;
-    padding-left: 50px;
-    padding-right: 50px;    
+    padding: 20px;    
 
   }
 
@@ -220,8 +221,7 @@ body{
   .product-card {
     border-radius: 15px;
     overflow: hidden;
-    transition: transform 0.2s;
-    width: 400px;
+    transition: transform 0.2s;    
     height: 100%;   
     
     
@@ -301,7 +301,7 @@ body{
     margin-left: 1rem;
     padding-left: 1rem;
     padding-bottom: 40px;
-    border-left: 4px solid #0460D9;
+    
     
 }
 
@@ -401,21 +401,98 @@ body{
   transform: rotateY(180deg);
 }
 
+/* -------------------------------Responsive--------------------- */
 
-/* ----------------- Responsive para TABLETAS ----------------- */
-@media (max-width: 991px) {
+/* Pantallas Medianas */
+@media (max-width: 1199px) and (min-width: 992px) {
   .content-Banner h1 {
-    font-size: 50px;
+    font-size: 55px;
   }
 
   .content-Banner p {
     font-size: 28px;
   }
 
-  .content-Banner button {
+  .search-input {
+    width: 300px;
+  }
+
+  .container-explora h2,
+  .titulo-Productos-Destacados h2,
+  .content-clientes h2 {
+    font-size: 40px;
+  }
+
+  .hobby-card p,
+  .product-card p {
+    font-size: 24px;
+  }
+}
+  /* Responsive Tablets */
+
+  @media (max-width: 991px) and (min-width: 768px) {
+  .content-Banner {
+    height: 400px;
+    padding: 20px;
+  }
+
+  .content-Banner h1 {
+    font-size: 45px;
+  }
+
+  .content-Banner p {
+    font-size: 24px;
+  }
+
+  .search-input {
+    width: 250px;
+  }
+
+  .container-explora h2,
+  .titulo-Productos-Destacados h2,
+  .content-clientes h2 {
+    font-size: 35px;
+  }
+
+  .hobby-card p,
+  .product-card p {
     font-size: 20px;
+  }
+
+  .carousel-item img {
+    height: 350px;
+  }
+
+  .modal-title {
+    font-size: 24px;
+  }
+
+  .modal-body {
+    font-size: 18px;
+  }
+}
+
+
+/* Responsive Celulares */
+
+@media (max-width: 767px) {
+  .content-Banner {
+    height: auto;
+    padding: 20px;
+  }
+
+  .content-Banner h1 {
+    font-size: 32px;
+  }
+
+  .content-Banner p {
+    font-size: 18px;
+  }
+
+  .content-Banner .custom-button {
+    font-size: 18px;
     padding: 10px 20px;
-  }  
+  }
 
   .search-input {
     width: 90%;
@@ -423,149 +500,74 @@ body{
   }
 
   .container-explora h2,
-  .titulo-Productos-Destacados h2 {
-    font-size: 36px;
-  }
-
-  
-
-  .hobby-card p {
-    font-size: 22px;
-  }
-
-  .modal-title {
-    font-size: 26px;
-  }
-
-  .modal-body {
-    font-size: 16px;
-  }
-
-  .carousel-item img {
-    height: 300px;
-  }
-}
-
-/* ----------------- Responsive para CELULARES ----------------- */
-@media (max-width: 575px) {
-  .content-Banner {
-    height: auto;
-    padding: 40px 20px;
-  }
-
-  .content-Banner h1 {
-    font-size: 25px;
-  }
-
-  .content-Banner p {
-    font-size: 16px;
-  }
-
-  .content-Banner button {
-    font-size: 18px;
-    padding: 10px 16px;
-  }
-
-  .content-explora-Hobbies {
-    height: auto;
-    padding: 20px 10px;
-  }
-
-  .search-input {
-    width: 100%;
-    font-size: 14px;
-  }
-
-  .container-explora h2,
-  .titulo-Productos-Destacados h2 {
+  .titulo-Productos-Destacados h2,
+  .content-clientes h2 {
     font-size: 28px;
   }
 
+  .hobby-card {
+    padding: 20px;
+  }
+
   .hobby-icon {
     font-size: 60px;
   }
 
-  .hobby-card p {
+  .hobby-card p,
+  .product-card p {
+    font-size: 16px;
+  }
+
+  .product-card h5 {
     font-size: 18px;
   }
 
+  .carousel-item img {
+    height: 250px;
+  }
+
+  .card-body button {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
   .modal-title {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .modal-body {
     font-size: 16px;
   }
 
-  .carousel-item img {
+  .categoria-title {
+    font-size: 26px;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .flip-card {
     height: 200px;
   }
 
-  .product-card p,
-  .card-body button {
+  .flip-card-front,
+  .flip-card-back {
     font-size: 16px;
+    padding: 15px;
   }
 
-  .product-card h5 {
-    font-size: 18px;
-  }
-}
-
-
-/* ----------------- Responsive para PANTALLAS hasta 1366px ----------------- */
-@media (max-width: 1366px) {
-  .content-Banner h1 {
-    font-size: 60px;
-  }
-
-  .content-Banner p {
-    font-size: 32px;
-  }
-
-  .content-Banner button {
-    font-size: 22px;
-    padding: 12px 24px;
-  }
-
-  .search-input {
-    width: 70%;
-    font-size: 18px;
-  }
-
-  .container-explora h2,
-  .titulo-Productos-Destacados h2 {
-    font-size: 42px;
-  }
-
-  .hobby-icon {
-    font-size: 70px;
-  }
-
-  .hobby-card p {
-    font-size: 26px;
-  }
-
-  .carousel-item img {
-    height: 400px;
-  }
-
-  .product-card h5 {
-    font-size: 22px;
-  }
-
-  .product-card p {
-    font-size: 18px;
-  }
-
-  .card-body button {
-    font-size: 18px;
-  }
-
-  .modal-title {
-    font-size: 26px;
-  }
-
-  .modal-body {
-    font-size: 20px;
+  .flip-card-front img.flip-icon {
+    width: 60px;
+    height: 60px;
   }
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -35,10 +35,20 @@
 
 /* Estilizado de los Botones */
 .btn {
-    padding: 0.6rem 1.5rem;
+    
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 150px; 
+    height: 45px; 
     border-radius: 8px;
     transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Josefin Sans", sans-serif !important;
+    font-optical-sizing: auto !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 16px !important;
+    text-align: center;
 }
 
 .btn-orange {
@@ -79,7 +89,7 @@
     border: none;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     padding: 0.8rem;
-    min-width: 120px;
+    min-width: 200px;
     margin-top: 0.5rem;
 }
 
@@ -89,15 +99,12 @@
     padding: 0.8rem 1rem;
     font-weight: 500;
     transition: all 0.2s ease;
+    
 }
 
 .dropdown-item:hover {
     background-color: rgba(33, 150, 243, 0.1);
     transform: translateX(5px);
-}
-
-#profile-section .dropdown-item:hover {
-    background-color: #f8f9fa;
 }
 
 /* Estilizado del menu movil */
@@ -107,7 +114,7 @@
 
 .mobile-menu-item {
     font-family: 'Poppins', sans-serif;
-    color: white;
+    color: #0460D9;
     text-decoration: none;
     padding: 0.8rem 1rem;
     border-radius: 8px;
@@ -118,59 +125,7 @@
 
 .mobile-menu-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.profile-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.user-profile {
-    margin-left: 1rem;
-}
-
-.user-profile .dropdown-toggle {
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.user-profile .dropdown-toggle:after {
-    margin-left: 0.5rem;
-}
-
-.user-profile .bi-person-circle {
-    font-size: 1.2rem;
-}
-
-.auth-buttons {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.profile-button .dropdown-menu {
-    background-color: var(--bs-dark);
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.profile-button .dropdown-item {
-    color: white;
-}
-
-.profile-button .dropdown-item:hover {
-    background-color: rgba(255,255,255,0.1);
-}
-
-.auth-section {
-    transition: all 0.3s ease;
-}
-
-.profile-button {
-    transition: all 0.3s ease;
+    color: #f25c05;
 }
 
 @media (max-width: 991.98px) {
