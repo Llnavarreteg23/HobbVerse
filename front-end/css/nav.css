@@ -128,12 +128,16 @@
     color: #f25c05;
 }
 
+.custom-icon-color {
+  color: #0460D9;  
+}
 /* Estilos para el botón de perfil */
 .user-profile .dropdown-toggle {
-    color: #2D3250 !important;
-    background-color: #F6B17A;
-    border: 2px solid #F6B17A;
-    border-radius: 30px;
+    color: #F5F5F5 !important;
+    background-color: #F28705 !important;
+    border: none;
+    width: 200px;
+    border-radius: 20px;
     padding: 8px 16px;
     display: flex;
     align-items: center;
@@ -142,18 +146,19 @@
 }
 
 .user-profile .dropdown-toggle:hover {
-    background-color: #e5a069;
-    border-color: #e5a069;
+    background-color: #f25c05;    
     transform: translateY(-2px);
 }
 
+
 .user-profile .bi-person-circle {
-    font-size: 1.2rem;
-    color: #2D3250;
+    font-size: 1.3rem;
+    color: #F5F5F5;
+    margin-top: 5px;
 }
 
 .user-profile .dropdown-menu {
-    background-color: #FFFFFF;
+    background-color: #F5F5F5;
     border: none;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     border-radius: 8px;
@@ -161,35 +166,42 @@
 }
 
 .user-profile .dropdown-item {
-    color: #424769;
+    color: #0460D9;
     padding: 8px 16px;
     transition: all 0.2s ease;
 }
 
 .user-profile .dropdown-item:hover {
     background-color: #F6B17A;
-    color: #2D3250;
+    color: #F5F5F5;  
 }
 
+
 .user-profile .dropdown-divider {
-    border-color: rgba(66, 71, 105, 0.1);
+    border-color: rgba(62, 69, 110, 0.1);
 }
 
 /* Versión móvil del botón de perfil */
 @media (max-width: 768px) {
     .profile-button .btn {
-        width: 100%;
-        background-color: #F6B17A;
-        color: #2D3250;
-        border: none;
+        width: 100%;       
+        border-color: #F28705 !important;
+        color: #0460D9 !important;        
         padding: 10px;
         border-radius: 8px;
+       
     }
 
-    .profile-button .dropdown-menu {
+    .profile-button .dropdown-menu .dropdown-item{
         width: 100%;
         margin-top: 4px;
+        color: #0460D9 !important;        
     }
+
+    .profile-button .dropdown-menu .dropdown-item.active {
+      background-color: #F28705;
+      color: #F5F5F5 !important;
+     }
 }
 
 @media (max-width: 991.98px) {

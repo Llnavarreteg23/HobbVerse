@@ -29,7 +29,7 @@ body {
     background-size: cover;
     background-position: center;
     position: relative;
-    background-image: linear-gradient(45deg, transparent, rgba(242, 92, 5, 0.414), rgba(242, 135, 5, 0.478), rgba(4, 135, 217, 0.467), rgba(4, 96, 217, 0.443)), url('/imagenes_Home/Imagen_fondo\ Banner_Contacto.jpg');
+    background-image: linear-gradient(45deg, transparent, rgba(242, 92, 5, 0.414), rgba(242, 135, 5, 0.478), rgba(4, 135, 217, 0.467), rgba(4, 96, 217, 0.443)), url('https://res.cloudinary.com/diljcypxv/image/upload/v1749229031/Imagen_fondo_Banner_Contacto_dlrhnb.jpg');
 
 }
 .titulo-faq {

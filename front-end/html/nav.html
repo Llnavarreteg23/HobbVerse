@@ -22,7 +22,7 @@
             
             <!-- Botón hamburguesa -->
             <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <i class="bi bi-journal-text fs-2"></i>
+                <i class="bi bi-journal-text fs-2 custom-icon-color"></i>
             </button>
             
             <!-- Menú colapsable -->
@@ -86,9 +86,9 @@
                             </div>
                             
                             <!-- Botón de perfil para móvil (oculto por defecto) -->
-                            <div class="profile-button d-none">
+                            <div class="profile-button d-block d-md-none">
                                 <div class="border-top my-3"></div>
-                                <button class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2" 
+                                <button class="btn w-100 d-flex align-items-center justify-content-center gap-2" 
                                         type="button" 
                                         data-bs-toggle="dropdown">
                                     <i class="bi bi-person-circle"></i>
@@ -108,7 +108,7 @@
                     
                         
                         <!-- Perfil de usuario (inicialmente oculto) -->
-                        <div class="user-profile" style="display: none;">
+                        <div class="user-profile d-none d-md-block">
                             <div class="dropdown">
                                 <button class="btn btn-link dropdown-toggle text-light" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-person-circle me-1"></i>

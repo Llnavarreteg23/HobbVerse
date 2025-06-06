@@ -1,5 +1,7 @@
+
+/* Estilos para las minitarjetas de productos */
 .card {
-    border-radius: 12px;
+    border-radius: 12px !important;
     border: none;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -10,14 +12,19 @@
     border-radius: 12px 12px 0 0 !important;
 }
 
-.btn-primary {
-    background: #2196F3;
-    border-color: #2196F3;
+.custom-add-btn {
+    background-color: #0460D9 !important;
+    color: #F5F5F5 !important;
+    border: none !important;
+    width: 50px !important;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover {
-    background: #1976D2;
-    border-color: #1976D2;
+.custom-add-btn:hover {
+    background-color: #0487D9 !important;
+    color: #FFF;
 }
 
 /* Estilos para las minitarjetas de productos */
@@ -137,6 +144,26 @@
 .category-item:hover {
     background-color: #e9ecef;
 }
+#categoryList{
+    color: #0460D9;
+}
+#categoryList .btn {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    margin-top: 5px;
+    width: 100px;
+}
+
+#categoryList .btn:first-child {
+    border-color: #0460D9;
+    color: #0460D9;
+}
+
+#categoryList .btn:last-child {
+    border-color: red;
+    color: red;
+}
 
 /* Mejoras en tipografía y encabezados */
 .card-header h5 {
@@ -173,21 +200,26 @@
 
 /* Inputs y controles */
 .form-control, .form-select {
-    border: 1px solid #dee2e6;
+    border: 1px solid #0460D9 !important;
     border-radius: 8px;
+    color: #0460D9 !important;
     padding: 0.625rem 1rem;
     font-size: 0.95rem;
     transition: all 0.3s ease;
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: #ff8f00;
-    box-shadow: 0 0 0 0.2rem rgba(255, 143, 0, 0.25);
+    border-color: #F28705 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 143, 0, 0.25) !important;
 }
 
 .form-control::placeholder {
-    color: #adb5bd;
-    font-size: 0.9rem;
+    color: #0460d9cf !important;
+    font-size: 0.9rem !important;
+}
+.form-select::placeholder {
+    color: #0460d9cf !important;
+    font-size: 0.9rem !important;
 }
 
 /* Estilo para el botón principal */
@@ -227,6 +259,26 @@
     border: none;
     color: #dc3545;
     cursor: pointer;
+}
+#uploadImageBtn{
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    width: 180px;
+    height: auto;
+    padding: 10px;
+    font-size: 20px;
+    color: #f5f5f5;
+    background-color: #0460D9;
+    border: none;
+    border-radius: 12px;
+    margin-top: 5px;
+    
+}
+
+#uploadImageBtn:hover{
+    background-color: #F28705;
 }
 
 /* Estilo para el switch de producto destacado */
