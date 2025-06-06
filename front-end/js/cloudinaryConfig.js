@@ -1,9 +1,9 @@
 // Configuracion de Cloudinary para la carga de imágenes
 const cloudinaryConfig = {
-    cloudName: 'YOUR_CLOUD_NAME',
-    uploadPreset: 'YOUR_UPLOAD_PRESET',
-    apiKey: 'YOUR_API_KEY',
-    apiSecret: 'YOUR_API_SECRET'
+    cloudName: 'diljcypxv',
+    uploadPreset: 'ml_default',
+    apiKey: '823799319284266',
+    apiSecret: 'dcz0ojlgHEVSodJh74goX19jrHs'
 };
 
 // Cargar Configuración de Cloudinary
