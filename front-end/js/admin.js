@@ -249,14 +249,17 @@ function filterProducts() {
     const searchTerm = document.getElementById('searchProducts').value.toLowerCase();
     const categoryFilter = document.getElementById('categoryFilter').value;
     
+    // Filtrar productos
     const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
-                            (product.description && product.description.toLowerCase().includes(searchTerm));
-        const matchesCategory = !categoryFilter || 
-                              (product.category && product.category.toLowerCase() === categoryFilter.toLowerCase());
-        return matchesSearch && matchesCategory;
+        const nameMatch = product.name.toLowerCase().includes(searchTerm);
+        const descriptionMatch = product.description?.toLowerCase().includes(searchTerm);
+        const categoryMatch = !categoryFilter || 
+                            product.category?.toLowerCase() === categoryFilter.toLowerCase();
+        
+        return (nameMatch || descriptionMatch) && categoryMatch;
     });
     
+    // Actualizar la lista de productos con los filtrados
     updateProductList(filteredProducts);
     updateProductCount(filteredProducts.length);
 }
@@ -330,10 +333,10 @@ function updateProductList(filteredProducts = null) {
     });
 }
 
-function updateProductCount(count = null) {
-    const productCountElement = document.getElementById('productCount');
-    if (productCountElement) {
-        productCountElement.textContent = count !== null ? count : products.length;
+function updateProductCount(count) {
+    const countElement = document.getElementById('productCount');
+    if (countElement) {
+        countElement.textContent = `Mostrando ${count} de ${products.length} productos`;
     }
 }
 
@@ -496,27 +499,115 @@ function deleteCategory(id) {
     updateUI();
 }
 
+// Configuración de Cloudinary
+const cloudinaryConfig = {
+    cloudName: 'YOUR_CLOUD_NAME',
+    uploadPreset: 'YOUR_UPLOAD_PRESET'
+};
+
 function initImageUpload() {
-    const uploadButton = document.getElementById('uploadImageBtn');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
+    const uploadMultipleBtn = document.getElementById('uploadMultipleBtn');
     const imagePreview = document.getElementById('imagePreview');
-    
-    uploadButton.addEventListener('click', () => {
-        cloudinaryUtils.openUploadWidget();
+    const imagesPreview = document.getElementById('imagesPreview');
+    let additionalImages = [];
+
+    // Configurar widget de Cloudinary
+    const uploadWidget = cloudinary.createUploadWidget({
+        cloudName: cloudinaryConfig.cloudName,
+        uploadPreset: cloudinaryConfig.uploadPreset,
+        multiple: false
+    }, (error, result) => {
+        if (!error && result && result.event === "success") {
+            const imageUrl = result.info.secure_url;
+            
+            if (uploadWidget.lastButtonClicked === 'main') {
+                // Actualizar preview de imagen principal
+                imagePreview.innerHTML = `
+                    <div class="position-relative">
+                        <img src="${imageUrl}" class="img-thumbnail" style="max-height: 200px">
+                        <input type="hidden" id="mainImage" name="mainImage" value="${imageUrl}">
+                    </div>
+                `;
+            } else {
+                // Agregar a imágenes adicionales
+                additionalImages.push(imageUrl);
+                updateAdditionalImagesPreview();
+            }
+        }
     });
 
-    // Escuchar el evento de carga exitosa
-    document.addEventListener('imageUploaded', (event) => {
-        const imageUrl = event.detail.secure_url;
-        
-        // Actualizar preview
-        if (imagePreview) {
-            imagePreview.innerHTML = `
-                <img src="${imageUrl}" class="img-fluid mb-2" alt="Preview">
-                <input type="hidden" name="productImage" value="${imageUrl}">
-            `;
-        }
-        
-        // Guardar URL en el formulario
-        document.getElementById('mainImage').value = imageUrl;
+    // Botón de imagen principal
+    uploadImageBtn.addEventListener('click', () => {
+        uploadWidget.lastButtonClicked = 'main';
+        uploadWidget.open();
     });
+
+    // Botón de imágenes adicionales
+    uploadMultipleBtn.addEventListener('click', () => {
+        uploadWidget.lastButtonClicked = 'additional';
+        uploadWidget.open();
+    });
+
+    function updateAdditionalImagesPreview() {
+        imagesPreview.innerHTML = additionalImages.map((url, index) => `
+            <div class="d-inline-block position-relative me-2 mb-2">
+                <img src="${url}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                        onclick="removeAdditionalImage(${index})">
+                    <i class="bi bi-x"></i>
+                </button>
+                <input type="hidden" name="additionalImages[]" value="${url}">
+            </div>
+        `).join('');
+    }
+
+    // Función global para remover imágenes
+    window.removeAdditionalImage = (index) => {
+        additionalImages.splice(index, 1);
+        updateAdditionalImagesPreview();
+    };
 }
+
+
+function setupFilters() {
+    
+    const searchInput = document.getElementById('searchProducts');
+    const categoryFilter = document.getElementById('categoryFilter');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const categoryValue = categoryFilter ? categoryFilter.value : '';
+            filterAndUpdateProducts(searchTerm, categoryValue);
+        });
+    }
+    
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', () => {
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            const categoryValue = categoryFilter.value;
+            filterAndUpdateProducts(searchTerm, categoryValue);
+        });
+    }
+}
+
+function filterAndUpdateProducts(searchTerm, category) {
+    const filteredProducts = products.filter(product => {
+        // Búsqueda en nombre, descripción y categoría
+        const nameMatch = product.name?.toLowerCase().includes(searchTerm);
+        const descriptionMatch = product.description?.toLowerCase().includes(searchTerm);
+        const categoryMatch = !category || product.category?.toLowerCase() === category.toLowerCase();
+        
+        return (nameMatch || descriptionMatch) && categoryMatch;
+    });
+    
+    updateProductList(filteredProducts);
+    updateProductCount(filteredProducts.length);
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    initImageUpload();
+    setupFilters();
+});
