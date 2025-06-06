@@ -1,7 +1,7 @@
 // Configuracion de Cloudinary para la carga de imágenes
 const cloudinaryConfig = {
     cloudName: 'diljcypxv',
-    uploadPreset: 'ml_default',
+    uploadPreset: 'hobbverse_unsigned',
     apiKey: '823799319284266',
     apiSecret: 'dcz0ojlgHEVSodJh74goX19jrHs'
 };

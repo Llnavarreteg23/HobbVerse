@@ -501,8 +501,8 @@ function deleteCategory(id) {
 
 // Configuración de Cloudinary
 const cloudinaryConfig = {
-    cloudName: 'YOUR_CLOUD_NAME',
-    uploadPreset: 'YOUR_UPLOAD_PRESET'
+    cloudName: 'diljcypxv',
+    uploadPreset: 'hobbverse_unsigned'
 };
 
 function initImageUpload() {
