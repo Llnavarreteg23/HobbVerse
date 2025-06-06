@@ -128,6 +128,70 @@
     color: #f25c05;
 }
 
+/* Estilos para el botón de perfil */
+.user-profile .dropdown-toggle {
+    color: #2D3250 !important;
+    background-color: #F6B17A;
+    border: 2px solid #F6B17A;
+    border-radius: 30px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.user-profile .dropdown-toggle:hover {
+    background-color: #e5a069;
+    border-color: #e5a069;
+    transform: translateY(-2px);
+}
+
+.user-profile .bi-person-circle {
+    font-size: 1.2rem;
+    color: #2D3250;
+}
+
+.user-profile .dropdown-menu {
+    background-color: #FFFFFF;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.user-profile .dropdown-item {
+    color: #424769;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+}
+
+.user-profile .dropdown-item:hover {
+    background-color: #F6B17A;
+    color: #2D3250;
+}
+
+.user-profile .dropdown-divider {
+    border-color: rgba(66, 71, 105, 0.1);
+}
+
+/* Versión móvil del botón de perfil */
+@media (max-width: 768px) {
+    .profile-button .btn {
+        width: 100%;
+        background-color: #F6B17A;
+        color: #2D3250;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .profile-button .dropdown-menu {
+        width: 100%;
+        margin-top: 4px;
+    }
+}
+
 @media (max-width: 991.98px) {
     .navbar-collapse {
         padding: 1rem;
@@ -142,4 +206,24 @@
     .brand-text {
         font-size: 1.5rem;
     }
+}
+
+.auth-buttons, .user-profile, .auth-section, .profile-button {
+    transition: all 0.3s ease-in-out;
+}
+
+.auth-buttons {
+    opacity: 1;
+}
+
+.auth-buttons[style*="display: none"] {
+    opacity: 0;
+}
+
+.user-profile {
+    opacity: 0;
+}
+
+.user-profile[style*="display: flex"] {
+    opacity: 1;
 }

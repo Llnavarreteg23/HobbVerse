@@ -15,69 +15,238 @@
         <nav></nav>
     </header>
 
-    <main class="container py-5">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 mb-4">
+    <main class="container-fluid py-5">
+        <div class="row g-4">
+            <!-- Sidebar Mejorado -->
+            <div class="col-xl-3 col-lg-4">
                 <div class="profile-sidebar">
+                    <!-- Header del Perfil -->
                     <div class="profile-header text-center p-4">
-                        <div class="profile-image mb-3">
-                            <i class="bi bi-person-circle display-1"></i>
+                        <div class="profile-image-container mb-3">
+                            <div class="profile-image">
+                                <i class="bi bi-person-circle"></i>
+                                <div class="profile-badge">
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
                         </div>
-                        <h4 class="user-name mb-0"></h4>
-                        <p class="user-email text-muted"></p>
+                        <h4 class="user-name mb-1"></h4>
+                        <p class="user-email text-muted mb-2"></p>
+                        <div class="user-level">
+                            <span class="level-badge">Explorador Nivel 1</span>
+                            <div class="progress mt-2">
+                                <div class="progress-bar" role="progressbar" style="width: 25%"></div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Estadísticas Rápidas -->
+                    <div class="profile-stats p-3">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <i class="bi bi-box-seam"></i>
+                                    <span class="stat-number" id="totalOrders">0</span>
+                                    <small>Pedidos</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <i class="bi bi-heart-fill"></i>
+                                    <span class="stat-number" id="totalFavorites">0</span>
+                                    <small>Favoritos</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <i class="bi bi-award"></i>
+                                    <span class="stat-number" id="totalPoints">0</span>
+                                    <small>Puntos</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Menú de Navegación -->
                     <div class="profile-menu">
-                        <button class="menu-item active" data-section="info">
-                            <i class="bi bi-person me-2"></i>Información Personal
+                        <button class="menu-item active" data-section="dashboard">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            <span>Dashboard</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </button>
+                        <button class="menu-item" data-section="info">
+                            <i class="bi bi-person me-2"></i>
+                            <span>Información Personal</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </button>
+                        <button class="menu-item" data-section="hobbies">
+                            <i class="bi bi-palette me-2"></i>
+                            <span>Mis Hobbies</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
                         </button>
                         <button class="menu-item" data-section="addresses">
-                            <i class="bi bi-geo-alt me-2"></i>Direcciones
+                            <i class="bi bi-geo-alt me-2"></i>
+                            <span>Direcciones</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
                         </button>
                         <button class="menu-item" data-section="orders">
-                            <i class="bi bi-box me-2"></i>Mis Pedidos
+                            <i class="bi bi-box me-2"></i>
+                            <span>Mis Pedidos</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </button>
+                        <button class="menu-item" data-section="favorites">
+                            <i class="bi bi-heart me-2"></i>
+                            <span>Favoritos</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
                         </button>
                         <button class="menu-item" data-section="security">
-                            <i class="bi bi-shield-lock me-2"></i>Seguridad
+                            <i class="bi bi-shield-lock me-2"></i>
+                            <span>Seguridad</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Content -->
-            <div class="col-md-9">
+            <!-- Contenido Principal -->
+            <div class="col-xl-9 col-lg-8">
+                <!-- Dashboard -->
+                <section id="dashboard" class="profile-section active">
+                    <div class="section-header mb-4">
+                        <h2>Dashboard Personal</h2>
+                        <p class="text-muted">Tu centro de control personalizado</p>
+                    </div>
+
+                    <!-- Recomendaciones Personalizadas -->
+                    <div class="card recommendation-card mb-4">
+                        <div class="card-header">
+                            <h5><i class="bi bi-lightbulb me-2"></i>Recomendado para ti</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="recommendationsCarousel" class="recommendations-grid">
+                                <!-- Se llenará dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actividad Reciente -->
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card activity-card">
+                                <div class="card-header">
+                                    <h6><i class="bi bi-clock-history me-2"></i>Actividad Reciente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recentActivity">
+                                        <!-- Se llenará dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card achievement-card">
+                                <div class="card-header">
+                                    <h6><i class="bi bi-trophy me-2"></i>Logros</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="achievements">
+                                        <!-- Se llenará dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Información Personal -->
-                <section id="info" class="profile-section active">
-                    <h3>Información Personal</h3>
-                    <div class="card">
+                <section id="info" class="profile-section">
+                    <div class="section-header mb-4">
+                        <h2>Información Personal</h2>
+                        <p class="text-muted">Mantén tu información actualizada</p>
+                    </div>
+                    <div class="card info-card">
                         <div class="card-body">
                             <form id="profileForm">
-                                <div class="row mb-3">
+                                <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" id="profileName" required>
+                                        <label class="form-label">Nombre completo</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input type="text" class="form-control" id="profileName" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Teléfono</label>
-                                        <input type="tel" class="form-control" id="profilePhone">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                            <input type="tel" class="form-control" id="profilePhone">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                            <input type="email" class="form-control" id="profileEmail" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha de nacimiento</label>
+                                        <input type="date" class="form-control" id="profileBirthdate">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Género</label>
+                                        <select class="form-select" id="profileGender">
+                                            <option value="">Seleccionar</option>
+                                            <option value="masculino">Masculino</option>
+                                            <option value="femenino">Femenino</option>
+                                            <option value="otro">Otro</option>
+                                            <option value="prefiero-no-decir">Prefiero no decir</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="profileEmail" readonly>
+                                <div class="form-actions mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-2"></i>Guardar Cambios
+                                    </button>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                             </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Mis Hobbies -->
+                <section id="hobbies" class="profile-section">
+                    <div class="section-header mb-4">
+                        <h2>Mis Hobbies</h2>
+                        <p class="text-muted">Personaliza tu experiencia según tus intereses</p>
+                    </div>
+                    <div class="card hobbies-card">
+                        <div class="card-body">
+                            <div class="hobby-categories mb-4">
+                                <h6 class="mb-3">Selecciona tus hobbies favoritos:</h6>
+                                <div id="hobbySelection" class="hobby-grid">
+                                    <!-- Se llenará dinámicamente -->
+                                </div>
+                            </div>
+                            <div class="selected-hobbies">
+                                <h6 class="mb-3">Tus hobbies seleccionados:</h6>
+                                <div id="selectedHobbies" class="selected-hobby-tags">
+                                    <!-- Se llenará dinámicamente -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- Direcciones -->
                 <section id="addresses" class="profile-section">
-                    <h3>Mis Direcciones</h3>
-                    <div class="card mb-3">
+                    <div class="section-header mb-4">
+                        <h2>Mis Direcciones</h2>
+                        <p class="text-muted">Administra tus direcciones de envío</p>
+                    </div>
+                    <div class="card addresses-card">
                         <div class="card-body">
-                            <button class="btn btn-primary mb-3" id="addAddressBtn">
+                            <button class="btn btn-primary mb-4" id="addAddressBtn">
                                 <i class="bi bi-plus-circle me-2"></i>Agregar Nueva Dirección
                             </button>
                             <div id="addressesList" class="addresses-container">
@@ -89,9 +258,32 @@
 
                 <!-- Pedidos -->
                 <section id="orders" class="profile-section">
-                    <h3>Historial de Pedidos</h3>
-                    <div class="card">
+                    <div class="section-header mb-4">
+                        <h2>Historial de Pedidos</h2>
+                        <p class="text-muted">Seguimiento de todas tus compras</p>
+                    </div>
+                    <div class="card orders-card">
                         <div class="card-body">
+                            <div class="orders-filters mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <select class="form-select" id="statusFilter">
+                                            <option value="">Todos los estados</option>
+                                            <option value="Pendiente">Pendiente</option>
+                                            <option value="En proceso">En proceso</option>
+                                            <option value="Enviado">Enviado</option>
+                                            <option value="Entregado">Entregado</option>
+                                            <option value="Cancelado">Cancelado</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="date" class="form-control" id="dateFilter">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" id="searchFilter" placeholder="Buscar pedido...">
+                                    </div>
+                                </div>
+                            </div>
                             <div id="ordersList" class="orders-container">
                                 <!-- Pedidos se cargarán dinámicamente -->
                             </div>
@@ -99,25 +291,73 @@
                     </div>
                 </section>
 
+                <!-- Favoritos -->
+                <section id="favorites" class="profile-section">
+                    <div class="section-header mb-4">
+                        <h2>Mis Favoritos</h2>
+                        <p class="text-muted">Productos que has guardado para más tarde</p>
+                    </div>
+                    <div class="card favorites-card">
+                        <div class="card-body">
+                            <div id="favoritesList" class="favorites-grid">
+                                <!-- Favoritos se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Seguridad -->
                 <section id="security" class="profile-section">
-                    <h3>Seguridad de la Cuenta</h3>
-                    <div class="card">
+                    <div class="section-header mb-4">
+                        <h2>Seguridad de la Cuenta</h2>
+                        <p class="text-muted">Mantén tu cuenta segura</p>
+                    </div>
+                    <div class="card security-card">
                         <div class="card-body">
                             <form id="securityForm">
-                                <div class="mb-3">
-                                    <label class="form-label">Contraseña Actual</label>
-                                    <input type="password" class="form-control" id="currentPassword">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Contraseña Actual</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input type="password" class="form-control" id="currentPassword">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('currentPassword')">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nueva Contraseña</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                            <input type="password" class="form-control" id="newPassword">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('newPassword')">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="password-strength mt-2">
+                                            <div class="progress">
+                                                <div class="progress-bar" id="passwordStrength" role="progressbar"></div>
+                                            </div>
+                                            <small class="text-muted" id="passwordStrengthText">Ingresa una contraseña</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Confirmar Nueva Contraseña</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                            <input type="password" class="form-control" id="confirmPassword">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPassword')">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Nueva Contraseña</label>
-                                    <input type="password" class="form-control" id="newPassword">
+                                <div class="form-actions mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-shield-check me-2"></i>Cambiar Contraseña
+                                    </button>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Confirmar Nueva Contraseña</label>
-                                    <input type="password" class="form-control" id="confirmPassword">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
                             </form>
                         </div>
                     </div>
@@ -130,41 +370,80 @@
 
     <!-- Modal para agregar/editar dirección -->
     <div class="modal fade" id="addressModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Agregar Dirección</h5>
+                    <h5 class="modal-title">
+                        <i class="bi bi-geo-alt me-2"></i>
+                        <span id="modalTitle">Agregar Dirección</span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addressForm">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre de la dirección</label>
-                            <input type="text" class="form-control" id="addressName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Dirección</label>
-                            <input type="text" class="form-control" id="addressStreet" required>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Nombre de la dirección</label>
+                                <input type="text" class="form-control" id="addressName" required placeholder="Ej: Casa, Oficina, etc.">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Dirección completa</label>
+                                <input type="text" class="form-control" id="addressStreet" required placeholder="Calle, número, etc.">
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Ciudad</label>
                                 <input type="text" class="form-control" id="addressCity" required>
                             </div>
-                            <div class="col">
+                            <div class="col-md-6">
                                 <label class="form-label">Código Postal</label>
                                 <input type="text" class="form-control" id="addressZip" required>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Teléfono de contacto</label>
-                            <input type="tel" class="form-control" id="addressPhone" required>
+                            <div class="col-md-6">
+                                <label class="form-label">Departamento/Estado</label>
+                                <input type="text" class="form-control" id="addressState">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono de contacto</label>
+                                <input type="tel" class="form-control" id="addressPhone" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Instrucciones especiales (opcional)</label>
+                                <textarea class="form-control" id="addressNotes" rows="2" placeholder="Ej: Segundo piso, portón azul, etc."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="addressDefault">
+                                    <label class="form-check-label" for="addressDefault">
+                                        Establecer como dirección predeterminada
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveAddress">Guardar</button>
+                    <button type="button" class="btn btn-primary" id="saveAddress">
+                        <i class="bi bi-check-circle me-2"></i>Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para detalles del pedido -->
+    <div class="modal fade" id="orderModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-box me-2"></i>
+                        Detalles del Pedido
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="orderModalBody">
+                    <!-- Se llenará dinámicamente -->
                 </div>
             </div>
         </div>
