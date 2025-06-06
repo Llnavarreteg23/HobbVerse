@@ -25,6 +25,21 @@
      <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
      <script src="/front-end/js/auth.js" defer></script>
+
+    <!-- Scripts de Cloudinary -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cloudinary-core/2.13.0/cloudinary-core-shrinkwrap.min.js"></script>
+    
+    <!-- Inicializar Cloudinary -->
+    <script type="text/javascript">
+        
+        const cloudinary = new Cloudinary({
+            cloud_name: 'YOUR_CLOUD_NAME',
+            api_key: 'YOUR_API_KEY',       
+            api_secret: 'YOUR_API_SECRET', 
+            secure: true
+        });
+    </script>
 </head>
 <body>
 

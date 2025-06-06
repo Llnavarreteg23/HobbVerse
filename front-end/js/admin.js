@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    initImageUpload();
+    initMultipleImageUpload();
+});
+
 function setupEventListeners() {
     document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
     document.getElementById('categoryForm').addEventListener('submit', handleCategorySubmit);
@@ -258,7 +263,7 @@ function filterProducts() {
 
 function updateProductList(filteredProducts = null) {
     const productList = document.getElementById('productList');
-    // CORRECIÓN: Usar filteredProducts si se proporciona, si no usar products
+    
     const productos = filteredProducts || products;
 
     productList.innerHTML = productos.map(product => `
@@ -489,4 +494,29 @@ function deleteCategory(id) {
 
     saveData();
     updateUI();
+}
+
+function initImageUpload() {
+    const uploadButton = document.getElementById('uploadImageBtn');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    uploadButton.addEventListener('click', () => {
+        cloudinaryUtils.openUploadWidget();
+    });
+
+    // Escuchar el evento de carga exitosa
+    document.addEventListener('imageUploaded', (event) => {
+        const imageUrl = event.detail.secure_url;
+        
+        // Actualizar preview
+        if (imagePreview) {
+            imagePreview.innerHTML = `
+                <img src="${imageUrl}" class="img-fluid mb-2" alt="Preview">
+                <input type="hidden" name="productImage" value="${imageUrl}">
+            `;
+        }
+        
+        // Guardar URL en el formulario
+        document.getElementById('mainImage').value = imageUrl;
+    });
 }
