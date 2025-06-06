@@ -325,6 +325,40 @@
     padding: 0.25rem 0.5rem;
 }
 
+/* Estilos para previsualizaciones de imágenes */
+#imagePreview img,
+#imagesPreview img {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#imagesPreview .btn-danger {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.8rem;
+    border-radius: 50%;
+    margin: 2px;
+}
+
+/* Estilos para filtros */
+.filter-section {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.filter-section .form-control:focus,
+.filter-section .form-select:focus {
+    border-color: #2D3250;
+    box-shadow: 0 0 0 0.2rem rgba(45, 50, 80, 0.25);
+}
+
+#productCount {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
 @media (max-width: 768px) {
     .card-header h5 {
         font-size: 1.1rem;
