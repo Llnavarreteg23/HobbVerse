@@ -552,10 +552,10 @@ function initImageUpload() {
     function updateAdditionalImagesPreview() {
         imagesPreview.innerHTML = additionalImages.map((url, index) => `
             <div class="d-inline-block position-relative me-2 mb-2">
-                <img src="${url}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
-                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                <img src="${url}" class="img-thumbnail" style="height: 150px; object-fit: cover;">
+                <button type="button" class="btn custom-elimnar-img position-absolute top-0 end-0"
                         onclick="removeAdditionalImage(${index})">
-                    <i class="bi bi-x"></i>
+                    <i class="bi bi-x custom-x-icon"></i>
                 </button>
                 <input type="hidden" name="additionalImages[]" value="${url}">
             </div>
