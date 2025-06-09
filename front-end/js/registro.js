@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             console.log('Enviando datos al backend:', userData);
             
-            const response = await fetch(`${API_BASE_URL}/usuarios/registro`, {
+            const response = await fetch(`${API_BASE_URL}/usuarios`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
