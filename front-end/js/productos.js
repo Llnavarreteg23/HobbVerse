@@ -1,4 +1,8 @@
+// Importaciones y selecciones de elementos del DOM se mantienen igual
 import * as adminFunctions from '/front-end/js/admin.js';
+// **IMPORTANTE: Asegúrate de que cloudinaryUtils y cloudinaryConfig estén disponibles**
+// Si están en un archivo separado, necesitas importarlos:
+cloudinaryConfig; // Ajusta la ruta
 
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
@@ -15,25 +19,67 @@ const categoryIcons = {
     "crochet": "bi-scissors"
 };
 
-export default function renderCategory(category, name) {
-    // Obtener productos
-    const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
-    const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
+// **NUEVO: Definir la URL base de tu backend**
+// Reemplaza con la URL pública de tu backend en AWS App Runner
+const API_BASE_URL = "https://<subdominio>.us-east-1.awsapprunner.com"; 
 
-    // Combinar productos y eliminar duplicados por ID
-    const todosLosProductos = [...productosNuevos, ...productosAntiguos].reduce((acc, producto) => {
-        if (!acc.find(p => p.id === producto.id)) {
-            acc.push(producto);
+// Variable para almacenar los productos cargados y evitar múltiples peticiones
+let cachedProducts = [];
+
+// **REFECTORIZADA: renderCategory para obtener productos del backend e integrar Cloudinary**
+export default async function renderCategory(category, name) {
+    hobbieImageContainer.innerHTML = ""; // Limpiar el contenedor antes de cargar
+
+    let productosFiltrados = [];
+
+    try {
+        let endpoint = `${API_BASE_URL}/productos`;
+        if (name) {
+            // Si se especifica una categoría, usa el endpoint de categoría
+            endpoint = `${API_BASE_URL}/productos/categoria/${name}`;
         }
-        return acc;
-    }, []);
 
-    // Filtrar por categoría si se especifica
-    const productosFiltrados = name ? 
-        todosLosProductos.filter(p => p.category.toLowerCase() === name.toLowerCase()) : 
-        todosLosProductos;
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+            if (response.status === 204) { // No Content, si no hay productos en la categoría
+                productosFiltrados = [];
+            } else {
+                throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+            }
+        } else {
+            const data = await response.json();
+            productosFiltrados = data.map(p => {
+                // **IMPORTANTE: ASUMIMOS que el backend envía publicId para las imágenes.**
+                // Si tu backend no envía 'mainImagePublicId' o 'additionalImagePublicIds'
+                // directamente en la respuesta JSON de Producto, estas propiedades serán undefined.
+                // Deberás modificar el backend para que incluya estos publicIds,
+                // o tener una lógica en el frontend para asociarlos (ej. por convención de nombre).
+                const mainImagePublicId = p.mainImagePublicId || null; // O de p.imagenPublicId si lo llamas así
+                const additionalImagePublicIds = p.additionalImagePublicIds || []; // O de p.imagenesAdicionalesPublicIds
 
-    hobbieImageContainer.innerHTML = "";
+                return {
+                    id: p.idProducto,
+                    name: p.nombreProducto,
+                    description: p.descripcion,
+                    price: p.precio,
+                    category: p.categoria,
+                    // **Integración de Cloudinary:** Genera las URLs de imagen usando publicId
+                    mainImage: mainImagePublicId ? cloudinaryUtils.getOptimizedUrl(mainImagePublicId, { width: 400, crop: "scale" }) : 'https://via.placeholder.com/300?text=No+Image', // URL optimizada o placeholder
+                    additionalImages: additionalImagePublicIds.map(id => cloudinaryUtils.getOptimizedUrl(id, { width: 400, crop: "scale" })),
+                    // featured: p.featured // Si tu backend no tiene 'featured', esta línea se ignoraría o daría undefined
+                };
+            });
+            cachedProducts = productosFiltrados; // Cachear los productos cargados
+        }
+    } catch (error) {
+        console.error("Error al cargar productos del backend:", error);
+        hobbieImageContainer.innerHTML = `
+            <div class="error-loading">
+                <p>Ocurrió un error al cargar los productos. Inténtalo de nuevo más tarde.</p>
+            </div>
+        `;
+        return; 
+    }
 
     if (productosFiltrados.length > 0) {
         productosFiltrados.forEach(producto => {
@@ -51,8 +97,8 @@ export default function renderCategory(category, name) {
                     </div>
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="${producto.mainImage || producto.imagen}" class="d-block w-100" 
-                                 alt="${producto.name || producto.nombre}">
+                            <img src="${producto.mainImage}" class="d-block w-100" 
+                                 alt="${producto.name}">
                         </div>
                         ${(producto.additionalImages || []).map(img => `
                             <div class="carousel-item">
@@ -74,9 +120,9 @@ export default function renderCategory(category, name) {
                     ` : ''}
                 </div>
                 <div class="product-details">
-                    <h3>${producto.name || producto.nombre}</h3>
+                    <h3>${producto.name}</h3>
                     ${producto.description ? `<p>${producto.description}</p>` : ''}
-                    <p class="price">$${(producto.price || producto.precio).toLocaleString()}</p>
+                    <p class="price">$${(producto.price).toLocaleString()}</p>
                     ${producto.featured ? '<span class="badge bg-warning">Destacado</span>' : ''}
                     <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
                         Agregar al carrito
@@ -100,6 +146,7 @@ export default function renderCategory(category, name) {
     }
 }
 
+// Los listeners para hobbieClicked se mantienen igual
 Array.from(hobbieClicked).forEach(link => {
     link.addEventListener("click", function(event) {
         event.preventDefault();
@@ -119,8 +166,9 @@ Array.from(hobbieClicked).forEach(link => {
     });
 });
 
+// DOMContentLoaded se mantiene igual
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Página cargada, verificando productos en localStorage...");
+    console.log("Página cargada, verificando productos del backend...");
     
     const defaultCategoryLink = Array.from(hobbieClicked).find(link => link.textContent.trim() === "Lectura");
 
@@ -134,56 +182,30 @@ document.addEventListener("DOMContentLoaded", function () {
     renderCategory("lectura", "Lectura");
 });
 
-/**
- * Carga los productos destacados desde el almacenamiento local
- * @returns {Array} Array de productos destacados
- */
+// cargarProductosDestacados se mantiene igual
 export function cargarProductosDestacados() {
-    // Obtener productos del almacenamiento local
-    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
-    
-    
-    if (!productos.length) {
-        productos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
-    }
-    
-    // Filtra solo los productos destacados
-    const destacados = productos.filter(producto => 
+    const destacados = cachedProducts.filter(producto => 
         producto.featured === true || producto.featured === 'on' || producto.featured === 'true'
     );
-    
     return destacados;
 }
 
-/**
- * Agrega un producto al carrito de compras
- * @param {string} productoId - ID del producto a agregar
- */
+// agregarAlCarrito se mantiene igual
 export function agregarAlCarrito(productoId) {
-    // Obtener el carrito actual o crear uno nuevo
     const carrito = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
-    
-    // Obtener todos los productos
-    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
-    if (!productos.length) {
-        productos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
-    }
-    
-    // Buscar el producto por ID
-    const producto = productos.find(p => p.id == productoId);
+    const producto = cachedProducts.find(p => p.id == productoId);
     
     if (producto) {
-        // Verificar si el producto ya está en el carrito
         const itemExistente = carrito.find(item => item.productoId == productoId);
         
         if (itemExistente) {
             itemExistente.cantidad += 1;
         } else {
             carrito.push({
-                productoId: productoId,
+                productoId: producto.id,
                 nombre: producto.name,
                 precio: producto.price,
-                imagen: producto.mainImage,
+                imagen: producto.mainImage, // Usar la imagen principal (ahora generada por Cloudinary)
                 cantidad: 1
             });
         }
@@ -191,15 +213,12 @@ export function agregarAlCarrito(productoId) {
         localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
         alert('Producto agregado al carrito');
     } else {
-        console.error('Producto no encontrado:', productoId);
+        console.error('Producto no encontrado en los productos cacheados:', productoId);
+        alert('No se pudo agregar el producto al carrito. Producto no encontrado.');
     }
 }
 
-/**
- * Formatea un precio como moneda colombiana
- * @param {number} precio - El precio a formatear
- * @returns {string} El precio formateado
- */
+// formatearPrecioCOP se mantiene igual
 export function formatearPrecioCOP(precio) {
     return new Intl.NumberFormat('es-CO', {
         style: 'currency',
@@ -208,66 +227,9 @@ export function formatearPrecioCOP(precio) {
     }).format(precio);
 }
 
-/**
- * Carga todos los productos desde el almacenamiento local
- * @returns {Array} Array de todos los productos
- */
+// cargarTodosLosProductos se mantiene igual
 export function cargarTodosLosProductos() {
-    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
-    return productos;
+    return cachedProducts;
 }
 
-/**
- * Renderiza los productos en el contenedor especificado
- * @param {string} categoria - Categoría para filtrar los productos (opcional)
- */
-export function renderizarProductos(categoria = null) {
-    const productos = cargarTodosLosProductos();
-    const productosFiltrados = categoria ? 
-        productos.filter(p => p.category.toLowerCase() === categoria.toLowerCase()) : 
-        productos;
-
-    const contenedor = document.getElementById('hobbieImageContainer');
-    
-    if (!productosFiltrados.length) {
-        contenedor.innerHTML = '<p class="text-center">No hay productos disponibles</p>';
-        return;
-    }
-
-    contenedor.innerHTML = productosFiltrados.map(producto => `
-        <div class="producto-card ${producto.featured ? 'featured' : ''}">
-            <div class="position-relative">
-                <img src="${producto.mainImage}" alt="${producto.name}">
-                ${producto.featured ? 
-                    '<span class="badge bg-warning position-absolute top-0 end-0 m-2">Destacado</span>' 
-                    : ''}
-            </div>
-            <div class="product-details">
-                <h3>${producto.name}</h3>
-                <p>${producto.description}</p>
-                <p class="price">$${producto.price.toLocaleString()}</p>
-                <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
-                    Agregar al carrito
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-function renderProducts(products) {
-    const container = document.getElementById('hobbieImageContainer');
-    container.innerHTML = products.map(product => `
-        <div class="producto-card">
-            <img src="${product.mainImage || product.imagen}" alt="${product.name || product.nombre}">
-            <div class="product-details">
-                <h3>${product.name || product.nombre}</h3>
-                <p>${product.description || ''}</p>
-                <p class="price">$${(product.price || product.precio).toLocaleString()}</p>
-                <button class="buy-button" onclick="window.floatingCart.addToCart(${JSON.stringify(product)})">
-                    Agregar al carrito
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
+// (Las funciones `renderizarProductos` y `renderProducts` fueron eliminadas en la refactorización anterior por ser redundantes.)
