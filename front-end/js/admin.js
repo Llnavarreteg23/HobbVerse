@@ -124,6 +124,8 @@ function getProductImagesFromLocalStorage(productId) {
     return null; // O un objeto predeterminado if not found
 }
 
+export { getProductImagesFromLocalStorage };
+
 function removeProductImagesFromLocalStorage(productId) {
     try {
         localStorage.removeItem(`productImages_${productId}`);
