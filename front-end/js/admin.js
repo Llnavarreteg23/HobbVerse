@@ -10,15 +10,19 @@ let editingCategoryId = null;
 let editingProductId = null;
 let imageCount = 0;
 
+// Configuración de la API
+const API_BASE_URL = '/api'; // Ajustar según la URL base de tu API
+const API_ENDPOINTS = {
+    products: `${API_BASE_URL}/productos`,
+    categories: `${API_BASE_URL}/categorias`
+};
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar datos
+    // Inicializar datos y configuraciones
     loadData();
     setupEventListeners();
-});
-
-document.addEventListener('DOMContentLoaded', () => {
     initImageUpload();
-    initMultipleImageUpload();
+    setupFilters();
 });
 
 function setupEventListeners() {
@@ -31,72 +35,85 @@ function setupEventListeners() {
 
 async function loadData() {
     try {
-        // Unificar productos de ambas fuentes
-        const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
-        const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
+        // Cargar categorías primero
+        await loadCategories();
         
-        // Combinar y eliminar duplicados
-        products = [...productosNuevos, ...productosAntiguos].reduce((acc, producto) => {
-            // Verificar si ya existe un producto con el mismo ID
-            const existingIndex = acc.findIndex(p => p.id === producto.id);
-            
-            
-            if (existingIndex >= 0) {
-                
-                const isFromProductos = productosNuevos.some(p => p.id === producto.id);
-                if (isFromProductos) {
-                    acc[existingIndex] = producto;
-                }
-                return acc;
-            }
-            
-            // Normalizar formato
-            acc.push({
-                id: producto.id || Date.now().toString(),
-                name: producto.name || producto.nombre || '',
-                category: producto.category || '',
-                description: producto.description || '',
-                price: parseFloat(producto.price || producto.precio || 0),
-                stock: parseInt(producto.stock || 0),
-                mainImage: producto.mainImage || producto.imagen || '',
-                additionalImages: producto.additionalImages || [],
-                featured: producto.featured || false
-            });
-            return acc;
-        }, []);
+        // Cargar productos desde la API
+        await loadProducts();
         
-       
-        localStorage.setItem('productos', JSON.stringify(products));
-        
-        // Cargar categorías
-        const storedCategories = localStorage.getItem('hobbverse_categories');
-
-        if (storedCategories) {
-            categories = JSON.parse(storedCategories);
-        } else {
-            try {
-                const response = await fetch('/front-end/data/initial-data.json');
-                const data = await response.json();
-                categories = data.categories;
-            } catch (fetchError) {
-                console.error('Error fetching initial data:', fetchError);
-                categories = [
-                    { id: 1, name: "Deportes" },
-                    { id: 2, name: "Arte" },
-                    { id: 3, name: "Música" }
-                ];
-            }
-            localStorage.setItem('hobbverse_categories', JSON.stringify(categories));
-        }
     } catch (error) {
         console.error('Error loading data:', error);
         
-        // Valores por defecto
+        // Valores por defecto si falla la carga
         if (!products || !Array.isArray(products)) {
             products = [];
         }
+    }
+
+    updateUI();
+}
+
+async function loadProducts() {
+    try {
+        const response = await fetch(API_ENDPOINTS.products);
         
-        if (!categories || !Array.isArray(categories)) {
+        if (!response.ok) {
+            throw new Error(`Error al cargar productos: ${response.status}`);
+        }
+        
+        products = await response.json();
+        
+        // Normalizar formato si es necesario
+        products = products.map(producto => ({
+            id: producto.id || Date.now().toString(),
+            name: producto.name || producto.nombre || '',
+            category: producto.category || producto.categoria || '',
+            description: producto.description || producto.descripcion || '',
+            price: parseFloat(producto.price || producto.precio || 0),
+            stock: parseInt(producto.stock || 0),
+            mainImage: producto.mainImage || producto.imagen || '',
+            additionalImages: producto.additionalImages || producto.imagenesAdicionales || [],
+            featured: producto.featured || producto.destacado || false
+        }));
+        
+    } catch (error) {
+        console.error('Error al cargar productos desde la API:', error);
+        
+        // Intentar cargar desde localStorage como respaldo
+        const storedProducts = localStorage.getItem('productos');
+        if (storedProducts) {
+            products = JSON.parse(storedProducts);
+        } else {
+            products = [];
+        }
+    }
+}
+
+async function loadCategories() {
+    try {
+        const response = await fetch(API_ENDPOINTS.categories);
+        
+        if (!response.ok) {
+            throw new Error(`Error al cargar categorías: ${response.status}`);
+        }
+        
+        categories = await response.json();
+        
+        // Normalizar formato si es necesario
+        categories = categories.map(cat => ({
+            id: cat.id,
+            name: cat.name || cat.nombre
+        }));
+        
+    } catch (error) {
+        console.error('Error al cargar categorías desde la API:', error);
+        
+        // Intentar cargar desde localStorage como respaldo
+        const storedCategories = localStorage.getItem('hobbverse_categories');
+        if (storedCategories) {
+            categories = JSON.parse(storedCategories);
+        } else {
+            // Categorías por defecto
             categories = [
                 { id: 1, name: "Deportes" },
                 { id: 2, name: "Arte" },
@@ -104,18 +121,130 @@ async function loadData() {
             ];
         }
     }
-
-    updateUI();
 }
 
-function saveData() {
+async function saveProduct(product) {
     try {
+        const url = editingProductId 
+            ? `${API_ENDPOINTS.products}/${product.id}` 
+            : API_ENDPOINTS.products;
+        
+        const method = editingProductId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(product)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error al guardar producto: ${response.status}`);
+        }
+        
+        // Actualizar el producto en la lista local
+        return await response.json();
+        
+    } catch (error) {
+        console.error('Error al guardar producto en la API:', error);
+        
+        // Respaldo: guardar en localStorage
+        if (editingProductId) {
+            const index = products.findIndex(p => p.id === product.id);
+            if (index !== -1) {
+                products[index] = product;
+            } else {
+                products.push(product);
+            }
+        } else {
+            // Asignar ID local
+            product.id = Date.now().toString();
+            products.push(product);
+        }
         
         localStorage.setItem('productos', JSON.stringify(products));
-        localStorage.setItem('hobbverse_products', JSON.stringify(products));
-        localStorage.setItem('hobbverse_categories', JSON.stringify(categories));
+        return product;
+    }
+}
+
+async function deleteProductFromAPI(productId) {
+    try {
+        const response = await fetch(`${API_ENDPOINTS.products}/${productId}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error al eliminar producto: ${response.status}`);
+        }
+        
+        return true;
+        
     } catch (error) {
-        console.error('Error saving data:', error);
+        console.error('Error al eliminar producto de la API:', error);
+        return false;
+    }
+}
+
+async function saveCategory(category) {
+    try {
+        const url = editingCategoryId 
+            ? `${API_ENDPOINTS.categories}/${category.id}` 
+            : API_ENDPOINTS.categories;
+        
+        const method = editingCategoryId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(category)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error al guardar categoría: ${response.status}`);
+        }
+        
+        return await response.json();
+        
+    } catch (error) {
+        console.error('Error al guardar categoría en la API:', error);
+        
+        // Respaldo: guardar en localStorage
+        if (editingCategoryId) {
+            const index = categories.findIndex(c => c.id === category.id);
+            if (index !== -1) {
+                categories[index] = category;
+            } else {
+                categories.push(category);
+            }
+        } else {
+            // Asignar ID local
+            category.id = Date.now();
+            categories.push(category);
+        }
+        
+        localStorage.setItem('hobbverse_categories', JSON.stringify(categories));
+        return category;
+    }
+}
+
+async function deleteCategoryFromAPI(categoryId) {
+    try {
+        const response = await fetch(`${API_ENDPOINTS.categories}/${categoryId}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error al eliminar categoría: ${response.status}`);
+        }
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Error al eliminar categoría de la API:', error);
+        return false;
     }
 }
 
@@ -141,12 +270,12 @@ function addImageInput() {
     document.getElementById('additionalImages').appendChild(container);
 }
 
-function handleProductSubmit(e) {
+async function handleProductSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     
     const productData = {
-        id: editingProductId || Date.now().toString(),
+        id: editingProductId || undefined,
         name: formData.get('name'),
         category: formData.get('category'),
         description: formData.get('description'),
@@ -159,71 +288,107 @@ function handleProductSubmit(e) {
         featured: formData.get('featured') === 'on'
     };
 
-    if (editingProductId) {
-        // Actualizar en la variable products
-        const index = products.findIndex(p => p.id === editingProductId);
-        if (index !== -1) {
-            products[index] = productData;
+    try {
+        const savedProduct = await saveProduct(productData);
+        
+        // Si es un producto nuevo, agregar a la lista
+        if (!editingProductId) {
+            products.push(savedProduct);
         } else {
-            // Si no se encuentra, agregarlo
-            products.push(productData);
+            // Si es actualización, actualizar en la lista
+            const index = products.findIndex(p => p.id === savedProduct.id);
+            if (index !== -1) {
+                products[index] = savedProduct;
+            } else {
+                products.push(savedProduct);
+            }
         }
-    } else {
-        // Agregar nuevo producto
-        products.push(productData);
-    }
-    
-    // Guardar en localStorage (ambos)
-    saveData();
-    
-    updateProductList();
-    e.target.reset();
-    
-    // Resetear estado de edición
-    editingProductId = null;
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    if (submitBtn) submitBtn.textContent = 'Agregar Producto';
+        
+        // Actualizar UI
+        updateProductList();
+        e.target.reset();
+        
+        // Resetear estado de edición
+        editingProductId = null;
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.textContent = 'Agregar Producto';
 
-    // Mostrar mensaje de éxito
-    if (typeof mostrarAlerta === 'function') {
-        mostrarAlerta('Producto guardado exitosamente', 'success');
-    } else {
-        alert('Producto guardado exitosamente');
+        // Mostrar mensaje de éxito
+        if (typeof mostrarAlerta === 'function') {
+            mostrarAlerta('Producto guardado exitosamente', 'success');
+        } else {
+            alert('Producto guardado exitosamente');
+        }
+        
+    } catch (error) {
+        console.error('Error al guardar producto:', error);
+        
+        if (typeof mostrarAlerta === 'function') {
+            mostrarAlerta('Error al guardar producto: ' + error.message, 'danger');
+        } else {
+            alert('Error al guardar producto: ' + error.message);
+        }
     }
 }
 
-function handleCategorySubmit(e) {
+async function handleCategorySubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const categoryName = formData.get('categoryName').trim();
 
-    if (editingCategoryId) {
-        const index = categories.findIndex(cat => cat.id === editingCategoryId);
-        if (index !== -1) {
-            categories[index].name = categoryName;
-        }
-        editingCategoryId = null;
-        e.target.querySelector('button[type="submit"]').textContent = 'Agregar Categoría';
-    } else {
-        const newCategory = {
-            id: Date.now(),
-            name: categoryName
-        };
-        categories.push(newCategory);
+    if (!categoryName) {
+        alert('El nombre de la categoría no puede estar vacío');
+        return;
     }
-    saveData();
-    updateUI();
 
-    e.target.reset();
-    const modal = bootstrap.Modal.getInstance(document.getElementById('categoryModal'));
-    if (modal) modal.hide();
+    try {
+        let categoryData;
+        
+        if (editingCategoryId) {
+            const index = categories.findIndex(cat => cat.id === editingCategoryId);
+            if (index !== -1) {
+                categoryData = {
+                    id: editingCategoryId,
+                    name: categoryName
+                };
+            }
+        } else {
+            categoryData = {
+                name: categoryName
+            };
+        }
+        
+        const savedCategory = await saveCategory(categoryData);
+        
+        // Actualizar la lista local
+        if (editingCategoryId) {
+            const index = categories.findIndex(cat => cat.id === editingCategoryId);
+            if (index !== -1) {
+                categories[index] = savedCategory;
+            }
+            editingCategoryId = null;
+            e.target.querySelector('button[type="submit"]').textContent = 'Agregar Categoría';
+        } else {
+            categories.push(savedCategory);
+        }
+        
+        updateUI();
+        e.target.reset();
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('categoryModal'));
+        if (modal) modal.hide();
+        
+    } catch (error) {
+        console.error('Error al guardar categoría:', error);
+        alert('Error al guardar categoría: ' + error.message);
+    }
 }
 
 function updateUI() {
     updateCategoryList();
     updateProductList();
     updateCategorySelect();
-    updateProductCount();
+    updateProductCount(products.length);
 }
 
 function updateCategoryList() {
@@ -251,10 +416,10 @@ function filterProducts() {
     
     // Filtrar productos
     const filteredProducts = products.filter(product => {
-        const nameMatch = product.name.toLowerCase().includes(searchTerm);
-        const descriptionMatch = product.description?.toLowerCase().includes(searchTerm);
+        const nameMatch = product.name && product.name.toLowerCase().includes(searchTerm);
+        const descriptionMatch = product.description && product.description.toLowerCase().includes(searchTerm);
         const categoryMatch = !categoryFilter || 
-                            product.category?.toLowerCase() === categoryFilter.toLowerCase();
+                            (product.category && product.category.toLowerCase() === categoryFilter.toLowerCase());
         
         return (nameMatch || descriptionMatch) && categoryMatch;
     });
@@ -266,6 +431,7 @@ function filterProducts() {
 
 function updateProductList(filteredProducts = null) {
     const productList = document.getElementById('productList');
+    if (!productList) return;
     
     const productos = filteredProducts || products;
 
@@ -281,15 +447,18 @@ function updateProductList(filteredProducts = null) {
                     </div>
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="${product.mainImage}" class="d-block w-100" alt="${product.name}" style="height: 200px; object-fit: cover;">
+                            <img src="${product.mainImage || 'https://placehold.co/600x400?text=Sin+imagen'}" 
+                                 class="d-block w-100" alt="${product.name}" 
+                                 style="height: 200px; object-fit: cover;">
                         </div>
                         ${(product.additionalImages || []).map(img => `
                             <div class="carousel-item">
-                                <img src="${img}" class="d-block w-100" alt="Imagen adicional" style="height: 200px; object-fit: cover;">
+                                <img src="${img}" class="d-block w-100" alt="Imagen adicional" 
+                                     style="height: 200px; object-fit: cover;">
                             </div>
                         `).join('')}
                     </div>
-                    ${(product.additionalImages || []).length > 0 ? `
+                    ${(product.additionalImages && product.additionalImages.length > 0) ? `
                         <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
                         </button>
@@ -299,11 +468,11 @@ function updateProductList(filteredProducts = null) {
                     ` : ''}
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">${product.name}</h5>
-                    <p class="card-text">${product.description}</p>
-                    <p class="card-text"><strong>Precio: </strong>$${product.price.toLocaleString()}</p>
-                    <p class="card-text"><strong>Categoría: </strong>${product.category}</p>
-                    <p class="card-text"><strong>Stock: </strong>${product.stock}</p>
+                    <h5 class="card-title">${product.name || 'Sin nombre'}</h5>
+                    <p class="card-text">${product.description || 'Sin descripción'}</p>
+                    <p class="card-text"><strong>Precio: </strong>${formatter.format(product.price || 0)}</p>
+                    <p class="card-text"><strong>Categoría: </strong>${product.category || 'Sin categoría'}</p>
+                    <p class="card-text"><strong>Stock: </strong>${product.stock || 0}</p>
                     <div class="btn-group w-100">
                         <button class="btn btn-sm btn-outline-primary" onclick="editProduct('${product.id}')">
                             <i class="bi bi-pencil"></i>
@@ -322,12 +491,16 @@ function updateProductList(filteredProducts = null) {
 
     // Inicializar todos los carruseles
     productos.forEach(product => {
-        if (product.additionalImages?.length > 0) {
+        if (product.additionalImages && product.additionalImages.length > 0) {
             const carouselElement = document.getElementById(`carousel-${product.id}`);
             if (carouselElement) {
-                new bootstrap.Carousel(carouselElement, {
-                    interval: 3000
-                });
+                try {
+                    new bootstrap.Carousel(carouselElement, {
+                        interval: 3000
+                    });
+                } catch (error) {
+                    console.error('Error al inicializar carrusel:', error);
+                }
             }
         }
     });
@@ -336,22 +509,43 @@ function updateProductList(filteredProducts = null) {
 function updateProductCount(count) {
     const countElement = document.getElementById('productCount');
     if (countElement) {
-        countElement.textContent = `Mostrando ${count} de ${products.length} productos`;
+        countElement.textContent = count === products.length 
+            ? `Total: ${products.length} productos` 
+            : `Mostrando ${count} de ${products.length} productos`;
     }
 }
 
-function toggleFeatured(productId) {
+async function toggleFeatured(productId) {
     const index = products.findIndex(p => p.id === productId);
     
     if (index !== -1) {
-        products[index].featured = !products[index].featured;
-        saveData(); 
-        updateProductList();
+        try {
+            const product = { ...products[index] };
+            product.featured = !product.featured;
+            
+            // Actualizar en la API
+            const updatedProduct = await saveProduct(product);
+            
+            // Actualizar en la lista local
+            products[index] = updatedProduct;
+            updateProductList();
+            
+        } catch (error) {
+            console.error('Error al actualizar estado destacado:', error);
+            
+            // Cambio local como respaldo
+            products[index].featured = !products[index].featured;
+            localStorage.setItem('productos', JSON.stringify(products));
+            updateProductList();
+        }
     }
 }
 
 function updateCategorySelect() {
     const categorySelects = document.querySelectorAll('select[name="category"], #categoryFilter');
+    
+    if (categorySelects.length === 0) return;
+    
     const options = `
         ${document.querySelector('#categoryFilter') ? '<option value="">Todas las categorías</option>' : ''}
         ${categories.map(category => 
@@ -360,40 +554,40 @@ function updateCategorySelect() {
     `;
     
     categorySelects.forEach(select => {
+        const currentValue = select.value;
         select.innerHTML = options;
+        
+        // Intentar mantener el valor seleccionado si existía
+        if (currentValue && categories.some(cat => cat.name === currentValue)) {
+            select.value = currentValue;
+        }
     });
 }
 
-function editProduct(productId) {
-    
+async function editProduct(productId) {
     let producto = products.find(p => p.id === productId);
     
     if (!producto) {
-        
         try {
-            const productosAlmacenados = localStorage.getItem('productos');
-            if (productosAlmacenados) {
-                const productosArray = JSON.parse(productosAlmacenados);
-                producto = productosArray.find(p => p.id === productId);
-                
-                
-                if (producto && !products.some(p => p.id === productId)) {
-                    products.push(producto);
-                    saveData();
-                }
-            }
+            // Intentar obtener el producto desde la API
+            const response = await fetch(`${API_ENDPOINTS.products}/${productId}`);
             
-           
-            if (!producto) {
-                const hobbverseProductos = localStorage.getItem('hobbverse_products');
-                if (hobbverseProductos) {
-                    const hobbverseArray = JSON.parse(hobbverseProductos);
-                    producto = hobbverseArray.find(p => p.id === productId);
-                    
+            if (response.ok) {
+                producto = await response.json();
+                
+                // Añadir a la lista local si no existe
+                if (!products.some(p => p.id === productId)) {
+                    products.push(producto);
+                }
+            } else {
+                // Buscar en localStorage como respaldo
+                const storedProducts = localStorage.getItem('productos');
+                if (storedProducts) {
+                    const localProducts = JSON.parse(storedProducts);
+                    producto = localProducts.find(p => p.id === productId);
                     
                     if (producto && !products.some(p => p.id === productId)) {
                         products.push(producto);
-                        saveData();
                     }
                 }
             }
@@ -404,6 +598,7 @@ function editProduct(productId) {
     
     if (!producto) {
         console.error('Producto no encontrado:', productId);
+        alert('No se pudo encontrar el producto para editar');
         return;
     }
 
@@ -413,9 +608,27 @@ function editProduct(productId) {
         return;
     }
     
+    // Asegurar que las categorías estén cargadas
+    if (!categories || categories.length === 0) {
+        loadCategories().then(() => {
+            updateCategorySelect();
+            fillProductForm(form, producto);
+        });
+    } else {
+        fillProductForm(form, producto);
+    }
+}
+
+function fillProductForm(form, producto) {
     // Llenar el formulario con los datos del producto
     form.elements['name'].value = producto.name || producto.nombre || '';
-    form.elements['category'].value = producto.category || '';
+    
+    // Asegurar que la categoría existe antes de asignarla
+    const categoryValue = producto.category || '';
+    form.elements['category'].value = categories.some(cat => cat.name === categoryValue) 
+        ? categoryValue 
+        : '';
+    
     form.elements['description'].value = producto.description || '';
     form.elements['price'].value = producto.price || producto.precio || 0;
     form.elements['stock'].value = producto.stock || 0;
@@ -452,51 +665,143 @@ function editProduct(productId) {
     }
 
     // Actualizar el estado de edición
-    editingProductId = productId;
+    editingProductId = producto.id;
     const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.textContent = 'Actualizar Producto';
+    
+    // Actualizar la vista previa de imagen principal
+    const imagePreview = document.getElementById('imagePreview');
+    if (imagePreview && producto.mainImage) {
+        imagePreview.innerHTML = `
+            <div class="position-relative">
+                <img src="${producto.mainImage}" class="img-thumbnail" style="max-height: 200px">
+            </div>
+        `;
+    }
     
     // Scroll al formulario
     form.scrollIntoView({ behavior: 'smooth' });
 }
 
-function deleteProduct(productId) {
-    if (confirm('¿Estás seguro de eliminar este producto?')) {
+async function deleteProduct(productId) {
+    if (!confirm('¿Estás seguro de eliminar este producto?')) {
+        return;
+    }
+    
+    try {
+        // Intentar eliminar en la API
+        const deleted = await deleteProductFromAPI(productId);
+        
+        if (deleted) {
+            // Eliminar de la lista local
+            products = products.filter(p => p.id !== productId);
+            updateProductList();
+            updateProductCount(products.length);
+        } else {
+            throw new Error('No se pudo eliminar el producto');
+        }
+    } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        
+        // Eliminar localmente como respaldo
         products = products.filter(p => p.id !== productId);
-        saveData(); 
+        localStorage.setItem('productos', JSON.stringify(products));
         updateProductList();
-        updateProductCount();
+        updateProductCount(products.length);
     }
 }
 
-function editCategory(id) {
+async function editCategory(id) {
     const category = categories.find(c => c.id === id);
     if (!category) return;
 
     editingCategoryId = id;
     const form = document.getElementById('categoryForm');
+    if (!form) return;
+    
     form.elements['categoryName'].value = category.name;
 
-    const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
-    modal.show();
+    // Usar try-catch para manejar posibles errores con Bootstrap
+    try {
+        const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+        modal.show();
+    } catch (error) {
+        console.error('Error al mostrar modal de categoría:', error);
+        // Alternativa si bootstrap falla
+        const modalElement = document.getElementById('categoryModal');
+        if (modalElement) modalElement.classList.add('show');
+    }
 
-    form.querySelector('button[type="submit"]').textContent = 'Actualizar Categoría';
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.textContent = 'Actualizar Categoría';
 }
 
-function deleteCategory(id) {
-    if (!confirm('¿Está seguro de eliminar esta categoría? Los productos asociados quedarán sin categoría.')) return;
-
-    categories = categories.filter(c => c.id !== id);
-
-    products = products.map(p => {
-        if (p.category === id) {
-            return { ...p, category: null };
+async function deleteCategory(id) {
+    if (!confirm('¿Está seguro de eliminar esta categoría? Los productos asociados quedarán sin categoría.')) {
+        return;
+    }
+    
+    try {
+        // Intentar eliminar en la API
+        const deleted = await deleteCategoryFromAPI(id);
+        
+        if (deleted) {
+            // Obtener el nombre de la categoría antes de eliminarla
+            const categoryToDelete = categories.find(c => c.id === id);
+            if (!categoryToDelete) return;
+            
+            const categoryName = categoryToDelete.name;
+            
+            // Eliminar la categoría
+            categories = categories.filter(c => c.id !== id);
+    
+            // Actualizar los productos que tenían esta categoría
+            const productsToUpdate = products.filter(p => p.category === categoryName);
+            
+            // Actualizar productos en el backend
+            for (const producto of productsToUpdate) {
+                const updatedProduct = { ...producto, category: '' };
+                await saveProduct(updatedProduct);
+            }
+            
+            // Actualizar productos localmente
+            products = products.map(p => {
+                if (p.category === categoryName) {
+                    return { ...p, category: '' };
+                }
+                return p;
+            });
+            
+            updateUI();
+        } else {
+            throw new Error('No se pudo eliminar la categoría');
         }
-        return p;
-    });
-
-    saveData();
-    updateUI();
+    } catch (error) {
+        console.error('Error al eliminar categoría:', error);
+        
+        // Eliminar localmente como respaldo
+        // Obtener el nombre de la categoría antes de eliminarla
+        const categoryToDelete = categories.find(c => c.id === id);
+        if (!categoryToDelete) return;
+        
+        const categoryName = categoryToDelete.name;
+        
+        // Eliminar la categoría
+        categories = categories.filter(c => c.id !== id);
+        
+        // Actualizar los productos que tenían esta categoría
+        products = products.map(p => {
+            if (p.category === categoryName) {
+                return { ...p, category: '' };
+            }
+            return p;
+        });
+        
+        localStorage.setItem('hobbverse_categories', JSON.stringify(categories));
+        localStorage.setItem('productos', JSON.stringify(products));
+        
+        updateUI();
+    }
 }
 
 // Configuración de Cloudinary
@@ -507,10 +812,15 @@ const cloudinaryConfig = {
 
 function initImageUpload() {
     const uploadImageBtn = document.getElementById('uploadImageBtn');
-    const uploadMultipleBtn = document.getElementById('uploadMultipleBtn');
     const imagePreview = document.getElementById('imagePreview');
-    const imagesPreview = document.getElementById('imagesPreview');
-    let additionalImages = [];
+    
+    if (!uploadImageBtn) return;
+    
+    // Verificar si cloudinary está disponible
+    if (typeof cloudinary === 'undefined') {
+        console.error('Cloudinary no está disponible. Asegúrate de incluir el script en tu HTML.');
+        return;
+    }
 
     // Configurar widget de Cloudinary
     const uploadWidget = cloudinary.createUploadWidget({
@@ -521,93 +831,79 @@ function initImageUpload() {
         if (!error && result && result.event === "success") {
             const imageUrl = result.info.secure_url;
             
-            if (uploadWidget.lastButtonClicked === 'main') {
-                // Actualizar preview de imagen principal
+            // Actualizar preview de imagen principal
+            if (imagePreview) {
                 imagePreview.innerHTML = `
                     <div class="position-relative">
                         <img src="${imageUrl}" class="img-thumbnail" style="max-height: 200px">
-                        <input type="hidden" id="mainImage" name="mainImage" value="${imageUrl}">
                     </div>
                 `;
+            }
+            
+            // Actualizar el campo de entrada oculto
+            const mainImageInput = document.getElementById('mainImage') || document.querySelector('input[name="mainImage"]');
+            if (mainImageInput) {
+                mainImageInput.value = imageUrl;
             } else {
-                // Agregar a imágenes adicionales
-                additionalImages.push(imageUrl);
-                updateAdditionalImagesPreview();
+                // Si no existe el campo, crearlo
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'mainImage';
+                input.id = 'mainImage';
+                input.value = imageUrl;
+                document.getElementById('productForm').appendChild(input);
             }
         }
     });
 
     // Botón de imagen principal
     uploadImageBtn.addEventListener('click', () => {
-        uploadWidget.lastButtonClicked = 'main';
         uploadWidget.open();
     });
-
-    // Botón de imágenes adicionales
-    uploadMultipleBtn.addEventListener('click', () => {
-        uploadWidget.lastButtonClicked = 'additional';
-        uploadWidget.open();
-    });
-
-    function updateAdditionalImagesPreview() {
-        imagesPreview.innerHTML = additionalImages.map((url, index) => `
-            <div class="d-inline-block position-relative me-2 mb-2">
-                <img src="${url}" class="img-thumbnail" style="height: 150px; object-fit: cover;">
-                <button type="button" class="btn custom-elimnar-img position-absolute top-0 end-0"
-                        onclick="removeAdditionalImage(${index})">
-                    <i class="bi bi-x custom-x-icon"></i>
-                </button>
-                <input type="hidden" name="additionalImages[]" value="${url}">
-            </div>
-        `).join('');
+    
+    // Configurar el botón para imágenes adicionales si existe
+    const uploadMultipleBtn = document.getElementById('uploadMultipleBtn');
+    if (uploadMultipleBtn) {
+        uploadMultipleBtn.addEventListener('click', () => {
+            // Abre el widget con configuración para múltiples imágenes
+            const multipleWidget = cloudinary.createUploadWidget({
+                cloudName: cloudinaryConfig.cloudName,
+                uploadPreset: cloudinaryConfig.uploadPreset,
+                multiple: true
+            }, (error, result) => {
+                if (!error && result && result.event === "success") {
+                    addImageInput();
+                    const inputs = document.querySelectorAll('#additionalImages .additional-image:last-child input');
+                    if (inputs.length > 0) {
+                        inputs[0].value = result.info.secure_url;
+                    }
+                }
+            });
+            
+            multipleWidget.open();
+        });
     }
-
-    // Función global para remover imágenes
-    window.removeAdditionalImage = (index) => {
-        additionalImages.splice(index, 1);
-        updateAdditionalImagesPreview();
-    };
 }
 
-
 function setupFilters() {
-    
     const searchInput = document.getElementById('searchProducts');
     const categoryFilter = document.getElementById('categoryFilter');
     
     if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const categoryValue = categoryFilter ? categoryFilter.value : '';
-            filterAndUpdateProducts(searchTerm, categoryValue);
-        });
+        searchInput.addEventListener('input', filterProducts);
     }
     
     if (categoryFilter) {
-        categoryFilter.addEventListener('change', () => {
-            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-            const categoryValue = categoryFilter.value;
-            filterAndUpdateProducts(searchTerm, categoryValue);
-        });
+        categoryFilter.addEventListener('change', filterProducts);
     }
 }
 
-function filterAndUpdateProducts(searchTerm, category) {
-    const filteredProducts = products.filter(product => {
-        // Búsqueda en nombre, descripción y categoría
-        const nameMatch = product.name?.toLowerCase().includes(searchTerm);
-        const descriptionMatch = product.description?.toLowerCase().includes(searchTerm);
-        const categoryMatch = !category || product.category?.toLowerCase() === category.toLowerCase();
-        
-        return (nameMatch || descriptionMatch) && categoryMatch;
-    });
-    
-    updateProductList(filteredProducts);
-    updateProductCount(filteredProducts.length);
-}
-
-// Inicialización
-document.addEventListener('DOMContentLoaded', function() {
-    initImageUpload();
-    setupFilters();
+// Inicialización para asegurar que todo se carga correctamente
+window.addEventListener('load', function() {
+    // Verificar si los datos ya se cargaron
+    if (products.length === 0 || categories.length === 0) {
+        loadData();
+    } else {
+        updateUI();
+    }
 });

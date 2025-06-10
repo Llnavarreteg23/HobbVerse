@@ -1,4 +1,4 @@
-// script.js
+
 
 function handleSuccessfulLogin() {
     document.getElementById('auth-buttons').style.display = 'none';

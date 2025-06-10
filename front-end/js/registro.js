@@ -1,4 +1,4 @@
-// Código JavaScript para la validación del formulario de registro
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Obtener referencias a los elementos del DOM
@@ -15,6 +15,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordError = document.getElementById('password-error');
     const password2Error = document.getElementById('password2-error');
 
+   let API_BASE_URL;
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    // URL local para desarrollo
+    API_BASE_URL = 'http://localhost:8080';
+} else {
+    // URL de producción
+    API_BASE_URL = 'https://9s68ixqgw5.us-east-1.awsapprunner.com';
+}
+
+
     // Requisitos de contraseña
     const requisitosPasswordContainer = document.createElement('div');
     requisitosPasswordContainer.className = 'requisitos-password';
@@ -30,51 +40,56 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     
     // Insertar requisitos después del campo de contraseña
-    passwordInput.parentNode.insertAdjacentElement('afterend', requisitosPasswordContainer);
+    if (passwordInput && passwordInput.parentNode) {
+        passwordInput.parentNode.insertAdjacentElement('afterend', requisitosPasswordContainer);
+    }
 
     // Funciones de validación
     function validarNombre() {
+        if (!nombreInput) return false;
         const valor = nombreInput.value.trim();
         if (!valor) {
-            errorNombre.textContent = '*El nombre es obligatorio.';
+            if (errorNombre) errorNombre.textContent = '*El nombre es obligatorio.';
             return false;
         }
         const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
         if (!regex.test(valor)) {
-            errorNombre.textContent = 'Solo se permiten letras y espacios.';
+            if (errorNombre) errorNombre.textContent = 'Solo se permiten letras y espacios.';
             return false;
         }
-        errorNombre.textContent = '';
+        if (errorNombre) errorNombre.textContent = '';
         return true;
     }
 
     function validarTelefono() {
+        if (!telefonoInput) return false;
         const valor = telefonoInput.value.trim();
         if (!valor) {
-            errorTelefono.textContent = '*El teléfono es obligatorio.';
+            if (errorTelefono) errorTelefono.textContent = '*El teléfono es obligatorio.';
             return false;
         }
         const regex = /^\d{7,10}$/;
         if (!regex.test(valor)) {
-            errorTelefono.textContent = 'El teléfono debe tener entre 7 y 10 dígitos numéricos.';
+            if (errorTelefono) errorTelefono.textContent = 'El teléfono debe tener entre 7 y 10 dígitos numéricos.';
             return false;
         }
-        errorTelefono.textContent = '';
+        if (errorTelefono) errorTelefono.textContent = '';
         return true;
     }
 
     function validarEmail() {
+        if (!emailInput) return false;
         const valor = emailInput.value.trim();
         if (!valor) {
-            errorEmail.textContent = '*El correo es obligatorio.';
+            if (errorEmail) errorEmail.textContent = '*El correo es obligatorio.';
             return false;
         }
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!regex.test(valor)) {
-            errorEmail.textContent = 'Correo electrónico inválido. Ejemplo: correo@email.com';
+            if (errorEmail) errorEmail.textContent = 'Correo electrónico inválido. Ejemplo: correo@email.com';
             return false;
         }
-        errorEmail.textContent = '';
+        if (errorEmail) errorEmail.textContent = '';
         return true;
     }
 
@@ -83,35 +98,39 @@ document.addEventListener('DOMContentLoaded', function() {
         let isValid = true;
         
         // Resetear mensajes
-        passwordError.textContent = '';
+        if (passwordError) passwordError.textContent = '';
         
         // Comprobar si está vacío
         if (!valor) {
-            passwordError.textContent = '*La contraseña es obligatoria.';
+            if (passwordError) passwordError.textContent = '*La contraseña es obligatoria.';
             return false;
         }
         
         // Validar longitud mínima (7 caracteres)
         const tieneMinLongitud = valor.length >= 7;
-        document.getElementById('req-longitud').style.color = tieneMinLongitud ? 'green' : 'red';
+        const reqLongitud = document.getElementById('req-longitud');
+        if (reqLongitud) reqLongitud.style.color = tieneMinLongitud ? 'green' : 'red';
         isValid = isValid && tieneMinLongitud;
         
         // Validar al menos una mayúscula
         const tieneMayuscula = /[A-Z]/.test(valor);
-        document.getElementById('req-mayuscula').style.color = tieneMayuscula ? 'green' : 'red';
+        const reqMayuscula = document.getElementById('req-mayuscula');
+        if (reqMayuscula) reqMayuscula.style.color = tieneMayuscula ? 'green' : 'red';
         isValid = isValid && tieneMayuscula;
         
         // Validar al menos un número
         const tieneNumero = /[0-9]/.test(valor);
-        document.getElementById('req-numero').style.color = tieneNumero ? 'green' : 'red';
+        const reqNumero = document.getElementById('req-numero');
+        if (reqNumero) reqNumero.style.color = tieneNumero ? 'green' : 'red';
         isValid = isValid && tieneNumero;
         
         // Validar al menos un carácter especial
         const tieneEspecial = /[!@#$%^&*]/.test(valor);
-        document.getElementById('req-especial').style.color = tieneEspecial ? 'green' : 'red';
+        const reqEspecial = document.getElementById('req-especial');
+        if (reqEspecial) reqEspecial.style.color = tieneEspecial ? 'green' : 'red';
         isValid = isValid && tieneEspecial;
         
-        if (!isValid) {
+        if (!isValid && passwordError) {
             passwordError.textContent = 'La contraseña no cumple con todos los requisitos.';
         }
         
@@ -119,16 +138,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validarPassword2() {
+        if (!password2Input) return false;
         const valor = password2Input.value;
         if (!valor) {
-            password2Error.textContent = '*Confirma tu contraseña.';
+            if (password2Error) password2Error.textContent = '*Confirma tu contraseña.';
             return false;
         }
         if (valor !== passwordInput.value) {
-            password2Error.textContent = 'Las contraseñas no coinciden.';
+            if (password2Error) password2Error.textContent = 'Las contraseñas no coinciden.';
             return false;
         }
-        password2Error.textContent = '';
+        if (password2Error) password2Error.textContent = '';
         return true;
     }
 
@@ -160,40 +180,114 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     }
 
-    // Function to redirect to login
+    // Function to redirect to login - ACTUALIZADA
     function redirigirAlLogin() {
         try {
-            // Probar diferentes rutas posibles
-            const posiblesRutas = [
-                './login.html',             
-                '../html/login.html',       
-                '/login.html',              
-                '/front-end/html/login.html', 
-                '/html/login.html'          
-            ];
-            
             console.log('Redirigiendo a login...');
-            window.location.href = posiblesRutas[0];
+            
+            window.location.href = '/front-end/html/login.html';
         } catch (error) {
             console.error('Error en redirección:', error);
         }
     }
 
+    // Función para registrar usuario en el backend
+    async function registrarUsuarioBackend(userData) {
+        try {
+            console.log('Enviando datos al backend:', userData);
+            
+            const response = await fetch(`${API_BASE_URL}/usuarios/registro`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombreCompleto: userData.nombre,
+                    email: userData.email,
+                    telefono: userData.telefono,
+                    contrasena: userData.password
+                }),
+                // Agregar credenciales para cookies
+                credentials: 'include'
+            });
+
+            console.log('Respuesta status:', response.status);
+            
+            // Leer la respuesta
+            const responseText = await response.text();
+            console.log('Respuesta raw:', responseText);
+            
+            let data;
+            try {
+                // Solo intentar parsear como JSON si el texto no está vacío
+                data = responseText ? JSON.parse(responseText) : {};
+            } catch (parseError) {
+                console.error('Error parsing JSON:', parseError);
+                return { 
+                    success: false, 
+                    error: 'Error en el formato de respuesta del servidor' 
+                };
+            }
+            
+            console.log('Respuesta data:', data);
+            
+            if (response.ok) {
+                return { 
+                    success: true, 
+                    data: data 
+                };
+            } else {
+                return { 
+                    success: false, 
+                    error: data.mensaje || data.error || `Error del servidor: ${response.status}` 
+                };
+            }
+            
+        } catch (error) {
+            console.error('Error de conexión:', error);
+            
+            // Mensajes de error más descriptivos
+            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                return { 
+                    success: false, 
+                    error: 'No se pudo conectar con el servidor. Verifica la URL del backend y que CORS esté configurado correctamente.' 
+                };
+            }
+            
+            return { 
+                success: false, 
+                error: 'Error de conexión con el servidor: ' + error.message
+            };
+        }
+    }
+
     // Validación en tiempo real
-    nombreInput.addEventListener('input', validarNombre);
-    telefonoInput.addEventListener('input', validarTelefono);
-    emailInput.addEventListener('input', validarEmail);
-    passwordInput.addEventListener('input', validarPassword);
-    password2Input.addEventListener('input', validarPassword2);
+    if (nombreInput) nombreInput.addEventListener('input', validarNombre);
+    if (telefonoInput) telefonoInput.addEventListener('input', validarTelefono);
+    if (emailInput) emailInput.addEventListener('input', validarEmail);
+    if (passwordInput) passwordInput.addEventListener('input', validarPassword);
+    if (password2Input) password2Input.addEventListener('input', validarPassword2);
 
     // Mostrar requisitos de contraseña al hacer focus
-    passwordInput.addEventListener('focus', function() {
-        requisitosPasswordContainer.style.display = 'block';
-    });
+    if (passwordInput) {
+        passwordInput.addEventListener('focus', function() {
+            requisitosPasswordContainer.style.display = 'block';
+        });
+    }
 
-    passwordInput.addEventListener('blur', function() {
-        
-    });
+    if (passwordInput) {
+        passwordInput.addEventListener('blur', function() {
+            // Mantener visible los requisitos si la contraseña no es válida
+            if (!validarPassword()) {
+                requisitosPasswordContainer.style.display = 'block';
+            } else {
+                setTimeout(() => {
+                    requisitosPasswordContainer.style.display = 'none';
+                }, 1000);
+            }
+        });
+    }
 
     // Funcionalidad mostrar/ocultar contraseña para ambos campos
     const togglePassword = document.getElementById('togglePassword');
@@ -201,85 +295,129 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función reutilizable para alternar visibilidad de contraseña
     function togglePasswordVisibility(toggleButton, inputField) {
-        toggleButton.addEventListener('click', function() {
-            const type = inputField.getAttribute('type') === 'password' ? 'text' : 'password';
-            inputField.setAttribute('type', type);
-            
-            const icon = this.querySelector('i');
-            icon.classList.toggle('bi-eye');
-            icon.classList.toggle('bi-eye-slash');
-        });
+        if (toggleButton && inputField) {
+            toggleButton.addEventListener('click', function() {
+                const type = inputField.getAttribute('type') === 'password' ? 'text' : 'password';
+                inputField.setAttribute('type', type);
+                
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('bi-eye');
+                    icon.classList.toggle('bi-eye-slash');
+                }
+            });
+        }
     }
 
     // Aplicar la funcionalidad a ambos campos
-    togglePasswordVisibility(togglePassword, passwordInput);
-    togglePasswordVisibility(togglePassword2, password2Input);
+    if (togglePassword && passwordInput) {
+        togglePasswordVisibility(togglePassword, passwordInput);
+    }
+    if (togglePassword2 && password2Input) {
+        togglePasswordVisibility(togglePassword2, password2Input);
+    }
 
     // Evento al hacer clic en el botón registrarse
-    registrarBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // Validar todos los campos
-        const isNombreValid = validarNombre();
-        const isTelefonoValid = validarTelefono();
-        const isEmailValid = validarEmail();
-        const isPasswordValid = validarPassword();
-        const isPassword2Valid = validarPassword2();
-
-        // Si todas las validaciones son correctas
-        if (isNombreValid && isTelefonoValid && isEmailValid && isPasswordValid && isPassword2Valid) {
-            // Crear objeto con datos del usuario
-            const userData = {
-                id: Date.now(),
-                nombre: nombreInput.value.trim(),
-                email: emailInput.value.trim(),
-                telefono: telefonoInput.value.trim(),
-                password: passwordInput.value,
-                fechaRegistro: new Date().toISOString()
-            };
-
-            // Obtener usuarios existentes
-            let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
-
-            // Verificar si el email ya existe
-            if (usuarios.some(user => user.email === userData.email)) {
-                errorEmail.textContent = 'Este correo ya está registrado';
-                return;
-            }
-
-            // Agregar nuevo usuario
-            usuarios.push(userData);
-
-            // Guardar en localStorage
-            localStorage.setItem('hobbverse_usuarios', JSON.stringify(usuarios));
-
-            // Mostrar en consola el nuevo usuario
-            console.log('Nuevo usuario registrado:', JSON.stringify(userData, null, 2));
-            console.log('Registro exitoso');
+    if (registrarBtn) {
+        registrarBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
             
-            // Deshabilitar el botón de registro
-            registrarBtn.disabled = true;
+            console.log('Iniciando proceso de registro...');
+            
+            // Validar todos los campos
+            const isNombreValid = validarNombre();
+            const isTelefonoValid = validarTelefono();
+            const isEmailValid = validarEmail();
+            const isPasswordValid = validarPassword();
+            const isPassword2Valid = validarPassword2();
 
-            // Mostrar alerta de éxito y redirigir
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Registro Exitoso!',
-                    text: 'Redirigiendo al login...',
-                    timer: 2000,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                }).then(() => {
-                    redirigirAlLogin();
-                }).catch(error => {
-                    console.error('Error con SweetAlert:', error);
-                    redirigirAlLogin();
-                });
+            console.log('Validaciones:', {
+                nombre: isNombreValid,
+                telefono: isTelefonoValid,
+                email: isEmailValid,
+                password: isPasswordValid,
+                password2: isPassword2Valid
+            });
+
+            // Si todas las validaciones son correctas
+            if (isNombreValid && isTelefonoValid && isEmailValid && isPasswordValid && isPassword2Valid) {
+                // Deshabilitar el botón de registro
+                registrarBtn.disabled = true;
+                registrarBtn.textContent = 'Registrando...';
+
+                // Crear objeto con datos del usuario
+                const userData = {
+                    nombre: nombreInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    telefono: telefonoInput.value.trim(),
+                    password: passwordInput.value
+                };
+
+                console.log('Datos del usuario:', userData);
+
+                // Intentar registrar en el backend
+                const result = await registrarUsuarioBackend(userData);
+                
+                console.log('Resultado del registro:', result);
+                
+                if (result.success) {
+                    
+                    try {
+                        let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
+                        const localUserData = {
+                            id: result.data.usuario ? result.data.usuario.id : Date.now(),
+                            nombre: userData.nombre,
+                            email: userData.email,
+                            telefono: userData.telefono,
+                            password: userData.password,
+                            fechaRegistro: new Date().toISOString()
+                        };
+                        usuarios.push(localUserData);
+                        localStorage.setItem('hobbverse_usuarios', JSON.stringify(usuarios));
+                    } catch (storageError) {
+                        console.warn('Error al guardar en localStorage:', storageError);
+                    }
+
+                    console.log('Registro exitoso');
+                    
+                    
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Registro Exitoso!',
+                            text: 'Redirigiendo al login...',
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(() => {
+                            redirigirAlLogin();
+                        }).catch(error => {
+                            console.error('Error con SweetAlert:', error);
+                            redirigirAlLogin();
+                        });
+                    } else {
+                        mostrarAlertaPersonalizada('¡Registro Exitoso! Redirigiendo al login...', 'success', redirigirAlLogin);
+                    }
+                } else {
+                    console.log('Error en registro:', result.error);
+                    
+                    // Manejar errores específicos
+                    if (result.error && result.error.includes('correo ya está registrado')) {
+                        errorEmail.textContent = result.error;
+                    } else {
+                        mostrarAlertaPersonalizada(result.error || 'Error desconocido', 'error');
+                    }
+                    
+                    // Rehabilitar el botón
+                    registrarBtn.disabled = false;
+                    registrarBtn.textContent = 'Registrarse';
+                }
             } else {
-                mostrarAlertaPersonalizada('¡Registro Exitoso! Redirigiendo al login...', 'success', redirigirAlLogin);
+                console.log('Error en la validación del formulario');
+                mostrarAlertaPersonalizada('Por favor, corrige los errores en el formulario', 'error');
             }
-        } else {
-            console.log('Error en la validación del formulario');
-        }
-    });
+        });
+    } else {
+        console.error('Botón de registro no encontrado');
+    }
 });
