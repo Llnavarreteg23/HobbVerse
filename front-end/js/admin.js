@@ -124,7 +124,7 @@ function getProductImagesFromLocalStorage(productId) {
     return null; // O un objeto predeterminado if not found
 }
 
-export { getProductImagesFromLocalStorage };
+
 
 function removeProductImagesFromLocalStorage(productId) {
     try {
@@ -642,3 +642,4 @@ function setupFilters() {
         categoryFilter.addEventListener('change', filterProducts);
     }
 }
+export { getProductImagesFromLocalStorage };
