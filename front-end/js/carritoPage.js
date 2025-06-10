@@ -9,10 +9,27 @@ class CarritoPage {
         this.cuponAplicado = null;
         this.costoEnvio = 5000;
         
+        // Recuperar cupón aplicado anteriormente, si existe
+        const cuponGuardado = localStorage.getItem('applied_coupon');
+        if (cuponGuardado) {
+            try {
+                this.cuponAplicado = JSON.parse(cuponGuardado);
+            } catch (e) {
+                console.error('Error al cargar el cupón guardado:', e);
+            }
+        }
+        
         this.init();
     }
 
     init() {
+        // Verificar si hay elementos del DOM necesarios
+        const cartContainer = document.querySelector('.cart-container .card-body');
+        if (!cartContainer) {
+            console.error('No se encontró el contenedor del carrito');
+            return;
+        }
+        
         this.loadCartItems();
         this.setupEventListeners();
         this.updateOrderSummary();
@@ -23,7 +40,6 @@ class CarritoPage {
         const continuarComprando = document.querySelector('a[href="index.html"]');
         if (continuarComprando) {
             continuarComprando.addEventListener('click', (e) => {
-                
                 e.currentTarget.href = window.location.pathname.includes('/front-end/') 
                     ? '/index.html'
                     : 'index.html';
@@ -51,8 +67,15 @@ class CarritoPage {
 
     loadCartItems() {
         const cartContainer = document.querySelector('.cart-container .card-body');
+        if (!cartContainer) return;
+        
         const headerRow = cartContainer.querySelector('.d-none.d-md-flex');
         const buttonRow = cartContainer.querySelector('.d-flex.justify-content-between.mt-4');
+        
+        if (!headerRow || !buttonRow) {
+            console.error('No se encontraron elementos necesarios en el contenedor del carrito');
+            return;
+        }
         
         // Limpiar productos anteriores (mantener solo el header y los botones)
         const productCards = cartContainer.querySelectorAll('.product-card');
@@ -87,7 +110,7 @@ class CarritoPage {
                         <div class="col-md-6 mb-3 mb-md-0">
                             <div class="d-flex align-items-center">
                                 <div class="product-image-container me-3">
-                                    <div class="product-image" style="background-image: url('${item.mainImage}')"></div>
+                                    <div class="product-image" style="background-image: url('${item.mainImage || ''}')"></div>
                                 </div>
                                 <div class="product-details">
                                     <h3 class="product-title">${item.name}</h3>
@@ -208,7 +231,6 @@ class CarritoPage {
             if (window.floatingCart) {
                 window.floatingCart.updateQuantity(productId, quantity);
             } else {
-                
                 this.syncWithOldCart(productId, quantity);
             }
             
@@ -244,7 +266,6 @@ class CarritoPage {
         if (window.floatingCart) {
             window.floatingCart.removeItem(productId);
         } else {
-            
             this.removeFromOldCart(productId);
         }
         
@@ -271,6 +292,9 @@ class CarritoPage {
             // Guardar cambios en localStorage
             this.saveCart();
             
+            // Limpiar el cupón aplicado
+            this.cuponAplicado = null;
+            localStorage.removeItem('applied_coupon');
             
             localStorage.setItem('hobbverse_carrito', '[]');
             
@@ -290,6 +314,8 @@ class CarritoPage {
 
     aplicarCupon() {
         const cuponInput = document.querySelector('.input-group input');
+        if (!cuponInput) return;
+        
         const cuponCodigo = cuponInput.value.trim().toUpperCase();
         
         if (!cuponCodigo) {
@@ -310,6 +336,9 @@ class CarritoPage {
             ...cupon
         };
         
+        // Guardar en localStorage para uso en checkout
+        localStorage.setItem('applied_coupon', JSON.stringify(this.cuponAplicado));
+        
         // Mostrar confirmación
         this.mostrarAlerta(`Cupón "${cuponCodigo}" aplicado: ${cupon.descripcion}`, 'success');
         
@@ -327,8 +356,12 @@ class CarritoPage {
         alerta.className = `alert alert-${tipo} alert-cupon mt-2`;
         alerta.textContent = mensaje;
         
-        
         const inputGroup = document.querySelector('.input-group');
+        if (!inputGroup) {
+            console.error('No se encontró el grupo de input para mostrar la alerta');
+            return;
+        }
+        
         inputGroup.after(alerta);
         
         // Auto-eliminar después de 3 segundos
@@ -381,8 +414,16 @@ class CarritoPage {
                     <span>Descuento (${this.cuponAplicado.codigo}):</span>
                     <span>-$${descuento.toLocaleString()}</span>
                 `;
-                // Insertar después del envío
-                envioElement.closest('div').after(newDescuentoRow);
+                
+                // Insertar después del envío si existe, o en su lugar adecuado
+                if (envioElement && envioElement.closest('div')) {
+                    envioElement.closest('div').after(newDescuentoRow);
+                } else {
+                    const totalRow = totalElement ? totalElement.closest('div') : null;
+                    if (totalRow) {
+                        totalRow.before(newDescuentoRow);
+                    }
+                }
             } else {
                 // Actualizar fila existente
                 descuentoRow.innerHTML = `
@@ -402,9 +443,17 @@ class CarritoPage {
             return;
         }
         
-        // redireccion al checkout
-        alert('Redirigiendo a la página de pago...');
-        // window.location.href = 'checkout.html';
+        // Guardar el cupón aplicado en localStorage para usarlo en checkout
+        if (this.cuponAplicado) {
+            localStorage.setItem('applied_coupon', JSON.stringify(this.cuponAplicado));
+        }
+        
+        // Redireccionar a la página de checkout
+        const checkoutPath = window.location.pathname.includes('/front-end/') 
+            ? '/front-end/html/checkout.html'
+            : 'checkout.html';
+            
+        window.location.href = checkoutPath;
     }
 
     saveCart() {
@@ -452,5 +501,30 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(styles);
     
     // Inicializar la página del carrito
-    window.carritoPage = new CarritoPage();
+    try {
+        window.carritoPage = new CarritoPage();
+    } catch (error) {
+        console.error('Error al inicializar CarritoPage:', error);
+    }
+    
+    // Asegurarse de que el botón de finalizar compra funcione incluso si la página se carga estáticamente
+    setTimeout(function() {
+        const checkoutBtn = document.querySelector('.checkout-btn');
+        if (checkoutBtn && (!window.carritoPage || !window.carritoPage.finalizarCompra)) {
+            checkoutBtn.addEventListener('click', function() {
+                // Verificar si hay productos en el carrito
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                if (cart.length === 0) {
+                    alert('El carrito está vacío');
+                    return;
+                }
+                
+                // Redireccionar a checkout
+                const checkoutPath = window.location.pathname.includes('/front-end/') 
+                    ? '/front-end/html/checkout.html'
+                    : 'checkout.html';
+                window.location.href = checkoutPath;
+            });
+        }
+    }, 500);
 });

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - HobbVerse</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:400,700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/checkout.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <!-- Navbar will be loaded dynamically -->
+    </header>
+    
+    <main class="py-5">
+        <div class="container">
+            <div class="row mb-4 checkout-header">
+                <div class="col">
+                    <h2 class="fw-bold">Finalizar Compra</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                            <li class="breadcrumb-item"><a href="carrito.html">Carrito</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Columna izquierda: Formulario de checkout -->
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Dirección de Envío</h5>
+                        </div>
+                        <div class="card-body" id="addresses-container">
+                            <!-- Direcciones cargadas dinámicamente -->
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Método de Pago</h5>
+                        </div>
+                        <div class="card-body" id="payment-container">
+                            <!-- Contenido estático de métodos de pago con logos -->
+                            
+                            <!-- Tarjetas de crédito -->
+                            <div class="payment-method-card">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+                                        <label class="form-check-label fw-bold" for="creditCard">
+                                            Tarjeta de Crédito/Débito
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="payment-cards-icons mt-2 mb-3">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/visa-3-226460.png" alt="Visa" height="30">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/mastercard-3521564-2944982.png" alt="Mastercard" height="30">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/american-express-3521560-2944978.png" alt="American Express" height="30">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/discover-3521558-2944976.png" alt="Discover" height="30">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/diners-club-3521554-2944972.png" alt="Diners Club" height="30">
+                                    </div>
+                                    
+                                    <div class="payment-form">
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label for="cardNumber" class="form-label">Número de Tarjeta</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX">
+                                                    <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="expiryDate" class="form-label">Fecha de Expiración</label>
+                                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/AA">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="cvv" class="form-label">CVV</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="cvv" placeholder="XXX">
+                                                    <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top" title="Código de 3 o 4 dígitos en la parte posterior de la tarjeta">
+                                                        <i class="bi bi-question-circle"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="cardName" class="form-label">Titular de la Tarjeta</label>
+                                                <input type="text" class="form-control" id="cardName" placeholder="Nombre como aparece en la tarjeta">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- PSE -->
+                            <div class="payment-method-card mt-3">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="psePayment">
+                                        <label class="form-check-label fw-bold" for="psePayment">
+                                            Pago con PSE
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center mt-2 mb-3">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/PSE_logo.svg/1200px-PSE_logo.svg.png" alt="PSE" height="40" class="me-3">
+                                        <span class="text-muted">Pago Seguro Electrónico - Débito de tu cuenta bancaria</span>
+                                    </div>
+                                    
+                                    <div class="payment-form" style="display: none;">
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label for="bankSelect" class="form-label">Selecciona tu banco</label>
+                                                <select class="form-select" id="bankSelect">
+                                                    <option selected disabled>Selecciona tu banco...</option>
+                                                    <option value="bancolombia">Bancolombia</option>
+                                                    <option value="davivienda">Davivienda</option>
+                                                    <option value="bbva">BBVA</option>
+                                                    <option value="bancodebogota">Banco de Bogotá</option>
+                                                    <option value="colpatria">Scotiabank Colpatria</option>
+                                                    <option value="popular">Banco Popular</option>
+                                                    <option value="av-villas">AV Villas</option>
+                                                    <option value="occidente">Banco de Occidente</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="personType" class="form-label">Tipo de persona</label>
+                                                <select class="form-select" id="personType">
+                                                    <option value="natural">Persona Natural</option>
+                                                    <option value="juridica">Persona Jurídica</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="docType" class="form-label">Tipo de documento</label>
+                                                <select class="form-select" id="docType">
+                                                    <option value="cc">Cédula de ciudadanía</option>
+                                                    <option value="ce">Cédula de extranjería</option>
+                                                    <option value="nit">NIT</option>
+                                                    <option value="passport">Pasaporte</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="docNumber" class="form-label">Número de documento</label>
+                                                <input type="text" class="form-control" id="docNumber">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Pago en efectivo / transferencia -->
+                            <div class="payment-method-card mt-3">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cashPayment">
+                                        <label class="form-check-label fw-bold" for="cashPayment">
+                                            Pago en Efectivo / Corresponsales
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="payment-partners mt-2 mb-3 d-flex flex-wrap align-items-center">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Efecty_logo.svg/1200px-Efecty_logo.svg.png" alt="Efecty" height="30" class="me-3 mb-2">
+                                        <img src="https://www.pagosinteligentes.com/wp-content/uploads/2020/04/Logo-Baloto.png" alt="Baloto" height="30" class="me-3 mb-2">
+                                        <img src="https://www.grupobancolombia.com/wcm/connect/www.grupobancolombia.com/0a351d13-d94b-42af-b411-fc4675a54f70/corresponsales-bancarios-bancolombia-a-la-mano.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE.Z18_K9HC1202P86O60Q6Q8O9K10000-0a351d13-d94b-42af-b411-fc4675a54f70-o1CPCZD" alt="Corresponsales Bancolombia" height="30" class="me-3 mb-2">
+                                        <img src="https://www.davivienda.com/wps/wcm/connect/personas/3645b905-6b27-43b4-b7c1-285fa9c6405e/logo-daviplata.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE.Z18_P8A618K0NOB5A0QNQN8BB10H69-3645b905-6b27-43b4-b7c1-285fa9c6405e-mNzQCGj" alt="Daviplata" height="30" class="me-3 mb-2">
+                                        <img src="https://www.nequi.com.co/wp-content/uploads/2020/08/logo-nequi.png" alt="Nequi" height="30" class="mb-2">
+                                    </div>
+                                    
+                                    <div class="payment-form" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle-fill me-2"></i>
+                                            Al seleccionar esta opción, te enviaremos un correo electrónico con las instrucciones para realizar tu pago.
+                                        </div>
+                                        <p class="mb-0">Tu pedido será procesado una vez confirmemos tu pago.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- PayPal y otros métodos internacionales -->
+                            <div class="payment-method-card mt-3">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="internationalPayment">
+                                        <label class="form-check-label fw-bold" for="internationalPayment">
+                                            Pagos Internacionales
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="international-partners mt-2 mb-3 d-flex flex-wrap align-items-center">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/paypal-54-675727.png" alt="PayPal" height="30" class="me-3 mb-2">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/stripe-2-498440.png" alt="Stripe" height="30" class="me-3 mb-2">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/apple-pay-2-569545.png" alt="Apple Pay" height="30" class="me-3 mb-2">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/google-pay-2038779-1721670.png" alt="Google Pay" height="30" class="mb-2">
+                                    </div>
+                                    
+                                    <div class="payment-form" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle-fill me-2"></i>
+                                            Al hacer clic en "Completar Pago", serás redirigido a la plataforma de pago seleccionada para completar tu transacción de forma segura.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Términos y condiciones -->
+                            <div class="mt-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="acceptTerms">
+                                    <label class="form-check-label" for="acceptTerms">
+                                        He leído y acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Términos y Condiciones</a> y la <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Política de Privacidad</a>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button id="complete-payment-btn" class="btn btn-primary btn-lg w-100" disabled>
+                                    <i class="bi bi-lock-fill me-2"></i>Completar Pago
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Columna derecha: Resumen de la orden -->
+                <div class="col-lg-4">
+                    <div id="checkout-summary">
+                        <!-- Resumen cargado dinámicamente -->
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5 class="mb-0">Resumen de Compra</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="checkout-products">
+                                    <h6 class="mb-3">Productos (3)</h6>
+                                    
+                                    <!-- Producto de ejemplo 1 -->
+                                    <div class="checkout-product d-flex">
+                                        <div class="checkout-product-image me-3">
+                                            <div class="product-image" style="background-image: url('https://via.placeholder.com/60x60');"></div>
+                                        </div>
+                                        <div class="checkout-product-details flex-grow-1">
+                                            <h6>Producto de ejemplo 1</h6>
+                                            <div class="d-flex justify-content-between">
+                                                <span>1 x $25.000</span>
+                                                <span>$25.000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Producto de ejemplo 2 -->
+                                    <div class="checkout-product d-flex">
+                                        <div class="checkout-product-image me-3">
+                                            <div class="product-image" style="background-image: url('https://via.placeholder.com/60x60');"></div>
+                                        </div>
+                                        <div class="checkout-product-details flex-grow-1">
+                                            <h6>Producto de ejemplo 2</h6>
+                                            <div class="d-flex justify-content-between">
+                                                <span>2 x $45.000</span>
+                                                <span>$90.000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Totales -->
+                                <div class="checkout-totals mt-4">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Subtotal:</span>
+                                        <span>$115.000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Descuento:</span>
+                                        <span class="text-success">-$11.500</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Envío:</span>
+                                        <span>$5.000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between fw-bold mt-2">
+                                        <span>Total:</span>
+                                        <span class="text-primary">$108.500</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Información adicional -->
+                                <div class="mt-4">
+                                    <div class="alert alert-info small">
+                                        <i class="bi bi-info-circle-fill me-2"></i>
+                                        Todos los precios incluyen IVA donde sea aplicable.
+                                    </div>
+                                </div>
+                                
+                                <!-- Logos de certificación -->
+                                <div class="mt-4 text-center">
+                                    <div class="mb-2 text-muted small">Transacciones seguras garantizadas</div>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/pci-dss-2-570666.png" alt="PCI DSS" height="30">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/ssl-certificate-9-1175114.png" alt="SSL" height="30">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/norton-secured-3521551-2944969.png" alt="Norton Secured" height="30">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer mt-5 py-5 bg-dark text-white">
+        <!-- Footer will be loaded dynamically -->
+    </footer>
+    
+    <!-- Modal de Términos y Condiciones -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Términos y Condiciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Aceptación de Términos</h6>
+                    <p>
+                        Al utilizar nuestro servicio, usted acepta los siguientes términos y condiciones en su totalidad.
+                        Si no está de acuerdo con estos términos, por favor no utilice nuestro sitio.
+                    </p>
+                    
+                    <h6>2. Productos y Precios</h6>
+                    <p>
+                        Todos los productos y precios están sujetos a disponibilidad. Nos reservamos el derecho de modificar
+                        los precios en cualquier momento sin previo aviso.
+                    </p>
+                    
+                    <h6>3. Envíos y Entregas</h6>
+                    <p>
+                        Los tiempos de entrega son estimados y pueden variar según la ubicación geográfica y la disponibilidad
+                        de los productos. No nos hacemos responsables por retrasos causados por terceros.
+                    </p>
+                    
+                    <h6>4. Garantías y Devoluciones</h6>
+                    <p>
+                        Todos los productos tienen garantía de 30 días por defectos de fabricación. Para devoluciones,
+                        el producto debe estar en su empaque original y sin señales de uso.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Política de Privacidad -->
+    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Política de Privacidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Recopilación de Información</h6>
+                    <p>
+                        Recopilamos información personal como nombre, dirección, correo electrónico y detalles de pago
+                        necesarios para procesar sus pedidos y mejorar su experiencia.
+                    </p>
+                    
+                    <h6>2. Uso de la Información</h6>
+                    <p>
+                        Utilizamos su información para procesar pedidos, personalizar su experiencia de compra
+                        y comunicarnos con usted sobre su cuenta y promociones.
+                    </p>
+                    
+                    <h6>3. Protección de Datos</h6>
+                    <p>
+                        Implementamos medidas de seguridad para proteger su información personal y no compartimos
+                        sus datos con terceros sin su consentimiento expreso.
+                    </p>
+                    
+                    <h6>4. Cookies</h6>
+                    <p>
+                        Utilizamos cookies para mejorar la funcionalidad del sitio y personalizar su experiencia.
+                        Puede configurar su navegador para rechazar cookies, pero esto puede afectar algunas funciones.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="../js/checkout.js"></script>
+    <script>
+        // Script para mostrar/ocultar formularios de pago según la opción seleccionada
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
+            const paymentForms = document.querySelectorAll('.payment-form');
+            const acceptTermsCheckbox = document.getElementById('acceptTerms');
+            const completePaymentBtn = document.getElementById('complete-payment-btn');
+            
+            // Mostrar solo el formulario de la opción seleccionada
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    paymentForms.forEach(form => {
+                        form.style.display = 'none';
+                    });
+                    
+                    const selectedForm = this.closest('.payment-method-card').querySelector('.payment-form');
+                    if (selectedForm) {
+                        selectedForm.style.display = 'block';
+                    }
+                });
+            });
+            
+            // Mostrar el formulario de la opción seleccionada inicialmente
+            const checkedRadio = document.querySelector('input[name="paymentMethod"]:checked');
+            if (checkedRadio) {
+                const selectedForm = checkedRadio.closest('.payment-method-card').querySelector('.payment-form');
+                if (selectedForm) {
+                    selectedForm.style.display = 'block';
+                }
+            }
+            
+            // Habilitar/deshabilitar el botón de completar pago según los términos
+            if (acceptTermsCheckbox && completePaymentBtn) {
+                acceptTermsCheckbox.addEventListener('change', function() {
+                    completePaymentBtn.disabled = !this.checked;
+                });
+            }
+            
+            // Inicializar tooltips de Bootstrap
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+</body>
+</html>

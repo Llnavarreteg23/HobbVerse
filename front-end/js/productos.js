@@ -1,173 +1,304 @@
-import * as adminFunctions from '/front-end/js/admin.js'; // Importa todas las funciones exportadas de admin.js
+// Claves para localStorage
+const STORAGE_KEYS = {
+    products: 'hobbverse_products',
+    categories: 'hobbverse_categories',
+    cart: 'hobbverse_carrito'
+};
 
+// Inicialización de variables DOM
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
 const hobbieClicked = document.getElementsByClassName("hobbiea");
 const hobbieImageContainer = document.getElementById("hobbieImageContainer");
 
+// Iconos para las categorías
 const categoryIcons = {
     "lectura": "bi-book",
     "deportes": "bi-person-walking",
-    "música": "bi bi-music-note",
+    "música": "bi-music-note",
     "pintura": "bi-palette",
     "videojuegos": "bi-controller",
     "peliculas": "bi-film",
-    "crochet": "bi-scissors"
+    "crochet": "bi-scissors",
+    "arte": "bi-palette",
+    "juegos de mesa": "bi-dice-5",
+    "coleccionables": "bi-collection"
 };
 
-
-
-// Modificamos la función `renderCategory` para que sea `async` y cargue los productos del backend
-export default async function renderCategory(category, name) {
-    // Si adminFunctions.products aún no está cargado (array vacío), espera un poco.
-    // Esto es una solución temporal. Idealmente, admin.js debería exportar una promesa
-    // que se resuelva cuando los productos estén listos.
-    let allProducts = adminFunctions.products;
-    while (!allProducts || allProducts.length === 0) {
-        console.log("Esperando que admin.js cargue los productos...");
-        await new Promise(resolve => setTimeout(resolve, 100)); // Espera 100ms
-        allProducts = adminFunctions.products;
-    }
-
-    // Filtrar por categoría si se especifica
-    const productosFiltrados = name ?
-        allProducts.filter(p => p.categoria?.toLowerCase() === name.toLowerCase()) :
-        allProducts; // Usa product.categoria, no product.category, según tu admin.js
-
-    hobbieImageContainer.innerHTML = "";
-
-    if (productosFiltrados.length > 0) {
-        productosFiltrados.forEach(producto => {
-            const card = document.createElement("div");
-            card.className = "producto-card";
-
-            // Las propiedades mainImage y additionalImages ya están en el producto
-            // gracias a que admin.js las adjuntó desde localStorage.
-            const mainImageUrl = producto.mainImage || 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen';
-            const additionalImages = producto.additionalImages || [];
-
-            let carouselIndicators = `
-                <button type="button" data-bs-target="#carousel-${producto.idProducto}"
-                        data-bs-slide-to="0" class="active"></button>
-            `;
-            additionalImages.forEach((_, index) => {
-                carouselIndicators += `
-                    <button type="button" data-bs-target="#carousel-${producto.idProducto}"
-                            data-bs-slide-to="${index + 1}"></button>
-                `;
-            });
-
-            let carouselItems = `
-                <div class="carousel-item active">
-                    <img src="${mainImageUrl}" class="d-block w-100"
-                            alt="${producto.nombreProducto}" style="object-fit: cover; height: 200px;">
-                </div>
-            `;
-            additionalImages.forEach(img => {
-                carouselItems += `
-                    <div class="carousel-item">
-                        <img src="${img}" class="d-block w-100" alt="Imagen adicional" style="object-fit: cover; height: 200px;">
-                    </div>
-                `;
-            });
-
-            const needsCarouselControls = (additionalImages.length > 0 || mainImageUrl !== 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen');
-
-            card.innerHTML = `
-                <div id="carousel-${producto.idProducto}" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                        ${carouselIndicators}
-                    </div>
-                    <div class="carousel-inner">
-                        ${carouselItems}
-                    </div>
-                    ${needsCarouselControls ? `
-                        <button class="carousel-control-prev" type="button"
-                                data-bs-target="#carousel-${producto.idProducto}" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Anterior</span>
-                        </button>
-                        <button class="carousel-control-next" type="button"
-                                data-bs-target="#carousel-${producto.idProducto}" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Siguiente</span>
-                        </button>
-                    ` : ''}
-                </div>
-                <div class="product-details">
-                    <h3>${producto.nombreProducto}</h3>
-                    ${producto.descripcion ? `<p>${producto.descripcion}</p>` : ''}
-                    <p class="price">${adminFunctions.formatter.format(producto.precio)}</p>
-                    ${producto.featured ? '<span class="badge bg-warning">Destacado</span>' : ''}
-                    <button class="buy-button" onclick="agregarAlCarrito('${producto.idProducto}')">
-                        Agregar al carrito
-                    </button>
-                </div>
-            `;
-            hobbieImageContainer.appendChild(card);
-        });
-    } else {
-        hobbieImageContainer.innerHTML = `
-            <div class="no-products">
-                <p>No hay productos disponibles en esta categoría.</p>
-            </div>
-        `;
-    }
-
-    // Actualizar ícono y título de categoría seleccionada
-    if (category && name) {
-        iconSelected.className = `bi ${categoryIcons[name.toLowerCase()] || 'bi-tag'}`;
-        hobbieaSelected.textContent = name;
-    }
-}
-
-Array.from(hobbieClicked).forEach(link => {
-    link.addEventListener("click", async function(event) { // Make the event listener async
-        event.preventDefault();
-
-        Array.from(hobbieClicked).forEach(item => item.classList.remove("selected"));
-
-        this.classList.add("selected");
-
-        const category = this.dataset.category;
-        const name = this.textContent.trim();
-
-        hobbieaSelected.textContent = name;
-
-        iconSelected.className = categoryIcons[category];
-
-        await renderCategory(category, name); // Await the async function
-    });
-});
-
-document.addEventListener("DOMContentLoaded", async function () { // Make DOMContentLoaded listener async
-    console.log("Página cargada, verificando productos de la base de datos...");
-
-    const defaultCategoryLink = Array.from(hobbieClicked).find(link => link.textContent.trim() === "Lectura");
-
-    if (defaultCategoryLink) {
-        defaultCategoryLink.classList.add("selected");
-
-        hobbieaSelected.textContent = defaultCategoryLink.textContent.trim();
-        iconSelected.className = categoryIcons[defaultCategoryLink.dataset.category];
-    }
-
-    await renderCategory("lectura", "Lectura"); // Await the initial render
+// Formateador de moneda colombiana
+export const formatter = new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0
 });
 
 /**
- * Carga los productos destacados desde la base de datos (vía adminFunctions.products)
+ * Carga los productos desde localStorage
+ * @returns {Array} Lista de productos
+ */
+function cargarProductosDesdeStorage() {
+    try {
+        const productosJSON = localStorage.getItem(STORAGE_KEYS.products);
+        if (productosJSON) {
+            return JSON.parse(productosJSON);
+        }
+        return [];
+    } catch (error) {
+        console.error('Error al cargar productos desde localStorage:', error);
+        return [];
+    }
+}
+
+/**
+ * Renderiza productos de una categoría específica
+ * @param {string} category - ID de la categoría
+ * @param {string} name - Nombre de la categoría
+ */
+export default async function renderCategory(category, name) {
+    console.log(`Renderizando categoría: ${category} - ${name}`);
+    
+    // Cargar productos desde localStorage
+    let allProducts = cargarProductosDesdeStorage();
+    
+    // Si no hay productos, intentar cargar cada 100ms por un máximo de 3 segundos
+    let intentos = 0;
+    const maxIntentos = 30; // 3 segundos
+    
+    while (allProducts.length === 0 && intentos < maxIntentos) {
+        console.log(`Intento ${intentos + 1}: Esperando a que los productos estén disponibles...`);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        allProducts = cargarProductosDesdeStorage();
+        intentos++;
+    }
+    
+    if (allProducts.length === 0) {
+        console.warn('No se pudieron cargar productos después de varios intentos');
+    }
+    
+    console.log(`Productos cargados: ${allProducts.length}`);
+    
+    // Filtrar por categoría si se especifica
+    const productosFiltrados = name 
+        ? allProducts.filter(p => {
+            const categoriaProducto = (p.category || p.categoria || '').toLowerCase();
+            return categoriaProducto === name.toLowerCase();
+        })
+        : allProducts;
+    
+    console.log(`Productos filtrados para "${name}": ${productosFiltrados.length}`);
+    
+    // Limpiar el contenedor
+    if (hobbieImageContainer) {
+        hobbieImageContainer.innerHTML = "";
+        
+        if (productosFiltrados.length > 0) {
+            // Crear tarjetas de productos
+            productosFiltrados.forEach(producto => {
+                const productId = producto.id || producto.idProducto;
+                const productName = producto.name || producto.nombreProducto || 'Producto sin nombre';
+                const productDesc = producto.description || producto.descripcion || '';
+                const productPrice = producto.price || producto.precio || 0;
+                const isFeatured = producto.featured || producto.destacado || false;
+                
+                const card = document.createElement("div");
+                card.className = "producto-card";
+                
+                // Determinar la imagen principal y adicionales
+                const mainImageUrl = producto.mainImage || producto.imagen || 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen';
+                const additionalImages = producto.additionalImages || producto.imagenesAdicionales || [];
+                
+                // Solo crear carrusel si hay imágenes adicionales
+                if (additionalImages.length > 0) {
+                    // Crear indicadores del carrusel
+                    let carouselIndicators = `
+                        <button type="button" data-bs-target="#carousel-${productId}"
+                                data-bs-slide-to="0" class="active" aria-current="true"></button>
+                    `;
+                    additionalImages.forEach((_, index) => {
+                        carouselIndicators += `
+                            <button type="button" data-bs-target="#carousel-${productId}"
+                                    data-bs-slide-to="${index + 1}"></button>
+                        `;
+                    });
+                    
+                    // Crear elementos del carrusel
+                    let carouselItems = `
+                        <div class="carousel-item active">
+                            <img src="${mainImageUrl}" class="d-block w-100"
+                                    alt="${productName}" style="object-fit: cover; height: 200px;">
+                        </div>
+                    `;
+                    additionalImages.forEach(img => {
+                        carouselItems += `
+                            <div class="carousel-item">
+                                <img src="${img}" class="d-block w-100" alt="Imagen adicional" 
+                                     style="object-fit: cover; height: 200px;">
+                            </div>
+                        `;
+                    });
+                    
+                    // Armar el carrusel completo
+                    card.innerHTML = `
+                        <div id="carousel-${productId}" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                ${carouselIndicators}
+                            </div>
+                            <div class="carousel-inner">
+                                ${carouselItems}
+                            </div>
+                            <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#carousel-${productId}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                    data-bs-target="#carousel-${productId}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
+                            </button>
+                        </div>
+                        <div class="product-details">
+                            <h3>${productName}</h3>
+                            ${productDesc ? `<p>${productDesc}</p>` : ''}
+                            <p class="price">${formatter.format(productPrice)}</p>
+                            ${isFeatured ? '<span class="badge bg-warning">Destacado</span>' : ''}
+                            <button class="buy-button" onclick="agregarAlCarrito('${productId}')">
+                                <i class="bi bi-cart-plus"></i> Agregar al carrito
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // Versión simple sin carrusel
+                    card.innerHTML = `
+                        <div class="position-relative">
+                            <img src="${mainImageUrl}" class="producto-imagen" alt="${productName}">
+                            ${isFeatured ? '<span class="badge bg-warning position-absolute top-0 end-0 m-2">Destacado</span>' : ''}
+                        </div>
+                        <div class="product-details">
+                            <h3>${productName}</h3>
+                            ${productDesc ? `<p>${productDesc}</p>` : ''}
+                            <p class="price">${formatter.format(productPrice)}</p>
+                            <button class="buy-button" onclick="agregarAlCarrito('${productId}')">
+                                <i class="bi bi-cart-plus"></i> Agregar al carrito
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                hobbieImageContainer.appendChild(card);
+                
+                // Inicializar carrusel si es necesario
+                if (additionalImages.length > 0) {
+                    try {
+                        const carouselElement = document.getElementById(`carousel-${productId}`);
+                        if (carouselElement) {
+                            new bootstrap.Carousel(carouselElement, {
+                                interval: 3000,
+                                touch: true
+                            });
+                        }
+                    } catch (e) {
+                        console.warn(`Error al inicializar carrusel para producto ${productId}:`, e);
+                    }
+                }
+            });
+        } else {
+            // Mostrar mensaje si no hay productos
+            hobbieImageContainer.innerHTML = `
+                <div class="no-products">
+                    <p>No hay productos disponibles en esta categoría.</p>
+                </div>
+            `;
+        }
+    } else {
+        console.error('Elemento hobbieImageContainer no encontrado en el DOM');
+    }
+    
+    // Actualizar ícono y título de categoría seleccionada
+    if (category && name && iconSelected && hobbieaSelected) {
+        // Obtener el ícono para la categoría o usar uno predeterminado
+        const iconClass = categoryIcons[name.toLowerCase()] || 'bi-tag';
+        iconSelected.className = `bi ${iconClass}`;
+        hobbieaSelected.textContent = name;
+    }
+    
+    // Hacer global la función agregarAlCarrito
+    window.agregarAlCarrito = agregarAlCarrito;
+}
+
+// Configurar eventos para los enlaces de categoría
+if (hobbieClicked && hobbieClicked.length > 0) {
+    Array.from(hobbieClicked).forEach(link => {
+        link.addEventListener("click", async function(event) {
+            event.preventDefault();
+            
+            // Quitar selección de todos los enlaces
+            Array.from(hobbieClicked).forEach(item => item.classList.remove("selected"));
+            
+            // Marcar este enlace como seleccionado
+            this.classList.add("selected");
+            
+            // Obtener categoría y nombre
+            const category = this.dataset.category;
+            const name = this.textContent.trim();
+            
+            // Actualizar texto e ícono seleccionados
+            if (hobbieaSelected) hobbieaSelected.textContent = name;
+            
+            if (iconSelected) {
+                const iconClass = categoryIcons[category] || 'bi-tag';
+                iconSelected.className = `bi ${iconClass}`;
+            }
+            
+            // Renderizar productos de esta categoría
+            await renderCategory(category, name);
+        });
+    });
+}
+
+// Inicializar la página cuando el DOM esté listo
+document.addEventListener("DOMContentLoaded", async function () {
+    console.log("Página cargada, inicializando productos...");
+    
+    // Seleccionar la categoría predeterminada (Lectura)
+    if (hobbieClicked && hobbieClicked.length > 0) {
+        const defaultCategoryLink = Array.from(hobbieClicked).find(link => 
+            link.textContent.trim().toLowerCase() === "lectura"
+        );
+        
+        if (defaultCategoryLink) {
+            defaultCategoryLink.classList.add("selected");
+            
+            if (hobbieaSelected) hobbieaSelected.textContent = defaultCategoryLink.textContent.trim();
+            
+            if (iconSelected) {
+                const iconClass = categoryIcons[defaultCategoryLink.dataset.category] || 'bi-tag';
+                iconSelected.className = `bi ${iconClass}`;
+            }
+        }
+    }
+    
+    // Renderizar la categoría predeterminada
+    await renderCategory("lectura", "Lectura");
+    
+    // Actualizar contador del carrito si existe
+    actualizarContadorCarrito();
+});
+
+/**
+ * Carga los productos destacados desde localStorage
  * @returns {Array} Array de productos destacados
  */
 export function cargarProductosDestacados() {
-    let productsFromAdmin = adminFunctions.products || []; // Obtiene los productos de admin.js
-
-    // Filtra solo los productos destacados
-    const destacados = productsFromAdmin.filter(producto =>
-        producto.featured === true || producto.featured === 'on' || producto.featured === 'true'
+    const productos = cargarProductosDesdeStorage();
+    
+    // Filtrar solo los productos destacados
+    return productos.filter(producto => 
+        producto.featured === true || 
+        producto.destacado === true || 
+        producto.featured === 'on' || 
+        producto.destacado === 'on'
     );
-
-    return destacados;
 }
 
 /**
@@ -175,128 +306,161 @@ export function cargarProductosDestacados() {
  * @param {string} productoId - ID del producto a agregar
  */
 export function agregarAlCarrito(productoId) {
-    console.log("--- Inicia agregarAlCarrito ---");
-    console.log("ID del producto recibido:", productoId);
-
-    const carrito = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
-    console.log("Carrito actual (desde localStorage):", carrito);
-
-    // Obtener todos los productos de adminFunctions.products
-    let allProducts = adminFunctions.products || [];
-    console.log("Todos los productos disponibles (desde adminFunctions.products):", allProducts);
-
-    // Buscar el producto por ID
-    const producto = allProducts.find(p => p.idProducto == productoId);
-
-    if (producto) {
-        console.log("¡Producto encontrado!", producto);
+    console.log("Agregando al carrito producto con ID:", productoId);
+    
+    try {
+        // Cargar productos y carrito
+        const productos = cargarProductosDesdeStorage();
+        const carrito = JSON.parse(localStorage.getItem(STORAGE_KEYS.cart) || '[]');
+        
+        // Buscar el producto por ID
+        const producto = productos.find(p => 
+            (p.id == productoId) || (p.idProducto == productoId)
+        );
+        
+        if (!producto) {
+            console.error('Producto no encontrado:', productoId);
+            alert('Error: Producto no encontrado');
+            return;
+        }
+        
+        // Extraer información normalizada del producto
+        const nombre = producto.name || producto.nombreProducto;
+        const precio = producto.price || producto.precio;
+        const imagen = producto.mainImage || producto.imagen || 'https://via.placeholder.com/150';
+        
         // Verificar si el producto ya está en el carrito
-        const itemExistente = carrito.find(item => item.productoId == productoId);
-
+        const itemExistente = carrito.find(item => 
+            (item.productoId == productoId) || (item.id == productoId)
+        );
+        
         if (itemExistente) {
+            // Incrementar cantidad si ya existe
             itemExistente.cantidad += 1;
-            console.log("Producto ya en el carrito, cantidad actualizada:", itemExistente.cantidad);
+            console.log("Producto ya en carrito, cantidad aumentada:", itemExistente);
         } else {
-            const newItem = {
+            // Agregar nuevo item al carrito
+            const nuevoItem = {
                 productoId: productoId,
-                nombre: producto.nombreProducto,
-                precio: producto.precio,
-                imagen: producto.mainImage || 'https://via.placeholder.com/150',
+                id: productoId, // Para compatibilidad
+                nombre: nombre,
+                precio: precio,
+                imagen: imagen,
                 cantidad: 1
             };
-            carrito.push(newItem);
-            console.log("Nuevo producto añadido al carrito:", newItem);
+            carrito.push(nuevoItem);
+            console.log("Nuevo producto agregado al carrito:", nuevoItem);
         }
-
-        localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
-        console.log("Carrito guardado en localStorage:", JSON.parse(localStorage.getItem('hobbverse_carrito')));
-        alert('Producto agregado al carrito');
-
-        // Llama a la función para actualizar el contador del carrito si la tienes
-        // updateCartCount();
-    } else {
-        console.error('Producto no encontrado en la lista de productos disponibles:', productoId);
-        // Si ves este error, el problema es que `allProducts` está vacío o el ID no coincide.
+        
+        // Guardar carrito actualizado
+        localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(carrito));
+        
+        // Mostrar notificación
+        mostrarNotificacion(`¡${nombre} agregado al carrito!`);
+        
+        // Actualizar contador
+        actualizarContadorCarrito();
+        
+    } catch (error) {
+        console.error('Error al agregar producto al carrito:', error);
+        alert('Error al agregar el producto al carrito');
     }
-    console.log("--- Termina agregarAlCarrito ---");
 }
+
+/**
+ * Actualiza el contador del carrito en la UI
+ */
+function actualizarContadorCarrito() {
+    const contadorElement = document.querySelector('.cart-count');
+    if (!contadorElement) return;
+    
+    try {
+        const carrito = JSON.parse(localStorage.getItem(STORAGE_KEYS.cart) || '[]');
+        const totalItems = carrito.reduce((total, item) => total + (item.cantidad || 1), 0);
+        
+        contadorElement.textContent = totalItems.toString();
+        
+        // Mostrar u ocultar según haya items
+        if (totalItems > 0) {
+            contadorElement.style.display = 'inline-block';
+        } else {
+            contadorElement.style.display = 'none';
+        }
+    } catch (e) {
+        console.error('Error al actualizar contador del carrito:', e);
+    }
+}
+
+/**
+ * Muestra una notificación toast
+ * @param {string} mensaje - Mensaje a mostrar
+ * @param {boolean} esError - Si es un mensaje de error
+ */
+function mostrarNotificacion(mensaje, esError = false) {
+    // Crear elemento toast
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center ${esError ? 'bg-danger' : 'bg-success'} text-white position-fixed bottom-0 end-0 m-3`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                ${mensaje}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
+    `;
+    
+    // Agregar al DOM
+    document.body.appendChild(toast);
+    
+    // Inicializar y mostrar el toast
+    try {
+        const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+        bsToast.show();
+        
+        // Eliminar cuando se oculte
+        toast.addEventListener('hidden.bs.toast', () => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        });
+    } catch (e) {
+        console.error('Error al mostrar notificación:', e);
+        // Fallback simple si bootstrap no está disponible
+        toast.style.display = 'block';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 3000);
+    }
+}
+
 /**
  * Formatea un precio como moneda colombiana
  * @param {number} precio - El precio a formatear
  * @returns {string} El precio formateado
  */
 export function formatearPrecioCOP(precio) {
-    // Usa el formatter exportado de adminFunctions
-    return adminFunctions.formatter.format(precio);
+    return formatter.format(precio);
 }
 
 /**
- * Carga todos los productos desde la base de datos (vía adminFunctions.products)
+ * Carga todos los productos desde localStorage
  * @returns {Array} Array de todos los productos
  */
 export function cargarTodosLosProductos() {
-    return adminFunctions.products || []; // Obtiene los productos de admin.js
+    return cargarProductosDesdeStorage();
 }
 
 /**
  * Renderiza los productos en el contenedor especificado
  * @param {string} categoria - Categoría para filtrar los productos (opcional)
  */
-export async function renderizarProductos(categoria = null) { // Make this async too
-    let productsToRender = adminFunctions.products;
-    while (!productsToRender || productsToRender.length === 0) {
-        console.log("Esperando que admin.js cargue los productos para renderizarProductos...");
-        await new Promise(resolve => setTimeout(resolve, 100)); // Espera 100ms
-        productsToRender = adminFunctions.products;
-    }
-
-    const productosFiltrados = categoria ?
-        productsToRender.filter(p => p.categoria?.toLowerCase() === categoria.toLowerCase()) :
-        productsToRender;
-
-    const contenedor = document.getElementById('hobbieImageContainer');
-
-    if (!productosFiltrados.length) {
-        contenedor.innerHTML = '<p class="text-center">No hay productos disponibles</p>';
-        return;
-    }
-
-    contenedor.innerHTML = productosFiltrados.map(producto => `
-        <div class="producto-card ${producto.featured ? 'featured' : ''}">
-            <div class="position-relative">
-                <img src="${producto.mainImage || 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen'}" alt="${producto.nombreProducto}" style="object-fit: cover; height: 200px;">
-                ${producto.featured ?
-                    '<span class="badge bg-warning position-absolute top-0 end-0 m-2">Destacado</span>'
-                    : ''}
-            </div>
-            <div class="product-details">
-                <h3>${producto.nombreProducto}</h3>
-                <p>${producto.descripcion || ''}</p>
-                <p class="price">${adminFunctions.formatter.format(producto.precio)}</p>
-                <button class="buy-button" onclick="agregarAlCarrito('${producto.idProducto}')">
-                    Agregar al carrito
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Esta función renderProducts parece ser un duplicado o una versión más antigua.
-// Si no la estás usando en ningún otro lugar, puedes considerar eliminarla.
-// Si la usas, también deberías adaptarla para usar adminFunctions.products y el formato correcto.
-function renderProducts(products) {
-    const container = document.getElementById('hobbieImageContainer');
-    container.innerHTML = products.map(product => `
-        <div class="producto-card">
-            <img src="${product.mainImage || product.imagen}" alt="${product.name || product.nombre}">
-            <div class="product-details">
-                <h3>${product.name || product.nombre}</h3>
-                <p>${product.description || ''}</p>
-                <p class="price">${adminFunctions.formatter.format(product.price || product.precio)}</p>
-                <button class="buy-button" onclick="window.floatingCart.addToCart(${JSON.stringify(product)})">
-                    Agregar al carrito
-                </button>
-            </div>
-        </div>
-    `).join('');
+export async function renderizarProductos(categoria = null) {
+    // Reutilizar la función principal
+    await renderCategory(categoria, categoria);
 }

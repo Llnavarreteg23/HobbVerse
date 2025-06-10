@@ -1,4 +1,3 @@
-
 /* Estilos para las minitarjetas de productos */
 .card {
     border-radius: 12px !important;
@@ -144,22 +143,37 @@
 .category-item:hover {
     background-color: #e9ecef;
 }
-#categoryList{
+
+#categoryList {
     color: #0460D9;
 }
+
+/* CORRECCIÓN: Botones de categoría más pequeños y mejor espaciados */
+#categoryList .btn-group {
+    display: flex;
+    gap: 5px;
+}
+
 #categoryList .btn {
-    padding: 4px 8px;
-    font-size: 0.8rem;
-    border-radius: 6px;
-    margin-top: 5px;
-    width: 100px;
+    padding: 2px 5px !important;
+    font-size: 0.75rem !important;
+    border-radius: 4px !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 28px !important;
+}
+
+#categoryList .btn i {
+    font-size: 0.75rem !important;
 }
 
 #categoryList .btn:first-child {
     border-color: #0460D9;
     color: #0460D9;
 }
-#categoryList .btn:first-child:hover{
+
+#categoryList .btn:first-child:hover {
+    background-color: #0460D9;
     color: #f5f5f5;
 }
 
@@ -168,7 +182,8 @@
     color: red;
 }
 
-#categoryList .btn:last-child:hover{
+#categoryList .btn:last-child:hover {
+    background-color: red;
     color: #f5f5f5;
 }
 
@@ -229,8 +244,6 @@
     font-size: 0.9rem !important;
 }
 
-
-
 /* Estilos para la subida de imágenes */
 .image-upload-container {
     background: #f8f9fa;
@@ -273,11 +286,9 @@
     
 }
 
-
 #uploadImageBtn:hover{
     background-color: #F28705;
 }
-
 
 #uploadMultipleBtn{
     font-family: "Josefin Sans", sans-serif;
@@ -316,8 +327,6 @@
 .custom-elimnar-img:hover{
     background-color: rgb(196, 49, 49) !important;
 }
-
-
 
 /* Estilos bton Publicar producto */
 .custom-btn-publicar{
@@ -473,8 +482,34 @@
     margin-top: 0.5rem;
 }
 
+/* CORRECCIÓN: Mejorar espacio y ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
     .card-header h5 {
         font-size: 1.1rem;
     }
+    
+    #categoryList .btn {
+        padding: 1px 3px !important;
+        font-size: 0.7rem !important;
+        min-width: 24px !important;
+    }
+    
+    #categoryList .btn-group {
+        gap: 3px;
+    }
+}
+
+/* CORRECCIÓN: Ajuste específico para el panel de categorías */
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+}
+
+.list-group-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px;
 }
