@@ -92,6 +92,8 @@ async function apiFetch(baseUrl, endpoint, options = {}) {
 
 // --- NUEVAS FUNCIONES PARA MANEJAR IMÁGENES EN LOCAL STORAGE ---
 
+export const LOCAL_STORAGE_IMAGE_KEY = 'productImages_';
+
 function saveProductImagesToLocalStorage(productId, mainImageUrl, additionalImageUrls) {
     if (!productId) {
         console.warn('No se puede guardar la imagen en localStorage sin un ID de producto.');
@@ -114,19 +116,28 @@ function saveProductImagesToLocalStorage(productId, mainImageUrl, additionalImag
 
 function getProductImagesFromLocalStorage(productId) {
     try {
-        const imageDataString = localStorage.getItem(`productImages_${productId}`);
+        // Asegúrate de que la clave aquí coincida con cómo la guardas
+        const imageDataString = localStorage.getItem(`${LOCAL_STORAGE_IMAGE_KEY}${productId}`);
         if (imageDataString) {
-            return JSON.parse(imageDataString);
+            // CAMBIO: La función en productos.js espera un objeto con 'main' y 'additional'
+            const parsedData = JSON.parse(imageDataString);
+            return {
+                main: parsedData.main || null, // Asegúrate de que estas propiedades existan
+                additional: parsedData.additional || []
+            };
         }
     } catch (e) {
         console.error('Error al leer imágenes de localStorage:', e);
     }
-    return null; // O un objeto predeterminado si no se encuentra
+    return { main: null, additional: [] 
+
+    };
 }
 
-function removeProductImagesFromLocalStorage(productId) {
+export function removeProductImagesFromLocalStorage(productId) {
     try {
-        localStorage.removeItem(`productImages_${productId}`);
+        // Asegúrate de que la clave aquí coincida con cómo la guardas
+        localStorage.removeItem(`${LOCAL_STORAGE_IMAGE_KEY}${productId}`);
         console.log(`Imágenes eliminadas de localStorage para producto ${productId}`);
     } catch (e) {
         console.error('Error al eliminar imágenes de localStorage:', e);
