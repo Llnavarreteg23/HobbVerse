@@ -1,6 +1,15 @@
 class FloatingCart {
     constructor() {
-        this.cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        // Constantes para claves de localStorage
+        this.STORAGE_KEYS = {
+            cart: 'cart',
+            oldCart: 'carrito', // Clave usada en indexproductos.js
+            products: 'hobbverse_products',
+            newProducts: 'productos'
+        };
+        
+        // Intentar cargar carrito desde ambas fuentes y sincronizarlos
+        this.syncCarts();
         this.init();
     }
 
@@ -11,6 +20,80 @@ class FloatingCart {
         }
         this.updateCartCount();
         this.setupButtonListeners();
+        
+        // Escuchar cambios en localStorage de otras pestañas
+        window.addEventListener('storage', (e) => {
+            if (e.key === this.STORAGE_KEYS.cart || e.key === this.STORAGE_KEYS.oldCart) {
+                console.log('Cambio detectado en carrito desde otra pestaña');
+                this.syncCarts();
+                this.updateCartCount();
+                this.renderCartItems();
+            }
+        });
+        
+        // Escuchar eventos personalizados de carritoActualizado
+        document.addEventListener('carritoActualizado', (e) => {
+            console.log('Evento carritoActualizado detectado');
+            this.syncCarts();
+            this.updateCartCount();
+            this.renderCartItems();
+        });
+    }
+    
+    // Sincronizar ambos carritos para mantener coherencia
+    syncCarts() {
+        try {
+            // Cargar ambos carritos
+            const newCartJSON = localStorage.getItem(this.STORAGE_KEYS.cart);
+            const oldCartJSON = localStorage.getItem(this.STORAGE_KEYS.oldCart);
+            
+            let mergedCart = [];
+            
+            // Procesar carrito nuevo formato si existe
+            if (newCartJSON) {
+                mergedCart = JSON.parse(newCartJSON);
+                console.log('Carrito cargado (nuevo formato):', mergedCart);
+            }
+            
+            // Procesar carrito antiguo formato si existe
+            if (oldCartJSON) {
+                const oldCart = JSON.parse(oldCartJSON);
+                console.log('Carrito cargado (formato antiguo):', oldCart);
+                
+                // Por cada item en el carrito antiguo
+                oldCart.forEach(oldItem => {
+                    // Buscar si ya existe en el carrito unificado
+                    const existingItem = mergedCart.find(item => item.id == oldItem.productoId || 
+                                                           item.id == oldItem.id);
+                    
+                    if (existingItem) {
+                        // Si existe, actualizar cantidad (usar la mayor)
+                        existingItem.quantity = Math.max(existingItem.quantity, oldItem.cantidad || oldItem.quantity || 0);
+                    } else {
+                        // Si no existe, agregar como nuevo item
+                        mergedCart.push({
+                            id: oldItem.productoId || oldItem.id,
+                            name: oldItem.nombre || oldItem.name,
+                            price: parseFloat(oldItem.precio || oldItem.price),
+                            mainImage: oldItem.imagen || oldItem.mainImage || '',
+                            category: oldItem.categoria || oldItem.category || '',
+                            quantity: oldItem.cantidad || oldItem.quantity || 1
+                        });
+                    }
+                });
+            }
+            
+            // Guardar carrito unificado
+            this.cart = mergedCart;
+            this.saveCart(true); // true para guardar en ambos formatos
+            
+            return mergedCart;
+        } catch (error) {
+            console.error('Error al sincronizar carritos:', error);
+            // En caso de error, usar un carrito vacío
+            this.cart = [];
+            return [];
+        }
     }
 
     setupButtonListeners() {
@@ -23,13 +106,12 @@ class FloatingCart {
                     const productId = productCard.dataset.productId || this.extractProductIdFromClick(e.target);
                     
                     if (productId) {
-                        // Obtener datos del producto desde localStorage
-                        const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
-                        const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
-                        
+                        // Obtener datos del producto desde todas las fuentes posibles
+                        const productosNuevos = JSON.parse(localStorage.getItem(this.STORAGE_KEYS.newProducts) || '[]');
+                        const productosAntiguos = JSON.parse(localStorage.getItem(this.STORAGE_KEYS.products) || '[]');
                         
                         const allProducts = [...productosNuevos, ...productosAntiguos];
-                        const product = allProducts.find(p => p.id === productId);
+                        const product = allProducts.find(p => p.id == productId);
                         
                         if (product) {
                             this.addToCart(product);
@@ -52,7 +134,7 @@ class FloatingCart {
             <div id="floating-cart" class="floating-cart">
                 <button class="cart-toggle" id="cartToggle">
                     <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
+                    <span class="cart-count" id="carrito-contador">0</span>
                 </button>
                 
                 <div class="cart-content">
@@ -105,52 +187,38 @@ class FloatingCart {
             return;
         }
 
-        
+        // Normalizar producto para manejar ambos formatos
         const normalizedProduct = {
             id: product.id,
-            name: product.name || product.nombre,
-            price: parseFloat(product.price || product.precio),
-            mainImage: product.mainImage || product.imagen,
-            category: product.category || '',
+            name: product.name || product.nombre || product.nombreProducto || '',
+            price: parseFloat(product.price || product.precio || 0),
+            mainImage: product.mainImage || product.imagen || '',
+            category: product.category || product.categoria || '',
             quantity: 1
         };
 
-        const existingItem = this.cart.find(item => item.id === normalizedProduct.id);
+        console.log('Agregando producto normalizado al carrito:', normalizedProduct);
+
+        const existingItem = this.cart.find(item => item.id == normalizedProduct.id);
         
         if (existingItem) {
             existingItem.quantity += 1;
+            console.log('Incrementada cantidad de producto existente:', existingItem);
         } else {
             this.cart.push(normalizedProduct);
+            console.log('Añadido nuevo producto al carrito');
         }
 
-        this.saveCart();
+        this.saveCart(true); // true para guardar en ambos formatos
         this.updateCartCount();
         this.renderCartItems();
         this.showAddedToCartMessage(normalizedProduct.name);
         
-        
-        this.syncWithOldCart(normalizedProduct);
-    }
-
-    
-    syncWithOldCart(product) {
-        const oldCart = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
-        
-        const existingItem = oldCart.find(item => item.productoId === product.id);
-        
-        if (existingItem) {
-            existingItem.cantidad += 1;
-        } else {
-            oldCart.push({
-                productoId: product.id,
-                nombre: product.name,
-                precio: product.price,
-                imagen: product.mainImage,
-                cantidad: 1
-            });
-        }
-        
-        localStorage.setItem('hobbverse_carrito', JSON.stringify(oldCart));
+        // Disparar evento personalizado
+        const event = new CustomEvent('carritoActualizado', { 
+            detail: { carrito: this.cart } 
+        });
+        document.dispatchEvent(event);
     }
 
     showAddedToCartMessage(productName) {
@@ -169,12 +237,22 @@ class FloatingCart {
         `;
         document.body.appendChild(message);
 
-        setTimeout(() => message.remove(), 2000);
+        // Animar entrada
+        setTimeout(() => {
+            message.classList.add('cart-message-active');
+        }, 10);
+
+        setTimeout(() => {
+            message.classList.remove('cart-message-active');
+            setTimeout(() => message.remove(), 300);
+        }, 2000);
     }
 
     updateCartCount() {
         const count = this.cart.reduce((total, item) => total + item.quantity, 0);
-        const countElements = document.querySelectorAll('.cart-count');
+        
+        // Actualizar todos los posibles contadores
+        const countElements = document.querySelectorAll('.cart-count, #carrito-contador, .carrito-contador, [data-carrito-contador]');
         countElements.forEach(element => {
             element.textContent = count.toString();
             element.classList.add('cart-count-update');
@@ -194,7 +272,7 @@ class FloatingCart {
 
         cartItems.innerHTML = this.cart.map(item => `
             <div class="cart-item" data-product-id="${item.id}">
-                <img src="${item.mainImage}" alt="${item.name}" class="cart-item-image">
+                <img src="${item.mainImage || 'https://via.placeholder.com/50x50?text=Imagen'}" alt="${item.name}" class="cart-item-image">
                 <div class="cart-item-details">
                     <h6 class="cart-item-title">${item.name}</h6>
                     <div class="cart-item-category">${item.category}</div>
@@ -223,46 +301,50 @@ class FloatingCart {
             return;
         }
 
-        const item = this.cart.find(item => item.id === productId);
+        const item = this.cart.find(item => item.id == productId);
         if (item) {
             item.quantity = newQuantity;
-            this.saveCart();
+            this.saveCart(true);
             this.updateCartCount();
             this.renderCartItems();
             
-            
-            this.syncCartQuantity(productId, newQuantity);
-        }
-    }
-    
-    syncCartQuantity(productId, newQuantity) {
-        const oldCart = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
-        const item = oldCart.find(item => item.productoId === productId);
-        
-        if (item) {
-            item.cantidad = newQuantity;
-            localStorage.setItem('hobbverse_carrito', JSON.stringify(oldCart));
+            // Disparar evento personalizado
+            const event = new CustomEvent('carritoActualizado', { 
+                detail: { carrito: this.cart } 
+            });
+            document.dispatchEvent(event);
         }
     }
 
     removeItem(productId) {
-        this.cart = this.cart.filter(item => item.id !== productId);
-        this.saveCart();
+        this.cart = this.cart.filter(item => item.id != productId);
+        this.saveCart(true);
         this.updateCartCount();
         this.renderCartItems();
         
-        
-        this.removeFromOldCart(productId);
-    }
-    
-    removeFromOldCart(productId) {
-        const oldCart = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
-        const updatedCart = oldCart.filter(item => item.productoId !== productId);
-        localStorage.setItem('hobbverse_carrito', JSON.stringify(updatedCart));
+        // Disparar evento personalizado
+        const event = new CustomEvent('carritoActualizado', { 
+            detail: { carrito: this.cart } 
+        });
+        document.dispatchEvent(event);
     }
 
-    saveCart() {
-        localStorage.setItem('cart', JSON.stringify(this.cart));
+    saveCart(syncBothFormats = false) {
+        // Guardar en formato nuevo
+        localStorage.setItem(this.STORAGE_KEYS.cart, JSON.stringify(this.cart));
+        
+        // Si se indica, guardar también en formato antiguo para compatibilidad
+        if (syncBothFormats) {
+            const oldFormatCart = this.cart.map(item => ({
+                productoId: item.id,
+                nombre: item.name,
+                precio: item.price,
+                imagen: item.mainImage,
+                cantidad: item.quantity
+            }));
+            
+            localStorage.setItem(this.STORAGE_KEYS.oldCart, JSON.stringify(oldFormatCart));
+        }
     }
 }
 
@@ -270,32 +352,91 @@ class FloatingCart {
 document.addEventListener('DOMContentLoaded', function() {
     window.floatingCart = new FloatingCart();
     
-    
+    // Función global de agregar al carrito para compatibilidad con botones existentes
     window.agregarAlCarrito = function(productoId) {
+        // Buscar producto en todas las fuentes posibles
         const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
         const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
         const allProducts = [...productosNuevos, ...productosAntiguos];
+        
+        // Buscar por ID como string o número
         const product = allProducts.find(p => p.id == productoId);
         
         if (product && window.floatingCart) {
             window.floatingCart.addToCart(product);
+            return true;
+        } else {
+            console.error('Producto no encontrado o carrito no inicializado:', productoId);
+            return false;
         }
     };
 });
 
 // Inicializar carrito si ya se ha cargado el DOM
 if (document.readyState !== 'loading') {
-    window.floatingCart = window.floatingCart || new FloatingCart();
+    if (!window.floatingCart) {
+        window.floatingCart = new FloatingCart();
+    }
     
-    
-    window.agregarAlCarrito = function(productoId) {
-        const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
-        const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
-        const allProducts = [...productosNuevos, ...productosAntiguos];
-        const product = allProducts.find(p => p.id == productoId);
-        
-        if (product && window.floatingCart) {
-            window.floatingCart.addToCart(product);
-        }
-    };
+    // Función global de agregar al carrito
+    if (!window.agregarAlCarrito) {
+        window.agregarAlCarrito = function(productoId) {
+            const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
+            const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
+            const allProducts = [...productosNuevos, ...productosAntiguos];
+            const product = allProducts.find(p => p.id == productoId);
+            
+            if (product && window.floatingCart) {
+                window.floatingCart.addToCart(product);
+                return true;
+            } else {
+                console.error('Producto no encontrado o carrito no inicializado:', productoId);
+                return false;
+            }
+        };
+    }
 }
+
+// Agregar estilos específicos si no están ya definidos en tu CSS
+(function() {
+    const styleExists = document.getElementById('floating-cart-styles');
+    if (!styleExists) {
+        const style = document.createElement('style');
+        style.id = 'floating-cart-styles';
+        style.textContent = `
+            .cart-message {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background-color: #28a745;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1050;
+                transform: translateY(100px);
+                opacity: 0;
+                transition: transform 0.3s, opacity 0.3s;
+            }
+            .cart-message-active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            .cart-message i {
+                font-size: 20px;
+            }
+            .cart-count-update {
+                animation: cartCountPulse 0.3s ease-in-out;
+            }
+            @keyframes cartCountPulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.5); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+})();

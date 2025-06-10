@@ -3,7 +3,8 @@ import { formatearPrecioCOP } from './productos.js';
 // Constantes para localStorage
 const STORAGE_KEYS = {
     products: 'hobbverse_products',
-    categories: 'hobbverse_categories'
+    categories: 'hobbverse_categories',
+    cart: 'carrito' // Añadido para mayor consistencia
 };
 
 // API Endpoints
@@ -21,8 +22,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         mostrarProductosDestacadosPorCategoria();
         renderFeaturedProducts();
         
+        // Inicializar contador del carrito
+        actualizarContadorCarrito();
+        
         // Hacer global la función agregarAlCarrito para los botones
         window.agregarAlCarrito = agregarAlCarrito;
+        
+        // Agregar listener para cambios en el carrito desde otras pestañas
+        window.addEventListener('storage', function(e) {
+            if (e.key === STORAGE_KEYS.cart) {
+                console.log('Carrito actualizado en otra pestaña, actualizando contador');
+                actualizarContadorCarrito();
+            }
+        });
+        
+        console.log('Inicialización completa de la página de productos');
     } catch (error) {
         console.error('Error al inicializar la página de productos:', error);
         mostrarErrorDeCarga();
@@ -389,7 +403,7 @@ function agregarAlCarrito(idProducto) {
         
         // Cargar el carrito actual
         let carrito = [];
-        const carritoGuardado = localStorage.getItem('carrito');
+        const carritoGuardado = localStorage.getItem(STORAGE_KEYS.cart);
         if (carritoGuardado) {
             carrito = JSON.parse(carritoGuardado);
         }
@@ -400,29 +414,41 @@ function agregarAlCarrito(idProducto) {
         if (productoEnCarrito) {
             // Si ya está, incrementar cantidad
             productoEnCarrito.cantidad += 1;
+            console.log('Incrementada cantidad de producto en carrito:', productoEnCarrito);
         } else {
             // Si no está, agregarlo con cantidad 1
-            carrito.push({
+            const nuevoItem = {
                 id: producto.id,
                 nombre: producto.name,
                 precio: producto.price,
                 imagen: producto.mainImage,
                 cantidad: 1
-            });
+            };
+            carrito.push(nuevoItem);
+            console.log('Nuevo producto agregado al carrito:', nuevoItem);
         }
         
         // Guardar carrito actualizado
-        localStorage.setItem('carrito', JSON.stringify(carrito));
+        localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(carrito));
         
         // Mostrar confirmación
         mostrarNotificacion(`¡${producto.name} agregado al carrito!`);
         
-        // Actualizar contador del carrito si existe
+        // Actualizar contador del carrito
         actualizarContadorCarrito();
+        
+        // Disparar evento personalizado para que otros scripts puedan reaccionar
+        const event = new CustomEvent('carritoActualizado', { 
+            detail: { carrito: carrito } 
+        });
+        document.dispatchEvent(event);
+        
+        return true;
         
     } catch (error) {
         console.error('Error al agregar producto al carrito:', error);
         mostrarNotificacion('Error al agregar producto al carrito', true);
+        return false;
     }
 }
 
@@ -430,9 +456,20 @@ function agregarAlCarrito(idProducto) {
  * Muestra una notificación al usuario
  */
 function mostrarNotificacion(mensaje, esError = false) {
+    // Comprobar si ya existe un contenedor de notificaciones
+    let toastContainer = document.querySelector('.toast-container');
+    
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        document.body.appendChild(toastContainer);
+    }
+    
     // Crear elemento de notificación
+    const notificacionId = 'toast-' + Date.now();
     const notificacion = document.createElement('div');
-    notificacion.className = `toast align-items-center ${esError ? 'bg-danger' : 'bg-success'} text-white border-0 position-fixed bottom-0 end-0 m-3`;
+    notificacion.className = `toast ${esError ? 'bg-danger' : 'bg-success'} text-white border-0`;
+    notificacion.id = notificacionId;
     notificacion.setAttribute('role', 'alert');
     notificacion.setAttribute('aria-live', 'assertive');
     notificacion.setAttribute('aria-atomic', 'true');
@@ -446,46 +483,96 @@ function mostrarNotificacion(mensaje, esError = false) {
         </div>
     `;
     
-    // Agregar al DOM
-    document.body.appendChild(notificacion);
+    // Agregar al contenedor
+    toastContainer.appendChild(notificacion);
     
     // Inicializar toast de Bootstrap
-    const toast = new bootstrap.Toast(notificacion, { delay: 3000 });
-    toast.show();
-    
-    // Eliminar después de ocultarse
-    notificacion.addEventListener('hidden.bs.toast', () => {
-        document.body.removeChild(notificacion);
-    });
+    try {
+        const toast = new bootstrap.Toast(notificacion, { delay: 3000 });
+        toast.show();
+        
+        // Eliminar después de ocultarse
+        notificacion.addEventListener('hidden.bs.toast', () => {
+            notificacion.remove();
+            // Eliminar contenedor si está vacío
+            if (toastContainer.children.length === 0) {
+                toastContainer.remove();
+            }
+        });
+    } catch (error) {
+        console.warn('Error al mostrar notificación con Bootstrap:', error);
+        // Fallback simple si Bootstrap no está disponible
+        alert(mensaje);
+        notificacion.remove();
+    }
 }
 
 /**
  * Actualiza el contador del carrito en la UI
  */
 function actualizarContadorCarrito() {
-    const contadorElement = document.getElementById('carrito-contador');
-    if (!contadorElement) return;
-    
     try {
-        const carritoGuardado = localStorage.getItem('carrito');
-        if (!carritoGuardado) {
-            contadorElement.textContent = '0';
+        // Buscar todos los posibles contadores de carrito
+        const contadores = document.querySelectorAll('.carrito-contador, #carrito-contador, [data-carrito-contador]');
+        
+        if (contadores.length === 0) {
+            console.warn('No se encontraron elementos contadores de carrito en la página');
             return;
         }
         
-        const carrito = JSON.parse(carritoGuardado);
-        const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
+        // Calcular total de items
+        const carritoGuardado = localStorage.getItem(STORAGE_KEYS.cart);
+        let totalItems = 0;
         
-        contadorElement.textContent = totalItems.toString();
-        
-        // Hacer visible si hay items
-        if (totalItems > 0) {
-            contadorElement.classList.remove('d-none');
-        } else {
-            contadorElement.classList.add('d-none');
+        if (carritoGuardado) {
+            const carrito = JSON.parse(carritoGuardado);
+            totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
         }
+        
+        console.log('Total de items en carrito:', totalItems);
+        
+        // Actualizar todos los contadores encontrados
+        contadores.forEach(contador => {
+            contador.textContent = totalItems.toString();
+            
+            // Manejar visibilidad
+            if (totalItems > 0) {
+                contador.classList.remove('d-none');
+                contador.style.display = ''; // Eliminar estilo display:none si existe
+            } else {
+                // Comprobar si el elemento debe ocultarse cuando es cero
+                const ocultarEnCero = contador.getAttribute('data-ocultar-en-cero');
+                if (ocultarEnCero !== 'false') {
+                    contador.classList.add('d-none');
+                }
+            }
+        });
+        
+        // Actualizar también los elementos padres que podrían mostrar/ocultar el contador
+        const botonesCarrito = document.querySelectorAll('.btn-carrito, [data-carrito-btn]');
+        botonesCarrito.forEach(btn => {
+            const contador = btn.querySelector('.carrito-contador, [data-carrito-contador]');
+            if (contador) {
+                if (totalItems > 0) {
+                    contador.classList.remove('d-none');
+                } else {
+                    contador.classList.add('d-none');
+                }
+            }
+            
+            // Opcional: añadir una clase al botón si hay items
+            if (totalItems > 0) {
+                btn.classList.add('tiene-items');
+            } else {
+                btn.classList.remove('tiene-items');
+            }
+        });
+        
+        console.log('Contador de carrito actualizado correctamente');
+        return true;
     } catch (e) {
         console.error('Error al actualizar contador del carrito:', e);
+        return false;
     }
 }
 
@@ -523,3 +610,11 @@ function mostrarErrorDeCarga(containerId = null) {
         });
     }
 }
+
+// Exportar funciones para uso en otros archivos
+export {
+    agregarAlCarrito,
+    actualizarContadorCarrito,
+    cargarProductos,
+    mostrarNotificacion
+};
