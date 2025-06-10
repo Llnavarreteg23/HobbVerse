@@ -717,7 +717,7 @@ class CheckoutPage {
             this.crearOrden();
             
             // Redirigir a la página de confirmación
-            window.location.href = 'payment-success.html';
+            window.location.href = 'pagoexitoso.html';
         }, 3000);
     }
 
