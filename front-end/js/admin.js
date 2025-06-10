@@ -22,7 +22,7 @@ const API_PRODUCT_BASE_URL = `${API_BASE_URL}/productos`;
 // 'products' contendrá la información inicial del backend
 // y luego se modificará con el estado de favoritos en el frontend.
 let products = [];
-let categories = [];
+let categories = []; // Esta variable ahora siempre será llenada con defaultCategories
 let editingCategoryId = null; 
 let editingProductId = null;
 
@@ -89,40 +89,24 @@ async function apiFetch(baseUrl, endpoint, options = {}) {
 
 async function loadData() {
     try {
+        // Se cargan los productos desde el backend
         products = await apiFetch(API_PRODUCT_BASE_URL, '');
         console.log('Todos los productos cargados desde el backend:', products);
 
-        const uniqueCategories = new Set();
-        if (products && Array.isArray(products)) {
-            products.forEach(product => {
-                if (product.categoria) {
-                    uniqueCategories.add(product.categoria);
-                }
-            });
-        }
-
-        // Si se cargaron categorías desde el backend
-        if (uniqueCategories.size > 0) {
-            categories = Array.from(uniqueCategories).map((catName, index) => ({
-                id: index + 1,
-                name: catName
-            }));
-            console.log('Categorías extraídas de los productos:', categories);
-        } else {
-            
-            console.log('No se encontraron categorías de productos. Usando categorías por defecto.');
-            categories = [...defaultCategories]; 
-        }
+        // Las categorías se cargan SIEMPRE desde defaultCategories ---
+        categories = [...defaultCategories]; // Asigna una copia de las categorías predefinidas
+        console.log('Categorías cargadas desde el frontend (por defecto):', categories);
+        
 
     } catch (error) {
-        console.error('Error general al cargar datos desde el backend. Usando categorías por defecto:', error);
+        console.error('Error general al cargar productos desde el backend:', error);
         if (typeof mostrarAlerta === 'function') {
-            mostrarAlerta(`No se pudieron cargar los datos del backend. Usando categorías por defecto: ${error.message}`, 'warning');
+            mostrarAlerta(`No se pudieron cargar los productos del backend: ${error.message}`, 'warning');
         } else {
-            alert(`No se pudieron cargar los datos del backend. Usando categorías por defecto: ${error.message}`);
+            alert(`No se pudieron cargar los productos del backend: ${error.message}`);
         }
         products = []; // Limpia los productos si hay un error de carga
-        categories = [...defaultCategories]; // Asegura que se usen las categorías por defecto en caso de error
+        
     }
     updateUI();
 }
@@ -228,6 +212,7 @@ async function filterProducts() {
                 productsToDisplay = [];
             }
         } else {
+            // Cuando no hay búsqueda, se filtra sobre 'products' cargados desde el backend
             productsToDisplay = products.filter(product => {
                 const categoryMatch = !categoryFilter || product.categoria?.toLowerCase() === categoryFilter.toLowerCase();
                 return categoryMatch;
@@ -355,7 +340,11 @@ async function editProduct(productId) {
         }
 
         form.elements['name'].value = product.nombreProducto || '';
-        form.elements['category'].value = product.categoria || '';
+        // Asegúrate de que la categoría del producto editado exista en tus defaultCategories
+        // Si no existe, puedes elegir no seleccionarla o revertir a la primera opción.
+        // Aquí se asegura que el valor del select sea la categoría del producto si existe,
+        // o un string vacío si no, lo cual es manejado por el HTML con la opción "Seleccione una categoría".
+        form.elements['category'].value = product.categoria || ''; 
         form.elements['description'].value = product.descripcion || '';
         form.elements['price'].value = product.precio || 0;
         form.elements['stock'].value = product.cantidad || 0;
@@ -363,8 +352,6 @@ async function editProduct(productId) {
         
         const featuredCheckbox = document.getElementById('productFeatured');
         if (featuredCheckbox) {
-            // Asume que si 'product.featured' no existe, es false.
-            // Si el backend no envía 'featured', este valor será 'undefined || false', que es 'false'.
             featuredCheckbox.checked = product.featured || false;
         }
 
