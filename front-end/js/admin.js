@@ -28,13 +28,12 @@ let editingProductId = null;
 
 // Estas variables mantendrán las URLs de las imágenes subidas a Cloudinary
 // SOLO PARA LA VISTA PREVIA TEMPORAL EN EL FORMULARIO EN EL FRONTEND.
-// NO se enviarán al backend con el producto.
+// Serán utilizadas para guardarlas en localStorage.
 let currentMainImageUrl = '';
 let currentAdditionalImageUrls = [];
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    loadData(); // Carga inicial de datos, incluyendo los del backend 
+    loadData(); // Carga inicial de datos, incluyendo los del backend y del localStorage
     setupEventListeners();
     initImageUpload();
     setupFilters();
@@ -80,24 +79,87 @@ async function apiFetch(baseUrl, endpoint, options = {}) {
         if (response.status === 204) {
             return null;
         }
-        return response.json();
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        }
+        return null;
     } catch (networkError) {
         console.error('Error de red o CORS al llamar a la API:', networkError);
         throw new Error(`Error de conexión con el servidor: ${networkError.message}`);
     }
 }
 
+// --- NUEVAS FUNCIONES PARA MANEJAR IMÁGENES EN LOCAL STORAGE ---
+
+function saveProductImagesToLocalStorage(productId, mainImageUrl, additionalImageUrls) {
+    if (!productId) {
+        console.warn('No se puede guardar la imagen en localStorage sin un ID de producto.');
+        return;
+    }
+    const imageData = {
+        mainImage: mainImageUrl,
+        additionalImages: additionalImageUrls
+    };
+    try {
+        localStorage.setItem(`productImages_${productId}`, JSON.stringify(imageData));
+        console.log(`Imágenes guardadas en localStorage para producto ${productId}`);
+    } catch (e) {
+        console.error('Error al guardar imágenes en localStorage:', e);
+        if (typeof mostrarAlerta === 'function') {
+            mostrarAlerta('Error al guardar imágenes localmente. Espacio de almacenamiento agotado o error de seguridad.', 'danger');
+        }
+    }
+}
+
+function getProductImagesFromLocalStorage(productId) {
+    try {
+        const imageDataString = localStorage.getItem(`productImages_${productId}`);
+        if (imageDataString) {
+            return JSON.parse(imageDataString);
+        }
+    } catch (e) {
+        console.error('Error al leer imágenes de localStorage:', e);
+    }
+    return null; // O un objeto predeterminado si no se encuentra
+}
+
+function removeProductImagesFromLocalStorage(productId) {
+    try {
+        localStorage.removeItem(`productImages_${productId}`);
+        console.log(`Imágenes eliminadas de localStorage para producto ${productId}`);
+    } catch (e) {
+        console.error('Error al eliminar imágenes de localStorage:', e);
+    }
+}
+
+// --- FIN DE LAS NUEVAS FUNCIONES ---
+
+
 async function loadData() {
     try {
-        // Se cargan los productos desde el backend
         products = await apiFetch(API_PRODUCT_BASE_URL, '');
         console.log('Todos los productos cargados desde el backend:', products);
 
-        // Las categorías se cargan SIEMPRE desde defaultCategories ---
-        categories = [...defaultCategories]; // Asigna una copia de las categorías predefinidas
+        // --- Extender productos con URLs de imágenes desde localStorage ---
+        products = products.map(product => {
+            const localImages = getProductImagesFromLocalStorage(product.idProducto);
+            if (localImages) {
+                // Si encontramos imágenes en localStorage, las adjuntamos al objeto del producto
+                return {
+                    ...product,
+                    mainImage: localImages.mainImage || null,
+                    additionalImages: localImages.additionalImages || []
+                };
+            }
+            return product; // Devuelve el producto tal como viene del backend si no hay imágenes locales
+        });
+        console.log('Productos con imágenes de localStorage:', products);
+
+
+        categories = [...defaultCategories]; 
         console.log('Categorías cargadas desde el frontend (por defecto):', categories);
         
-
     } catch (error) {
         console.error('Error general al cargar productos desde el backend:', error);
         if (typeof mostrarAlerta === 'function') {
@@ -105,8 +167,9 @@ async function loadData() {
         } else {
             alert(`No se pudieron cargar los productos del backend: ${error.message}`);
         }
-        products = []; // Limpia los productos si hay un error de carga
-        
+        products = [];
+        // Incluso si el backend falla, aún podemos intentar cargar categorías y limpiar imágenes.
+        categories = [...defaultCategories]; // Asegurarse de que las categorías estén siempre disponibles
     }
     updateUI();
 }
@@ -121,6 +184,7 @@ async function handleProductSubmit(e) {
         precio: parseFloat(formData.get('price')),
         categoria: formData.get('category'),
         descripcion: formData.get('description'),
+        // Las URLs de las imágenes NO se envían al backend
     };
 
     if (!productData.nombreProducto || !productData.cantidad || !productData.precio || !productData.categoria || !productData.descripcion) {
@@ -134,31 +198,52 @@ async function handleProductSubmit(e) {
 
     try {
         let message = '';
+        let createdOrUpdatedProduct; 
+
         if (editingProductId) {
-            await apiFetch(API_PRODUCT_BASE_URL, `/${editingProductId}`, {
+            createdOrUpdatedProduct = await apiFetch(API_PRODUCT_BASE_URL, `/${editingProductId}`, {
                 method: 'PUT',
                 body: JSON.stringify(productData)
             });
             message = 'Producto actualizado exitosamente';
         } else {
-            await apiFetch(API_PRODUCT_BASE_URL, '', {
+            createdOrUpdatedProduct = await apiFetch(API_PRODUCT_BASE_URL, '', {
                 method: 'POST',
                 body: JSON.stringify(productData)
             });
             message = 'Producto agregado exitosamente';
         }
 
-        await loadData();
-        e.target.reset(); // Limpia el formulario
+        if (createdOrUpdatedProduct) {
+            // Guardar las URLs de las imágenes en localStorage con el ID del producto
+            // Este ID debe ser el que el backend devuelve para el producto recién creado/actualizado.
+            saveProductImagesToLocalStorage(createdOrUpdatedProduct.idProducto, currentMainImageUrl, currentAdditionalImageUrls);
+            
+            // Asigna las URLs de las imágenes temporales al producto para la renderización inmediata en el frontend
+            createdOrUpdatedProduct.mainImage = currentMainImageUrl;
+            createdOrUpdatedProduct.additionalImages = currentAdditionalImageUrls;
+
+            if (editingProductId) {
+                const index = products.findIndex(p => p.idProducto === createdOrUpdatedProduct.idProducto);
+                if (index !== -1) {
+                    products[index] = createdOrUpdatedProduct;
+                }
+            } else {
+                products.push(createdOrUpdatedProduct);
+            }
+        }
+        
+        updateUI(); 
+
+        e.target.reset(); 
 
         editingProductId = null;
         const submitBtn = e.target.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.textContent = 'Agregar Producto';
 
-        // --- Manejo del checkbox
         const featuredCheckbox = document.getElementById('productFeatured');
         if (featuredCheckbox) {
-            featuredCheckbox.checked = false; // Asegura que el checkbox se desmarque después de enviar
+            featuredCheckbox.checked = false; 
         }
 
         // Limpia la vista previa de imágenes y las URLs de Cloudinary temporales
@@ -168,8 +253,8 @@ async function handleProductSubmit(e) {
         if (uploadedAdditionalImagesInput) {
             uploadedAdditionalImagesInput.value = '[]';
         }
-        currentMainImageUrl = ''; // Limpiar URLs temporales de Cloudinary
-        currentAdditionalImageUrls = []; // Limpiar URLs temporales de Cloudinary
+        currentMainImageUrl = ''; 
+        currentAdditionalImageUrls = []; 
 
         if (typeof mostrarAlerta === 'function') {
             mostrarAlerta(message, 'success');
@@ -199,38 +284,16 @@ async function filterProducts() {
 
     let productsToDisplay = [];
 
-    try {
-        if (searchTerm) {
-            const response = await apiFetch(API_PRODUCT_BASE_URL, `/nombre/coincidencias/${encodeURIComponent(searchTerm)}`);
-
-            if (response && Array.isArray(response)) {
-                productsToDisplay = response.filter(product => {
-                    const categoryMatch = !categoryFilter || product.categoria?.toLowerCase() === categoryFilter.toLowerCase();
-                    return categoryMatch;
-                });
-            } else {
-                productsToDisplay = [];
-            }
-        } else {
-            // Cuando no hay búsqueda, se filtra sobre 'products' cargados desde el backend
-            productsToDisplay = products.filter(product => {
-                const categoryMatch = !categoryFilter || product.categoria?.toLowerCase() === categoryFilter.toLowerCase();
-                return categoryMatch;
-            });
-        }
-    } catch (error) {
-        console.error('Error al buscar o filtrar productos:', error);
-        if (typeof mostrarAlerta === 'function') {
-            mostrarAlerta(`Error al buscar/filtrar: ${error.message}`, 'danger');
-        } else {
-            alert(`Error al buscar/filtrar: ${error.message}`);
-        }
-        productsToDisplay = [];
-    }
+    productsToDisplay = products.filter(product => {
+        const nameMatch = !searchTerm || product.nombreProducto?.toLowerCase().includes(searchTerm);
+        const categoryMatch = !categoryFilter || product.categoria?.toLowerCase() === categoryFilter.toLowerCase();
+        return nameMatch && categoryMatch;
+    });
 
     updateProductList(productsToDisplay);
     updateProductCount(productsToDisplay.length);
 }
+
 
 function updateProductList(productosToDisplay = null) {
     const productList = document.getElementById('productList');
@@ -245,19 +308,34 @@ function updateProductList(productosToDisplay = null) {
     }
 
     productList.innerHTML = currentProducts.map(product => {
-        // Puesto que las URLs de imagen siempre se mostrará un placeholder
-        const imageUrlToDisplay = 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen';
+        // Las propiedades mainImage y additionalImages deberían estar disponibles
+        // en el objeto 'product' porque fueron adjuntadas en loadData() desde localStorage.
+        const mainImageUrl = product.mainImage || 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen';
+        const additionalImages = product.additionalImages || [];
 
-        // Si quisieras que el carrusel muestre las imágenes subidas en la *sesión actual*
-        
-        const carouselIndicators = `
+        let carouselIndicators = `
             <button type="button" data-bs-target="#carousel-${product.idProducto}" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         `;
-        const carouselItems = `
+        additionalImages.forEach((_, index) => {
+            carouselIndicators += `
+                <button type="button" data-bs-target="#carousel-${product.idProducto}" data-bs-slide-to="${index + 1}" aria-label="Slide ${index + 2}"></button>
+            `;
+        });
+
+        let carouselItems = `
             <div class="carousel-item active">
-                <img src="${imageUrlToDisplay}" class="d-block w-100" alt="${product.nombreProducto}" style="height: 200px; object-fit: cover;">
+                <img src="${mainImageUrl}" class="d-block w-100" alt="${product.nombreProducto}" style="height: 200px; object-fit: cover;">
             </div>
         `;
+        additionalImages.forEach(imgUrl => {
+            carouselItems += `
+                <div class="carousel-item">
+                    <img src="${imgUrl}" class="d-block w-100" alt="Imagen adicional" style="height: 200px; object-fit: cover;">
+                </div>
+            `;
+        });
+
+        const needsCarouselControls = (additionalImages.length > 0 || mainImageUrl !== 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen');
 
         return `
             <div class="col">
@@ -269,6 +347,7 @@ function updateProductList(productosToDisplay = null) {
                         <div class="carousel-inner">
                             ${carouselItems}
                         </div>
+                        ${needsCarouselControls ? `
                         <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.idProducto}" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Previous</span>
@@ -277,6 +356,7 @@ function updateProductList(productosToDisplay = null) {
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Next</span>
                         </button>
+                        ` : ''}
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">${product.nombreProducto}</h5>
@@ -331,7 +411,18 @@ function updateCategorySelect() {
 async function editProduct(productId) {
     try {
         const product = await apiFetch(API_PRODUCT_BASE_URL, `/${productId}`);
-        console.log('Producto cargado para edición:', product);
+        console.log('Producto cargado para edición desde backend:', product);
+
+        // --- Cargar imágenes de localStorage para el producto que se está editando ---
+        const localImages = getProductImagesFromLocalStorage(productId);
+        if (localImages) {
+            currentMainImageUrl = localImages.mainImage || '';
+            currentAdditionalImageUrls = localImages.additionalImages || [];
+            console.log('Imágenes cargadas de localStorage para edición:', currentMainImageUrl, currentAdditionalImageUrls);
+        } else {
+            currentMainImageUrl = '';
+            currentAdditionalImageUrls = [];
+        }
 
         const form = document.getElementById('productForm');
         if (!form) {
@@ -340,32 +431,31 @@ async function editProduct(productId) {
         }
 
         form.elements['name'].value = product.nombreProducto || '';
-        // Asegúrate de que la categoría del producto editado exista en tus defaultCategories
-        // Si no existe, puedes elegir no seleccionarla o revertir a la primera opción.
-        // Aquí se asegura que el valor del select sea la categoría del producto si existe,
-        // o un string vacío si no, lo cual es manejado por el HTML con la opción "Seleccione una categoría".
         form.elements['category'].value = product.categoria || ''; 
         form.elements['description'].value = product.descripcion || '';
         form.elements['price'].value = product.precio || 0;
         form.elements['stock'].value = product.cantidad || 0;
 
-        
         const featuredCheckbox = document.getElementById('productFeatured');
         if (featuredCheckbox) {
             featuredCheckbox.checked = product.featured || false;
         }
 
-        
-        currentMainImageUrl = '';
-        currentAdditionalImageUrls = [];
-
         const imagePreview = document.getElementById('imagePreview');
         const imagesPreviewContainer = document.getElementById('imagesPreview');
         const uploadedAdditionalImagesInput = document.getElementById('uploadedAdditionalImages');
 
-        if (imagePreview) imagePreview.innerHTML = '';
-        if (imagesPreviewContainer) imagesPreviewContainer.innerHTML = '';
-        if (uploadedAdditionalImagesInput) uploadedAdditionalImagesInput.value = '[]';
+        // Mostrar las imágenes cargadas de localStorage en la vista previa del formulario
+        if (imagePreview && currentMainImageUrl) {
+            imagePreview.innerHTML = `<div class="position-relative"><img src="${currentMainImageUrl}" class="img-thumbnail" style="max-height: 200px"></div>`;
+        } else if (imagePreview) {
+            imagePreview.innerHTML = '';
+        }
+
+        if (uploadedAdditionalImagesInput) {
+            uploadedAdditionalImagesInput.value = JSON.stringify(currentAdditionalImageUrls);
+        }
+        updateAdditionalImagesPreview(); // Llama a esta función para renderizar las imágenes adicionales
 
         editingProductId = productId;
         const submitBtn = form.querySelector('button[type="submit"]');
@@ -389,7 +479,11 @@ async function deleteProduct(productId) {
             await apiFetch(API_PRODUCT_BASE_URL, `/${productId}`, {
                 method: 'DELETE'
             });
-            await loadData();
+            // Remover el producto del array 'products' en el frontend
+            products = products.filter(p => p.idProducto !== productId);
+            removeProductImagesFromLocalStorage(productId); // --- Eliminar también de localStorage ---
+            updateUI(); 
+
             if (typeof mostrarAlerta === 'function') {
                 mostrarAlerta('Producto eliminado exitosamente', 'success');
             } else {
@@ -424,9 +518,9 @@ async function toggleProductFavorite(productId) {
 
         const product = products[productIndex];
         const newFeaturedState = !product.featured;
-        product.featured = newFeaturedState; // Actualiza el estado local del producto
+        product.featured = newFeaturedState; 
 
-        updateProductList(); // Re-renderizar la lista para reflejar el cambio visual
+        updateProductList(); 
 
         if (typeof mostrarAlerta === 'function') {
             mostrarAlerta(`Producto ${newFeaturedState ? 'marcado como favorito' : 'desmarcado de favoritos'}`, 'success');
@@ -436,7 +530,6 @@ async function toggleProductFavorite(productId) {
 
     } catch (error) {
         
-        // Solo por errores internos de JavaScript 
         console.error('Error interno al cambiar estado de favorito en frontend:', error);
         if (typeof mostrarAlerta === 'function') {
             mostrarAlerta(`Error al actualizar favorito: ${error.message}`, 'danger');
