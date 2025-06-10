@@ -1,5 +1,5 @@
 
-import * as adminFunctions from '/front-end/js/admin.js'; 
+import * as adminFunctions from './admin.js'; // Asegúrate que la ruta sea correcta desde productos.js a admin.js
 
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
@@ -21,27 +21,26 @@ const categoryIcons = {
 };
 
 /**
+/**
  * Función asíncrona para obtener productos filtrado por categoría.
  * @param {string} categoriaNombre; 
  * @returns {Array} 
  */
-
 async function productosCategoria(categoriaNombre) {
     if (!categoriaNombre) {
         console.warn("No se proporcionó un nombre de categoría. No se realizará la búsqueda.");
         return [];
     }
 
-    // Usamos la nueva constante para la URL base de productos
-    const url = new URL(API_PRODUCT_BASE_URL);
-    url.searchParams.append('categoria', categoriaNombre); // Añade el parámetro de consulta 'categoria'
+    // *** CAMBIO AQUÍ para usar el formato de @PathVariable ***
+    // La URL debe ser directamente /productos/categoria/{categoriaNombre}
+    const url = `${API_PRODUCT_BASE_URL}/categoria/${encodeURIComponent(categoriaNombre)}`; 
+    // encodeURIComponent es importante para manejar nombres de categoría con espacios o caracteres especiales
 
     try {
-        const response = await fetch(url.toString());
+        const response = await fetch(url); // Ya no es necesario .toString() si construyes la string directamente
         
         if (!response.ok) {
-            // Si el backend devuelve 204 (No Content) para una categoría sin productos,
-            // lo manejamos como un caso válido sin errores HTTP.
             if (response.status === 204) {
                 console.log(`No hay productos para la categoría: ${categoriaNombre}`);
                 return []; 
@@ -58,34 +57,48 @@ async function productosCategoria(categoriaNombre) {
 }
 
 /**
- * Obtener productos de una categoría específica.
+ * Obtener productos de una categoría específica y renderizarlos.
  * @param {string} categoryData - El valor del atributo data-category del elemento clickeado
  * @param {string} categoriaNombre - El nombre de la categoría 
  */
 export default async function renderCategory(categoryData, categoriaNombre) {
     hobbieImageContainer.innerHTML = ""; 
 
-    // Obtiene los productos filtrados por categoría.
-    const productosFiltrados = await productosCategoria(categoriaNombre);
+    // 1. Obtiene los productos filtrados por categoría desde el backend.
+    let productosFiltrados = await productosCategoria(categoriaNombre);
+
+    // 2. Para cada producto, intenta cargar sus URLs de imagen desde localStorage.
+    productosFiltrados = productosFiltrados.map(producto => {
+        // Usa la función importada desde adminFunctions
+        const localImages = adminFunctions.getProductImagesFromLocalStorage(producto.idProducto); // Asumo que el ID del producto es `idProducto`
+
+        return {
+            ...producto,
+            mainImage: localImages.main,
+            additionalImages: localImages.additional
+        };
+    });
 
     if (productosFiltrados.length > 0) {
         productosFiltrados.forEach(producto => {
             const card = document.createElement("div");
             card.className = "producto-card";
             
-            // **IMPORTANTE:** Ajusta los nombres de las propiedades para que coincidan con tu backend (modelo Producto.java)
-            // Asegúrate de que tu modelo `Producto` en Spring Boot tenga campos como `mainImage` o `additionalImages`
-            // si los esperas aquí, o ajusta cómo se manejan las imágenes.
+            // Usa las propiedades `mainImage` y `additionalImages` que ahora
+            // contendrán las URLs de localStorage si existen, o serán vacías/undefined.
             const mainImage = producto.mainImage || 'https://via.placeholder.com/300x200?text=Sin+Imagen'; 
             const additionalImages = producto.additionalImages || [];
 
+            // Determina si se necesitan los controles del carrusel
+            const needsCarouselControls = (additionalImages.length > 0 || mainImage !== 'https://via.placeholder.com/300x200?text=Sin+Imagen');
+
             card.innerHTML = `
-                <div id="carousel-${producto.id}" class="carousel slide" data-bs-ride="carousel">
+                <div id="carousel-${producto.idProducto}" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carousel-${producto.id}" 
+                        <button type="button" data-bs-target="#carousel-${producto.idProducto}" 
                                 data-bs-slide-to="0" class="active"></button>
                         ${additionalImages.map((_, index) => `
-                            <button type="button" data-bs-target="#carousel-${producto.id}" 
+                            <button type="button" data-bs-target="#carousel-${producto.idProducto}" 
                                     data-bs-slide-to="${index + 1}"></button>
                         `).join('')}
                     </div>
@@ -100,14 +113,14 @@ export default async function renderCategory(categoryData, categoriaNombre) {
                             </div>
                         `).join('')}
                     </div>
-                    ${additionalImages.length > 0 ? `
+                    ${needsCarouselControls ? `
                         <button class="carousel-control-prev" type="button" 
-                                data-bs-target="#carousel-${producto.id}" data-bs-slide="prev">
+                                data-bs-target="#carousel-${producto.idProducto}" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
                             <span class="visually-hidden">Anterior</span>
                         </button>
                         <button class="carousel-control-next" type="button" 
-                                data-bs-target="#carousel-${producto.id}" data-bs-slide="next">
+                                data-bs-target="#carousel-${producto.idProducto}" data-bs-slide="next">
                             <span class="carousel-control-next-icon"></span>
                             <span class="visually-hidden">Siguiente</span>
                         </button>
@@ -117,13 +130,17 @@ export default async function renderCategory(categoryData, categoriaNombre) {
                     <h3>${producto.nombreProducto}</h3>
                     ${producto.descripcion ? `<p>${producto.descripcion}</p>` : ''}
                     <p class="price">${formatearPrecioCOP(producto.precio)}</p>
-                    ${producto.destacado ? '<span class="badge bg-warning">Destacado</span>' : ''}
-                    <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
-                        Agregar al carrito
+                    ${producto.featured ? '<span class="badge bg-warning">Destacado</span>' : ''} <button class="buy-button" onclick="agregarAlCarrito('${producto.idProducto}')"> Agregar al carrito
                     </button>
                 </div>
             `;
             hobbieImageContainer.appendChild(card);
+
+            // Inicializa el carrusel de Bootstrap para cada tarjeta
+            const carouselElement = card.querySelector(`#carousel-${producto.idProducto}`);
+            if (carouselElement) {
+                new bootstrap.Carousel(carouselElement);
+            }
         });
     } else {
         hobbieImageContainer.innerHTML = `
@@ -186,23 +203,26 @@ export async function agregarAlCarrito(productoId) {
     
     try {
         // Obtiene los detalles completos del producto desde el backend usando el endpoint /productos/{id}
-        const response = await fetch(`${API_PRODUCT_BASE_URL}/${productoId}`); // Usamos la nueva constante
+        const response = await fetch(`${API_PRODUCT_BASE_URL}/${productoId}`); 
         if (!response.ok) {
             throw new Error(`Error al obtener el producto (ID: ${productoId}): ${response.statusText}`);
         }
         const producto = await response.json();
 
         if (producto) {
+            // Intenta obtener las URLs de las imágenes de localStorage para el carrito
+            const localImages = adminFunctions.getProductImagesFromLocalStorage(producto.idProducto); // Usa la función importada
+
             const itemExistente = carrito.find(item => item.productoId == productoId);
             
             if (itemExistente) {
                 itemExistente.cantidad += 1;
             } else {
                 carrito.push({
-                    productoId: producto.id,
+                    productoId: producto.idProducto, // Asegúrate de usar idProducto
                     nombre: producto.nombreProducto, 
-                    precio: producto.precio,          
-                    imagen: producto.mainImage || 'https://via.placeholder.com/50x50?text=Img', // Asegúrate de tener esta propiedad o ajusta
+                    precio: producto.precio,         
+                    imagen: localImages.main || 'https://via.placeholder.com/50x50?text=Img', // Usa la imagen principal de localStorage
                     cantidad: 1
                 });
             }
