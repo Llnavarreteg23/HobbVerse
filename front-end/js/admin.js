@@ -18,21 +18,27 @@ const formatter = new Intl.NumberFormat('es-CO', {
 const API_BASE_URL = "https://9s68ixqgw5.us-east-1.awsapprunner.com";
 const API_PRODUCT_BASE_URL = `${API_BASE_URL}/productos`;
 
+// Variable global que contendrá el estado de los productos
+// 'products' contendrá la información inicial del backend
+// y luego se modificará con el estado de favoritos en el frontend.
 let products = [];
-let categories = [...defaultCategories]; // Las categorías siempre serán las por defecto
-let editingCategoryId = null; // No usado actualmente, pero mantenido
+let categories = []; // Esta variable ahora siempre será llenada con defaultCategories
+let editingCategoryId = null;
 let editingProductId = null;
 
+// Estas variables mantendrán las URLs de las imágenes subidas a Cloudinary
+// SOLO PARA LA VISTA PREVIA TEMPORAL EN EL FORMULARIO EN EL FRONTEND.
+// NO se enviarán al backend con el producto.
 let currentMainImageUrl = '';
 let currentAdditionalImageUrls = [];
 
-// productImagesCache persiste a través de la sesión del navegador.
-// Se mantendrá en memoria hasta que la página se recargue o se cierre.
+// CACHÉ para almacenar las URLs de las imágenes por ID de producto
+// Esto permite que las imágenes persistan en el frontend durante la sesión.
 let productImagesCache = {};
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadData();
+    loadData(); // Carga inicial de datos, incluyendo los del backend
     setupEventListeners();
     initImageUpload();
     setupFilters();
@@ -49,6 +55,8 @@ function setupEventListeners() {
     });
 }
 
+
+// Funciones de Utilidad de la API
 
 async function apiFetch(baseUrl, endpoint, options = {}) {
     const url = `${baseUrl}${endpoint}`;
@@ -85,17 +93,17 @@ async function apiFetch(baseUrl, endpoint, options = {}) {
 
 async function loadData() {
     try {
-        // Obtenemos los productos del backend
-        const fetchedProducts = await apiFetch(API_PRODUCT_BASE_URL, '');
-        console.log('Todos los productos cargados desde el backend:', fetchedProducts);
+        // Se cargan los productos desde el backend
+        products = await apiFetch(API_PRODUCT_BASE_URL, '');
+        console.log('Todos los productos cargados desde el backend:', products);
 
-        // Ojo: productImagesCache NO se reinicia aquí.
-        // Solo actualizamos la lista de productos principal.
-        products = fetchedProducts;
-
-        // Las categorías siempre se cargan desde defaultCategories
-        categories = [...defaultCategories];
+        // Las categorías se cargan SIEMPRE desde defaultCategories ---
+        categories = [...defaultCategories]; // Asigna una copia de las categorías predefinidas
         console.log('Categorías cargadas desde el frontend (por defecto):', categories);
+
+        // Limpiar el caché de imágenes al recargar data, para asegurar consistencia
+        // (o podrías decidir persistir las URLs si el backend las devolviera)
+        productImagesCache = {};
 
     } catch (error) {
         console.error('Error general al cargar productos desde el backend:', error);
@@ -104,7 +112,8 @@ async function loadData() {
         } else {
             alert(`No se pudieron cargar los productos del backend: ${error.message}`);
         }
-        products = [];
+        products = []; // Limpia los productos si hay un error de carga
+
     }
     updateUI();
 }
@@ -119,7 +128,9 @@ async function handleProductSubmit(e) {
         precio: parseFloat(formData.get('price')),
         categoria: formData.get('category'),
         descripcion: formData.get('description'),
-        featured: document.getElementById('productFeatured').checked
+        // Aquí podrías añadir las URLs de imagen si el backend las aceptara
+        // mainImageUrl: currentMainImageUrl,
+        // additionalImageUrls: currentAdditionalImageUrls,
     };
 
     if (!productData.nombreProducto || !productData.cantidad || !productData.precio || !productData.categoria || !productData.descripcion) {
@@ -149,51 +160,37 @@ async function handleProductSubmit(e) {
             message = 'Producto agregado exitosamente';
         }
 
-        // Si la operación fue exitosa, y tenemos un ID de producto válido:
+        // Si la operación fue exitosa y se obtuvo un producto con ID,
+        // almacena las URLs de imagen temporales en el caché
         if (createdOrUpdatedProduct && createdOrUpdatedProduct.idProducto) {
-            // Guardamos las URLs de imagen actuales en el caché del frontend para este producto.
-            // Esto asegura que la imagen que acabamos de subir se muestre inmediatamente.
             productImagesCache[createdOrUpdatedProduct.idProducto] = {
                 main: currentMainImageUrl,
                 additional: [...currentAdditionalImageUrls]
             };
         }
 
-        // NO llamamos a loadData() inmediatamente después de una actualización/creación exitosa,
-        // porque eso resetearía el caché de imágenes y no veríamos la imagen recién subida.
-        // En su lugar, actualizamos la lista directamente,
-        // y loadData se llamará de nuevo si la página se recarga o se navega.
-
-        // Actualizamos los productos en el array 'products' localmente si es necesario
-        // (Esto es importante para que el filtro y la edición funcionen con los datos más recientes)
-        const updatedIndex = products.findIndex(p => p.idProducto === createdOrUpdatedProduct.idProducto);
-        if (updatedIndex !== -1) {
-            // Si es una actualización, reemplazamos el producto existente con la respuesta del backend
-            // (que no tiene las URLs de imagen, pero el caché local sí)
-            products[updatedIndex] = { ...products[updatedIndex], ...createdOrUpdatedProduct };
-        } else if (createdOrUpdatedProduct) {
-            // Si es un nuevo producto, lo añadimos al array local
-            products.push(createdOrUpdatedProduct);
-        }
-
-        // Actualizamos la interfaz de usuario con los datos locales y el caché de imágenes
-        updateUI();
-
-        e.target.reset();
+        await loadData(); // Recarga los productos del backend, que no contendrán las imágenes
+        e.target.reset(); // Limpia el formulario
 
         editingProductId = null;
         const submitBtn = e.target.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.textContent = 'Agregar Producto';
 
+        // --- Manejo del checkbox
         const featuredCheckbox = document.getElementById('productFeatured');
         if (featuredCheckbox) {
-            featuredCheckbox.checked = false;
+            featuredCheckbox.checked = false; // Asegura que el checkbox se desmarque después de enviar
         }
 
+        // Limpia la vista previa de imágenes y las URLs de Cloudinary temporales
         document.getElementById('imagePreview').innerHTML = '';
         document.getElementById('imagesPreview').innerHTML = '';
-        currentMainImageUrl = '';
-        currentAdditionalImageUrls = [];
+        const uploadedAdditionalImagesInput = document.getElementById('uploadedAdditionalImages');
+        if (uploadedAdditionalImagesInput) {
+            uploadedAdditionalImagesInput.value = '[]';
+        }
+        currentMainImageUrl = ''; // Limpiar URLs temporales de Cloudinary
+        currentAdditionalImageUrls = []; // Limpiar URLs temporales de Cloudinary
 
         if (typeof mostrarAlerta === 'function') {
             mostrarAlerta(message, 'success');
@@ -236,6 +233,7 @@ async function filterProducts() {
                 productsToDisplay = [];
             }
         } else {
+            // Cuando no hay búsqueda, se filtra sobre 'products' cargados desde el backend
             productsToDisplay = products.filter(product => {
                 const categoryMatch = !categoryFilter || product.categoria?.toLowerCase() === categoryFilter.toLowerCase();
                 return categoryMatch;
@@ -268,35 +266,31 @@ function updateProductList(productosToDisplay = null) {
     }
 
     productList.innerHTML = currentProducts.map(product => {
-        // OBTENER IMÁGENES DEL CACHÉ LOCAL DEL NAVEGADOR
+        // Obtener las URLs de las imágenes del caché si existen, de lo contrario usar el placeholder
         const cachedImages = productImagesCache[product.idProducto] || { main: '', additional: [] };
-        const imageUrlToDisplay = cachedImages.main || 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen';
+        const mainImageUrl = cachedImages.main || 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen';
         const additionalImages = cachedImages.additional || [];
 
-        let carouselIndicators = '';
-        let carouselItems = '';
+        // Generar indicadores del carrusel (uno para la imagen principal, más para las adicionales)
+        let carouselIndicators = `<button type="button" data-bs-target="#carousel-${product.idProducto}" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>`;
+        if (additionalImages.length > 0) {
+            carouselIndicators += additionalImages.map((_, index) =>
+                `<button type="button" data-bs-target="#carousel-${product.idProducto}" data-bs-slide-to="${index + 1}" aria-label="Slide ${index + 2}"></button>`
+            ).join('');
+        }
 
-        const allImages = [imageUrlToDisplay, ...additionalImages].filter(url => url);
-
-        if (allImages.length > 0) {
-            carouselIndicators = allImages.map((_, index) => `
-                <button type="button" data-bs-target="#carousel-${product.idProducto}" data-bs-slide-to="${index}" class="${index === 0 ? 'active' : ''}" aria-current="${index === 0 ? 'true' : 'false'}" aria-label="Slide ${index + 1}"></button>
-            `).join('');
-
-            carouselItems = allImages.map((url, index) => `
-                <div class="carousel-item ${index === 0 ? 'active' : ''}">
-                    <img src="${url}" class="d-block w-100" alt="${product.nombreProducto} ${index === 0 ? 'principal' : 'adicional ' + index}" style="height: 200px; object-fit: cover;">
+        // Generar elementos del carrusel (uno para la imagen principal, más para las adicionales)
+        let carouselItems = `
+            <div class="carousel-item active">
+                <img src="${mainImageUrl}" class="d-block w-100" alt="${product.nombreProducto}" style="height: 200px; object-fit: cover;">
+            </div>
+        `;
+        if (additionalImages.length > 0) {
+            carouselItems += additionalImages.map(url => `
+                <div class="carousel-item">
+                    <img src="${url}" class="d-block w-100" alt="${product.nombreProducto} - Imagen adicional" style="height: 200px; object-fit: cover;">
                 </div>
             `).join('');
-        } else {
-            carouselIndicators = `
-                <button type="button" data-bs-target="#carousel-${product.idProducto}" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            `;
-            carouselItems = `
-                <div class="carousel-item active">
-                    <img src="https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen" class="d-block w-100" alt="${product.nombreProducto}" style="height: 200px; object-fit: cover;">
-                </div>
-            `;
         }
 
         return `
@@ -380,33 +374,54 @@ async function editProduct(productId) {
         }
 
         form.elements['name'].value = product.nombreProducto || '';
+        // Asegúrate de que la categoría del producto editado exista en tus defaultCategories
+        // Si no existe, puedes elegir no seleccionarla o revertir a la primera opción.
+        // Aquí se asegura que el valor del select sea la categoría del producto si existe,
+        // o un string vacío si no, lo cual es manejado por el HTML con la opción "Seleccione una categoría".
         form.elements['category'].value = product.categoria || '';
         form.elements['description'].value = product.descripcion || '';
         form.elements['price'].value = product.precio || 0;
         form.elements['stock'].value = product.cantidad || 0;
+
 
         const featuredCheckbox = document.getElementById('productFeatured');
         if (featuredCheckbox) {
             featuredCheckbox.checked = product.featured || false;
         }
 
-        // Cargar las URLs de imágenes DEL CACHÉ LOCAL para edición, si existen
-        const cachedImages = productImagesCache[productId] || { main: '', additional: [] };
-        currentMainImageUrl = cachedImages.main;
-        currentAdditionalImageUrls = [...cachedImages.additional];
-
+        // Cargar las imágenes del caché para la edición
+        const cachedImages = productImagesCache[productId];
         const imagePreview = document.getElementById('imagePreview');
         const imagesPreviewContainer = document.getElementById('imagesPreview');
+        const uploadedAdditionalImagesInput = document.getElementById('uploadedAdditionalImages');
 
-        if (imagePreview) {
-            imagePreview.innerHTML = currentMainImageUrl ? `
-                <div class="position-relative">
-                    <img src="${currentMainImageUrl}" class="img-thumbnail" style="max-height: 200px">
-                </div>
-            ` : '';
+        currentMainImageUrl = '';
+        currentAdditionalImageUrls = [];
+
+        if (imagePreview) imagePreview.innerHTML = '';
+        if (imagesPreviewContainer) imagesPreviewContainer.innerHTML = '';
+        if (uploadedAdditionalImagesInput) uploadedAdditionalImagesInput.value = '[]';
+
+
+        if (cachedImages) {
+            if (cachedImages.main) {
+                currentMainImageUrl = cachedImages.main;
+                if (imagePreview) {
+                    imagePreview.innerHTML = `
+                        <div class="position-relative">
+                            <img src="${currentMainImageUrl}" class="img-thumbnail" style="max-height: 200px">
+                        </div>
+                    `;
+                }
+            }
+            if (cachedImages.additional && cachedImages.additional.length > 0) {
+                currentAdditionalImageUrls = [...cachedImages.additional];
+                if (uploadedAdditionalImagesInput) {
+                    uploadedAdditionalImagesInput.value = JSON.stringify(currentAdditionalImageUrls);
+                }
+                updateAdditionalImagesPreview();
+            }
         }
-
-        updateAdditionalImagesPreview();
 
         editingProductId = productId;
         const submitBtn = form.querySelector('button[type="submit"]');
@@ -430,7 +445,9 @@ async function deleteProduct(productId) {
             await apiFetch(API_PRODUCT_BASE_URL, `/${productId}`, {
                 method: 'DELETE'
             });
-            delete productImagesCache[productId]; // Eliminar también del caché
+            // Eliminar las imágenes del caché al borrar el producto
+            delete productImagesCache[productId];
+
             await loadData();
             if (typeof mostrarAlerta === 'function') {
                 mostrarAlerta('Producto eliminado exitosamente', 'success');
@@ -466,15 +483,9 @@ async function toggleProductFavorite(productId) {
 
         const product = products[productIndex];
         const newFeaturedState = !product.featured;
-        const updatedProduct = { ...product, featured: newFeaturedState };
+        product.featured = newFeaturedState; // Actualiza el estado local del producto
 
-        await apiFetch(API_PRODUCT_BASE_URL, `/${productId}`, {
-            method: 'PUT',
-            body: JSON.stringify(updatedProduct)
-        });
-
-        product.featured = newFeaturedState;
-        updateProductList();
+        updateProductList(); // Re-renderizar la lista para reflejar el cambio visual
 
         if (typeof mostrarAlerta === 'function') {
             mostrarAlerta(`Producto ${newFeaturedState ? 'marcado como favorito' : 'desmarcado de favoritos'}`, 'success');
@@ -483,7 +494,9 @@ async function toggleProductFavorite(productId) {
         }
 
     } catch (error) {
-        console.error('Error al cambiar estado de favorito:', error);
+
+        // Solo por errores internos de JavaScript
+        console.error('Error interno al cambiar estado de favorito en frontend:', error);
         if (typeof mostrarAlerta === 'function') {
             mostrarAlerta(`Error al actualizar favorito: ${error.message}`, 'danger');
         } else {
@@ -502,6 +515,7 @@ function initImageUpload() {
     const uploadMultipleBtn = document.getElementById('uploadMultipleBtn');
     const imagePreview = document.getElementById('imagePreview');
     const imagesPreview = document.getElementById('imagesPreview');
+    const uploadedAdditionalImagesInput = document.getElementById('uploadedAdditionalImages');
 
     if (!uploadImageBtn || !uploadMultipleBtn) {
         console.warn('Botones de carga de imagen de Cloudinary no encontrados. La funcionalidad de carga de imágenes no estará disponible.');
@@ -512,9 +526,7 @@ function initImageUpload() {
         cloudName: cloudinaryConfig.cloudName,
         uploadPreset: cloudinaryConfig.uploadPreset,
         multiple: true,
-        maxFiles: 5,
-        clientAllowedFormats: ["png", "gif", "jpeg", "jpg"],
-        thumbnailTransformation: { width: 100, height: 100, crop: "fill" }
+        maxFiles: 5
     }, (error, result) => {
         if (!error && result && result.event === "success") {
             const imageUrl = result.info.secure_url;
@@ -530,6 +542,9 @@ function initImageUpload() {
                 }
             } else if (uploadWidget.lastButtonClicked === 'additional') {
                 currentAdditionalImageUrls.push(imageUrl);
+                if (uploadedAdditionalImagesInput) {
+                    uploadedAdditionalImagesInput.value = JSON.stringify(currentAdditionalImageUrls);
+                }
                 updateAdditionalImagesPreview();
             }
         } else if (error) {
@@ -543,13 +558,11 @@ function initImageUpload() {
     });
 
     uploadImageBtn.addEventListener('click', () => {
-        uploadWidget.update({ multiple: false });
         uploadWidget.lastButtonClicked = 'main';
         uploadWidget.open();
     });
 
     uploadMultipleBtn.addEventListener('click', () => {
-        uploadWidget.update({ multiple: true, maxFiles: 5 });
         uploadWidget.lastButtonClicked = 'additional';
         uploadWidget.open();
     });
@@ -572,6 +585,9 @@ function initImageUpload() {
 
     window.removeAdditionalImageFromPreview = (index) => {
         currentAdditionalImageUrls.splice(index, 1);
+        if (uploadedAdditionalImagesInput) {
+            uploadedAdditionalImagesInput.value = JSON.stringify(currentAdditionalImageUrls);
+        }
         updateAdditionalImagesPreview();
     };
 }
