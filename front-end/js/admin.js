@@ -1,3 +1,13 @@
+const defaultCategories = [
+    { id: 1, name: "lectura" },
+    { id: 2, name: "deportes" },
+    { id: 3, name: "música" },
+    { id: 4, name: "pintura" },
+    { id: 5, name: "videojuegos" },
+    { id: 6, name: "peliculas" },
+    { id: 7, name: "crochet" }
+];
+
 const formatter = new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
@@ -91,26 +101,28 @@ async function loadData() {
             });
         }
 
-        categories = Array.from(uniqueCategories).map((catName, index) => ({
-            id: index + 1,
-            name: catName
-        }));
-
-        console.log('Categorías extraídas de los productos:', categories);
+        // Si se cargaron categorías desde el backend
+        if (uniqueCategories.size > 0) {
+            categories = Array.from(uniqueCategories).map((catName, index) => ({
+                id: index + 1,
+                name: catName
+            }));
+            console.log('Categorías extraídas de los productos:', categories);
+        } else {
+            
+            console.log('No se encontraron categorías de productos. Usando categorías por defecto.');
+            categories = [...defaultCategories]; 
+        }
 
     } catch (error) {
-        console.error('Error general al cargar datos:', error);
+        console.error('Error general al cargar datos desde el backend. Usando categorías por defecto:', error);
         if (typeof mostrarAlerta === 'function') {
-            mostrarAlerta(`No se pudieron cargar los datos: ${error.message}`, 'danger');
+            mostrarAlerta(`No se pudieron cargar los datos del backend. Usando categorías por defecto: ${error.message}`, 'warning');
         } else {
-            alert(`No se pudieron cargar los datos: ${error.message}`);
+            alert(`No se pudieron cargar los datos del backend. Usando categorías por defecto: ${error.message}`);
         }
-        products = [];
-        categories = [
-            { id: 1, name: "Deportes" },
-            { id: 2, name: "Arte" },
-            { id: 3, name: "Música" }
-        ];
+        products = []; // Limpia los productos si hay un error de carga
+        categories = [...defaultCategories]; // Asegura que se usen las categorías por defecto en caso de error
     }
     updateUI();
 }
@@ -125,7 +137,6 @@ async function handleProductSubmit(e) {
         precio: parseFloat(formData.get('price')),
         categoria: formData.get('category'),
         descripcion: formData.get('description'),
-        
     };
 
     if (!productData.nombreProducto || !productData.cantidad || !productData.precio || !productData.categoria || !productData.descripcion) {
@@ -160,7 +171,7 @@ async function handleProductSubmit(e) {
         const submitBtn = e.target.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.textContent = 'Agregar Producto';
 
-        // --- Manejo del checkbox 
+        // --- Manejo del checkbox
         const featuredCheckbox = document.getElementById('productFeatured');
         if (featuredCheckbox) {
             featuredCheckbox.checked = false; // Asegura que el checkbox se desmarque después de enviar
@@ -352,6 +363,8 @@ async function editProduct(productId) {
         
         const featuredCheckbox = document.getElementById('productFeatured');
         if (featuredCheckbox) {
+            // Asume que si 'product.featured' no existe, es false.
+            // Si el backend no envía 'featured', este valor será 'undefined || false', que es 'false'.
             featuredCheckbox.checked = product.featured || false;
         }
 

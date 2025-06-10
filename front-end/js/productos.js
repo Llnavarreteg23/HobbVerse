@@ -1,8 +1,7 @@
 
 // Importaciones de admin.js
 import { API_BASE_URL, apiFetch, formatter, cloudinaryConfig, getCloudinaryImageUrl } from './admin.js'; 
-// Ajusta la ruta si admin.js no está en el mismo directorio que productos.js.
-// Por ejemplo, si productos.js está en /front-end/js/ y admin.js también, entonces './admin.js' es correcto.
+
 
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
@@ -34,14 +33,7 @@ export default async function renderCategory(category, name) {
             endpoint = `/productos/categoria/${encodeURIComponent(name)}`;
         }
         
-        // Usar la función apiFetch importada de admin.js
-        // Pasamos API_BASE_URL directamente a apiFetch ya que el endpoint ya incluye /productos
-        // NOTA: Si API_PRODUCT_BASE_URL ya es 'https://9s68ixqgw5.us-east-1.awsapprunner.com/productos',
-        // entonces el endpoint debe ser solo lo que viene DESPUÉS de /productos.
-        // EJ: si API_PRODUCT_BASE_URL = '.../productos'
-        // y quieres '.../productos/categoria/X', el endpoint para apiFetch sería '/categoria/X'.
-        // Tu API_PRODUCT_BASE_URL ya está bien definida como `BASE_URL/productos`.
-        // Así que la llamada debe ser apiFetch(API_PRODUCT_BASE_URL, `/${endpoint_relativo}`);
+
         const data = await apiFetch(API_BASE_URL, endpoint); // Usar API_BASE_URL para que apiFetch construya bien la URL
 
         if (!data || data.length === 0) {
