@@ -18,29 +18,21 @@ const formatter = new Intl.NumberFormat('es-CO', {
 const API_BASE_URL = "https://9s68ixqgw5.us-east-1.awsapprunner.com";
 const API_PRODUCT_BASE_URL = `${API_BASE_URL}/productos`;
 
-// Variable global que contendrá el estado de los productos
-// 'products' contendrá la información inicial del backend
-// y luego se modificará con el estado de favoritos en el frontend.
 let products = [];
-let categories = []; // Esta variable ahora siempre será llenada con defaultCategories
-let editingCategoryId = null;
+let categories = [...defaultCategories]; // Las categorías siempre serán las por defecto
+let editingCategoryId = null; // No usado actualmente, pero mantenido
 let editingProductId = null;
 
-// Estas variables mantendrán las URLs de las imágenes subidas a Cloudinary
-// SOLO PARA LA VISTA PREVIA TEMPORAL EN EL FORMULARIO EN EL FRONTEND.
-// NO se enviarán al backend con el producto.
 let currentMainImageUrl = '';
 let currentAdditionalImageUrls = [];
 
-// Nuevo objeto para mapear IDs de producto a URLs de imagen,
-// PERO SOLO DENTRO DE LA SESIÓN ACTUAL DEL NAVEGADOR.
-// Esto permite que las imágenes subidas persistan visualmente mientras
-// la página no se recargue completamente o el navegador no se cierre.
+// productImagesCache persiste a través de la sesión del navegador.
+// Se mantendrá en memoria hasta que la página se recargue o se cierre.
 let productImagesCache = {};
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadData(); // Carga inicial de datos, incluyendo los del backend
+    loadData();
     setupEventListeners();
     initImageUpload();
     setupFilters();
@@ -57,8 +49,6 @@ function setupEventListeners() {
     });
 }
 
-
-// Funciones de Utilidad de la API
 
 async function apiFetch(baseUrl, endpoint, options = {}) {
     const url = `${baseUrl}${endpoint}`;
@@ -95,16 +85,17 @@ async function apiFetch(baseUrl, endpoint, options = {}) {
 
 async function loadData() {
     try {
-        // Se cargan los productos desde el backend
-        products = await apiFetch(API_PRODUCT_BASE_URL, '');
-        console.log('Todos los productos cargados desde el backend:', products);
+        // Obtenemos los productos del backend
+        const fetchedProducts = await apiFetch(API_PRODUCT_BASE_URL, '');
+        console.log('Todos los productos cargados desde el backend:', fetchedProducts);
 
-        // Las categorías se cargan SIEMPRE desde defaultCategories ---
-        categories = [...defaultCategories]; // Asigna una copia de las categorías predefinidas
+        // Ojo: productImagesCache NO se reinicia aquí.
+        // Solo actualizamos la lista de productos principal.
+        products = fetchedProducts;
+
+        // Las categorías siempre se cargan desde defaultCategories
+        categories = [...defaultCategories];
         console.log('Categorías cargadas desde el frontend (por defecto):', categories);
-
-        // Al cargar datos, reiniciamos el caché de imágenes
-        productImagesCache = {};
 
     } catch (error) {
         console.error('Error general al cargar productos desde el backend:', error);
@@ -113,8 +104,7 @@ async function loadData() {
         } else {
             alert(`No se pudieron cargar los productos del backend: ${error.message}`);
         }
-        products = []; // Limpia los productos si hay un error de carga
-
+        products = [];
     }
     updateUI();
 }
@@ -129,10 +119,7 @@ async function handleProductSubmit(e) {
         precio: parseFloat(formData.get('price')),
         categoria: formData.get('category'),
         descripcion: formData.get('description'),
-        // NO se envían las URLs de imágenes al backend.
-        // mainImageUrl: currentMainImageUrl,
-        // additionalImageUrls: currentAdditionalImageUrls,
-        featured: document.getElementById('productFeatured').checked // Asegurarse de enviar el estado de destacado
+        featured: document.getElementById('productFeatured').checked
     };
 
     if (!productData.nombreProducto || !productData.cantidad || !productData.precio || !productData.categoria || !productData.descripcion) {
@@ -146,7 +133,7 @@ async function handleProductSubmit(e) {
 
     try {
         let message = '';
-        let createdOrUpdatedProduct; // Para capturar el producto si el backend lo devuelve
+        let createdOrUpdatedProduct;
 
         if (editingProductId) {
             createdOrUpdatedProduct = await apiFetch(API_PRODUCT_BASE_URL, `/${editingProductId}`, {
@@ -162,34 +149,51 @@ async function handleProductSubmit(e) {
             message = 'Producto agregado exitosamente';
         }
 
-        // Si se creó/actualizó un producto y tenemos sus URLs de imagen en el frontend,
-        // las almacenamos en el caché local.
+        // Si la operación fue exitosa, y tenemos un ID de producto válido:
         if (createdOrUpdatedProduct && createdOrUpdatedProduct.idProducto) {
+            // Guardamos las URLs de imagen actuales en el caché del frontend para este producto.
+            // Esto asegura que la imagen que acabamos de subir se muestre inmediatamente.
             productImagesCache[createdOrUpdatedProduct.idProducto] = {
                 main: currentMainImageUrl,
                 additional: [...currentAdditionalImageUrls]
             };
         }
 
-        await loadData(); // Recarga los datos del backend, que no incluirán las URLs de imagen
-        e.target.reset(); // Limpia el formulario
+        // NO llamamos a loadData() inmediatamente después de una actualización/creación exitosa,
+        // porque eso resetearía el caché de imágenes y no veríamos la imagen recién subida.
+        // En su lugar, actualizamos la lista directamente,
+        // y loadData se llamará de nuevo si la página se recarga o se navega.
+
+        // Actualizamos los productos en el array 'products' localmente si es necesario
+        // (Esto es importante para que el filtro y la edición funcionen con los datos más recientes)
+        const updatedIndex = products.findIndex(p => p.idProducto === createdOrUpdatedProduct.idProducto);
+        if (updatedIndex !== -1) {
+            // Si es una actualización, reemplazamos el producto existente con la respuesta del backend
+            // (que no tiene las URLs de imagen, pero el caché local sí)
+            products[updatedIndex] = { ...products[updatedIndex], ...createdOrUpdatedProduct };
+        } else if (createdOrUpdatedProduct) {
+            // Si es un nuevo producto, lo añadimos al array local
+            products.push(createdOrUpdatedProduct);
+        }
+
+        // Actualizamos la interfaz de usuario con los datos locales y el caché de imágenes
+        updateUI();
+
+        e.target.reset();
 
         editingProductId = null;
         const submitBtn = e.target.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.textContent = 'Agregar Producto';
 
-        // --- Manejo del checkbox
         const featuredCheckbox = document.getElementById('productFeatured');
         if (featuredCheckbox) {
-            featuredCheckbox.checked = false; // Asegura que el checkbox se desmarque después de enviar
+            featuredCheckbox.checked = false;
         }
 
-        // Limpia la vista previa de imágenes y las URLs de Cloudinary temporales
         document.getElementById('imagePreview').innerHTML = '';
         document.getElementById('imagesPreview').innerHTML = '';
-        currentMainImageUrl = ''; // Limpiar URLs temporales de Cloudinary
-        currentAdditionalImageUrls = []; // Limpiar URLs temporales de Cloudinary
-        // No es necesario el input hidden 'uploadedAdditionalImages' si no se envía al backend.
+        currentMainImageUrl = '';
+        currentAdditionalImageUrls = [];
 
         if (typeof mostrarAlerta === 'function') {
             mostrarAlerta(message, 'success');
@@ -232,7 +236,6 @@ async function filterProducts() {
                 productsToDisplay = [];
             }
         } else {
-            // Cuando no hay búsqueda, se filtra sobre 'products' cargados desde el backend
             productsToDisplay = products.filter(product => {
                 const categoryMatch = !categoryFilter || product.categoria?.toLowerCase() === categoryFilter.toLowerCase();
                 return categoryMatch;
@@ -286,7 +289,6 @@ function updateProductList(productosToDisplay = null) {
                 </div>
             `).join('');
         } else {
-            // Si no hay imágenes (ni siquiera el placeholder si se filtró por URL vacía), mostrar solo el placeholder
             carouselIndicators = `
                 <button type="button" data-bs-target="#carousel-${product.idProducto}" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
             `;
@@ -396,7 +398,6 @@ async function editProduct(productId) {
         const imagePreview = document.getElementById('imagePreview');
         const imagesPreviewContainer = document.getElementById('imagesPreview');
 
-        // Mostrar la imagen principal si existe en el caché
         if (imagePreview) {
             imagePreview.innerHTML = currentMainImageUrl ? `
                 <div class="position-relative">
@@ -405,8 +406,7 @@ async function editProduct(productId) {
             ` : '';
         }
 
-        // Mostrar las imágenes adicionales si existen en el caché
-        updateAdditionalImagesPreview(); // Llama a la función para renderizar las imágenes adicionales desde currentAdditionalImageUrls
+        updateAdditionalImagesPreview();
 
         editingProductId = productId;
         const submitBtn = form.querySelector('button[type="submit"]');
@@ -430,8 +430,7 @@ async function deleteProduct(productId) {
             await apiFetch(API_PRODUCT_BASE_URL, `/${productId}`, {
                 method: 'DELETE'
             });
-            // Si el producto se elimina, también eliminarlo del caché de imágenes
-            delete productImagesCache[productId];
+            delete productImagesCache[productId]; // Eliminar también del caché
             await loadData();
             if (typeof mostrarAlerta === 'function') {
                 mostrarAlerta('Producto eliminado exitosamente', 'success');
@@ -467,21 +466,15 @@ async function toggleProductFavorite(productId) {
 
         const product = products[productIndex];
         const newFeaturedState = !product.featured;
-        // Se actualiza el estado local y se envía la actualización al backend
         const updatedProduct = { ...product, featured: newFeaturedState };
 
-        // Asegúrate de que el backend solo reciba el campo 'featured' si no quieres enviar otros datos
-        // o si el endpoint PUT está diseñado para actualizar solo los campos provistos.
-        // Aquí se envía todo el objeto actualizado, pero si el backend no lo procesa,
-        // esto no causará un error siempre que los demás campos sean válidos.
         await apiFetch(API_PRODUCT_BASE_URL, `/${productId}`, {
             method: 'PUT',
             body: JSON.stringify(updatedProduct)
         });
 
-        // Solo si la llamada al API fue exitosa, actualizamos el estado local
         product.featured = newFeaturedState;
-        updateProductList(); // Re-renderizar la lista para reflejar el cambio visual
+        updateProductList();
 
         if (typeof mostrarAlerta === 'function') {
             mostrarAlerta(`Producto ${newFeaturedState ? 'marcado como favorito' : 'desmarcado de favoritos'}`, 'success');
@@ -509,7 +502,6 @@ function initImageUpload() {
     const uploadMultipleBtn = document.getElementById('uploadMultipleBtn');
     const imagePreview = document.getElementById('imagePreview');
     const imagesPreview = document.getElementById('imagesPreview');
-    // const uploadedAdditionalImagesInput = document.getElementById('uploadedAdditionalImages'); // No es necesario si no se envía al backend
 
     if (!uploadImageBtn || !uploadMultipleBtn) {
         console.warn('Botones de carga de imagen de Cloudinary no encontrados. La funcionalidad de carga de imágenes no estará disponible.');
@@ -520,7 +512,7 @@ function initImageUpload() {
         cloudName: cloudinaryConfig.cloudName,
         uploadPreset: cloudinaryConfig.uploadPreset,
         multiple: true,
-        maxFiles: 5, // Puedes ajustar este límite según tus necesidades
+        maxFiles: 5,
         clientAllowedFormats: ["png", "gif", "jpeg", "jpg"],
         thumbnailTransformation: { width: 100, height: 100, crop: "fill" }
     }, (error, result) => {
@@ -551,13 +543,13 @@ function initImageUpload() {
     });
 
     uploadImageBtn.addEventListener('click', () => {
-        uploadWidget.update({ multiple: false }); // Para asegurar que se carga una sola imagen principal
+        uploadWidget.update({ multiple: false });
         uploadWidget.lastButtonClicked = 'main';
         uploadWidget.open();
     });
 
     uploadMultipleBtn.addEventListener('click', () => {
-        uploadWidget.update({ multiple: true, maxFiles: 5 }); // Para permitir múltiples imágenes adicionales
+        uploadWidget.update({ multiple: true, maxFiles: 5 });
         uploadWidget.lastButtonClicked = 'additional';
         uploadWidget.open();
     });
