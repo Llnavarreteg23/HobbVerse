@@ -1,8 +1,8 @@
-// Importaciones y selecciones de elementos del DOM se mantienen igual
-import * as adminFunctions from '/front-end/js/admin.js';
-// **IMPORTANTE: Asegúrate de que cloudinaryUtils y cloudinaryConfig estén disponibles**
-// Si están en un archivo separado, necesitas importarlos:
-cloudinaryConfig; // Ajusta la ruta
+
+// Importaciones de admin.js
+import { API_BASE_URL, apiFetch, formatter, cloudinaryConfig, getCloudinaryImageUrl } from './admin.js'; 
+// Ajusta la ruta si admin.js no está en el mismo directorio que productos.js.
+// Por ejemplo, si productos.js está en /front-end/js/ y admin.js también, entonces './admin.js' es correcto.
 
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
@@ -19,10 +19,6 @@ const categoryIcons = {
     "crochet": "bi-scissors"
 };
 
-// **NUEVO: Definir la URL base de tu backend**
-// Reemplaza con la URL pública de tu backend en AWS App Runner
-const API_BASE_URL = "https://<subdominio>.us-east-1.awsapprunner.com"; 
-
 // Variable para almacenar los productos cargados y evitar múltiples peticiones
 let cachedProducts = [];
 
@@ -33,29 +29,28 @@ export default async function renderCategory(category, name) {
     let productosFiltrados = [];
 
     try {
-        let endpoint = `${API_BASE_URL}/productos`;
+        let endpoint = `/productos`; // Endpoint relativo a API_PRODUCT_BASE_URL
         if (name) {
-            // Si se especifica una categoría, usa el endpoint de categoría
-            endpoint = `${API_BASE_URL}/productos/categoria/${name}`;
+            endpoint = `/productos/categoria/${encodeURIComponent(name)}`;
         }
+        
+        // Usar la función apiFetch importada de admin.js
+        // Pasamos API_BASE_URL directamente a apiFetch ya que el endpoint ya incluye /productos
+        // NOTA: Si API_PRODUCT_BASE_URL ya es 'https://9s68ixqgw5.us-east-1.awsapprunner.com/productos',
+        // entonces el endpoint debe ser solo lo que viene DESPUÉS de /productos.
+        // EJ: si API_PRODUCT_BASE_URL = '.../productos'
+        // y quieres '.../productos/categoria/X', el endpoint para apiFetch sería '/categoria/X'.
+        // Tu API_PRODUCT_BASE_URL ya está bien definida como `BASE_URL/productos`.
+        // Así que la llamada debe ser apiFetch(API_PRODUCT_BASE_URL, `/${endpoint_relativo}`);
+        const data = await apiFetch(API_BASE_URL, endpoint); // Usar API_BASE_URL para que apiFetch construya bien la URL
 
-        const response = await fetch(endpoint);
-        if (!response.ok) {
-            if (response.status === 204) { // No Content, si no hay productos en la categoría
-                productosFiltrados = [];
-            } else {
-                throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
-            }
+        if (!data || data.length === 0) {
+            productosFiltrados = [];
         } else {
-            const data = await response.json();
             productosFiltrados = data.map(p => {
-                // **IMPORTANTE: ASUMIMOS que el backend envía publicId para las imágenes.**
-                // Si tu backend no envía 'mainImagePublicId' o 'additionalImagePublicIds'
-                // directamente en la respuesta JSON de Producto, estas propiedades serán undefined.
-                // Deberás modificar el backend para que incluya estos publicIds,
-                // o tener una lógica en el frontend para asociarlos (ej. por convención de nombre).
-                const mainImagePublicId = p.mainImagePublicId || null; // O de p.imagenPublicId si lo llamas así
-                const additionalImagePublicIds = p.additionalImagePublicIds || []; // O de p.imagenesAdicionalesPublicIds
+                // Asumimos que el backend envía 'mainImagePublicId' y 'additionalImagePublicIds'
+                const mainImagePublicId = p.mainImagePublicId || null;
+                const additionalImagePublicIds = p.additionalImagePublicIds || [];
 
                 return {
                     id: p.idProducto,
@@ -64,9 +59,10 @@ export default async function renderCategory(category, name) {
                     price: p.precio,
                     category: p.categoria,
                     // **Integración de Cloudinary:** Genera las URLs de imagen usando publicId
-                    mainImage: mainImagePublicId ? cloudinaryUtils.getOptimizedUrl(mainImagePublicId, { width: 400, crop: "scale" }) : 'https://via.placeholder.com/300?text=No+Image', // URL optimizada o placeholder
-                    additionalImages: additionalImagePublicIds.map(id => cloudinaryUtils.getOptimizedUrl(id, { width: 400, crop: "scale" })),
-                    // featured: p.featured // Si tu backend no tiene 'featured', esta línea se ignoraría o daría undefined
+                    // Usar la función importada de admin.js
+                    mainImage: mainImagePublicId ? getCloudinaryImageUrl(mainImagePublicId, { width: 300, height: 200, crop: "fill" }) : 'https://via.placeholder.com/300x200?text=No+Image',
+                    additionalImages: additionalImagePublicIds.map(id => getCloudinaryImageUrl(id, { width: 300, height: 200, crop: "fill" })),
+                    featured: p.featured || false // Asegurarse de que featured esté presente
                 };
             });
             cachedProducts = productosFiltrados; // Cachear los productos cargados
@@ -98,15 +94,15 @@ export default async function renderCategory(category, name) {
                     <div class="carousel-inner">
                         <div class="carousel-item active">
                             <img src="${producto.mainImage}" class="d-block w-100" 
-                                 alt="${producto.name}">
+                                 alt="${producto.name}" style="height: 200px; object-fit: cover;">
                         </div>
                         ${(producto.additionalImages || []).map(img => `
                             <div class="carousel-item">
-                                <img src="${img}" class="d-block w-100" alt="Imagen adicional">
+                                <img src="${img}" class="d-block w-100" alt="Imagen adicional" style="height: 200px; object-fit: cover;">
                             </div>
                         `).join('')}
                     </div>
-                    ${(producto.additionalImages || []).length > 0 ? `
+                    ${(producto.additionalImages || []).length > 0 || producto.mainImage !== 'https://via.placeholder.com/300x200?text=No+Image' ? `
                         <button class="carousel-control-prev" type="button" 
                                 data-bs-target="#carousel-${producto.id}" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
@@ -122,7 +118,7 @@ export default async function renderCategory(category, name) {
                 <div class="product-details">
                     <h3>${producto.name}</h3>
                     ${producto.description ? `<p>${producto.description}</p>` : ''}
-                    <p class="price">$${(producto.price).toLocaleString()}</p>
+                    <p class="price">${formatter.format(producto.price)}</p> 
                     ${producto.featured ? '<span class="badge bg-warning">Destacado</span>' : ''}
                     <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
                         Agregar al carrito
@@ -184,10 +180,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // cargarProductosDestacados se mantiene igual
 export function cargarProductosDestacados() {
-    const destacados = cachedProducts.filter(producto => 
-        producto.featured === true || producto.featured === 'on' || producto.featured === 'true'
+    // Los productos destacados se cargan ahora con 'featured' del backend
+    return cachedProducts.filter(producto => 
+        producto.featured === true
     );
-    return destacados;
+}
+
+// agregarAlCarrito se mantiene igual
+export function agregarAlCarrito(productoId) {
+    const carrito = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
+    const producto = cachedProducts.find(p => p.id == productoId);
+    
+    if (producto) {
+        const itemExistente = carrito.find(item => item.productoId == productoId);
+        
+        if (itemExistente) {
+            itemExistente.cantidad += 1;
+        } else {
+            carrito.push({
+                productoId: producto.id,
+                nombre: producto.name,
+                precio: producto.price,
+                imagen: producto.mainImage, // Usar la imagen principal 
+                cantidad: 1
+            });
+        }
+        
+        localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
+        alert('Producto agregado al carrito');
+    } else {
+        console.error('Producto no encontrado en los productos cacheados:', productoId);
+        alert('No se pudo agregar el producto al carrito. Producto no encontrado.');
+    }
 }
 
 // agregarAlCarrito se mantiene igual

@@ -125,8 +125,7 @@ async function handleProductSubmit(e) {
         precio: parseFloat(formData.get('price')),
         categoria: formData.get('category'),
         descripcion: formData.get('description'),
-       
-        featured: formData.get('featured') === 'on' // Este sí se envía al backend
+        
     };
 
     if (!productData.nombreProducto || !productData.cantidad || !productData.precio || !productData.categoria || !productData.descripcion) {
@@ -155,16 +154,19 @@ async function handleProductSubmit(e) {
         }
 
         await loadData();
-        e.target.reset();
+        e.target.reset(); // Limpia el formulario
 
         editingProductId = null;
         const submitBtn = e.target.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.textContent = 'Agregar Producto';
+
+        // --- Manejo del checkbox 
         const featuredCheckbox = document.getElementById('productFeatured');
-        if (featuredCheckbox) featuredCheckbox.checked = false;
+        if (featuredCheckbox) {
+            featuredCheckbox.checked = false; // Asegura que el checkbox se desmarque después de enviar
+        }
 
         // Limpia la vista previa de imágenes y las URLs de Cloudinary temporales
-        
         document.getElementById('imagePreview').innerHTML = '';
         document.getElementById('imagesPreview').innerHTML = '';
         const uploadedAdditionalImagesInput = document.getElementById('uploadedAdditionalImages');
