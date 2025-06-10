@@ -15,23 +15,7 @@ const categoryIcons = {
     "crochet": "bi-scissors"
 };
 
-// Función para obtener los productos cargados, si aún no están, espera por ellos.
-// Necesitamos un mecanismo para saber cuándo `admin.js` ha terminado de cargar.
-// La forma más robusta sería que `admin.js` exportara una promesa o un getter para `products`
-// que se resolviera una vez que `loadData` ha terminado.
-// Para este ejemplo, asumiremos que `adminFunctions.products` estará eventualmente poblado
-// después del 'DOMContentLoaded' en admin.js.
 
-// Una forma más segura de obtener los productos del admin.js:
-// Podríamos esperar a que `adminFunctions.products` tenga datos.
-// Esto es un poco hacky sin un evento o promesa de `admin.js`,
-// pero funcionará si `loadData` en `admin.js` se ejecuta antes de que necesites los datos aquí.
-// Si `admin.js` fuera un módulo de un framework, tendrías un estado global o un store.
-
-// Para este escenario, la forma más directa sería que `admin.js` exportara una función asíncrona
-// que devolviera los productos ya cargados.
-// Pero dado que pediste "sin modificar nada más del código" (de productos.js),
-// asumiré que el `products` de `adminFunctions` será accesible cuando se necesite.
 
 // Modificamos la función `renderCategory` para que sea `async` y cargue los productos del backend
 export default async function renderCategory(category, name) {
@@ -191,38 +175,51 @@ export function cargarProductosDestacados() {
  * @param {string} productoId - ID del producto a agregar
  */
 export function agregarAlCarrito(productoId) {
-    // Obtener el carrito actual o crear uno nuevo
+    console.log("--- Inicia agregarAlCarrito ---");
+    console.log("ID del producto recibido:", productoId);
+
     const carrito = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
+    console.log("Carrito actual (desde localStorage):", carrito);
 
     // Obtener todos los productos de adminFunctions.products
     let allProducts = adminFunctions.products || [];
+    console.log("Todos los productos disponibles (desde adminFunctions.products):", allProducts);
 
-    // Buscar el producto por ID (ahora usa idProducto)
+    // Buscar el producto por ID
     const producto = allProducts.find(p => p.idProducto == productoId);
 
     if (producto) {
+        console.log("¡Producto encontrado!", producto);
         // Verificar si el producto ya está en el carrito
         const itemExistente = carrito.find(item => item.productoId == productoId);
 
         if (itemExistente) {
             itemExistente.cantidad += 1;
+            console.log("Producto ya en el carrito, cantidad actualizada:", itemExistente.cantidad);
         } else {
-            carrito.push({
+            const newItem = {
                 productoId: productoId,
-                nombre: producto.nombreProducto, // Usa nombreProducto
-                precio: producto.precio,        // Usa precio
-                imagen: producto.mainImage || 'https://via.placeholder.com/150', // Usa mainImage
+                nombre: producto.nombreProducto,
+                precio: producto.precio,
+                imagen: producto.mainImage || 'https://via.placeholder.com/150',
                 cantidad: 1
-            });
+            };
+            carrito.push(newItem);
+            console.log("Nuevo producto añadido al carrito:", newItem);
         }
 
         localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
+        console.log("Carrito guardado en localStorage:", JSON.parse(localStorage.getItem('hobbverse_carrito')));
         alert('Producto agregado al carrito');
-    } else {
-        console.error('Producto no encontrado:', productoId);
-    }
-}
 
+        // Llama a la función para actualizar el contador del carrito si la tienes
+        // updateCartCount();
+    } else {
+        console.error('Producto no encontrado en la lista de productos disponibles:', productoId);
+        // Si ves este error, el problema es que `allProducts` está vacío o el ID no coincide.
+    }
+    console.log("--- Termina agregarAlCarrito ---");
+}
 /**
  * Formatea un precio como moneda colombiana
  * @param {number} precio - El precio a formatear
