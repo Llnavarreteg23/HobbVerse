@@ -112,7 +112,7 @@ function saveProductImagesToLocalStorage(productId, mainImageUrl, additionalImag
     }
 }
 
-export function getProductImagesFromLocalStorage(productId) {
+function getProductImagesFromLocalStorage(productId) {
     try {
         const imageDataString = localStorage.getItem(`productImages_${productId}`);
         if (imageDataString) {
