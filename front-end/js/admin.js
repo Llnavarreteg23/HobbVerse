@@ -81,18 +81,36 @@ function saveToLocalStorage() {
 function initializeCloudinary() {
     try {
         console.log('Inicializando Cloudinary...');
+        
+        // Configuración de Cloudinary con credenciales actualizadas
+        // Configuración global para uso de API si es necesario
+        if (typeof cloudinary !== 'undefined' && cloudinary.config) {
+            cloudinary.config({
+                cloud_name: 'diljcypxv',
+                api_key: '823799319284266',
+                api_secret: 'dcz0ojlgHEVSodJh74goX19jrHs'
+            });
+        }
+        
         // Widget para imagen principal
         cloudinaryWidget = cloudinary.createUploadWidget(
             {
                 cloudName: 'diljcypxv',
-                uploadPreset: 'hobbverse',
+                uploadPreset: 'hobbverse_unsigned', // Usando el preset actualizado
+                apiKey: '823799319284266',
                 sources: ['local', 'url', 'camera'],
                 multiple: false,
-                maxFiles: 1
+                maxFiles: 1,
+                folder: 'hobbverse_products', // Organizar en carpeta
+                clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif'], // Formatos permitidos
+                showAdvancedOptions: false, // Simplificar interfaz
+                cropping: false, // Desactivar recorte por defecto
+                debug: false // Activar solo para depuración
             },
             (error, result) => {
                 if (error) {
                     console.error('Error en widget de Cloudinary:', error);
+                    alert('Error al cargar imagen: ' + (error.message || 'Verifica tu conexión a internet'));
                 }
                 
                 if (!error && result && result.event === "success") {
@@ -111,14 +129,20 @@ function initializeCloudinary() {
         multipleImagesWidget = cloudinary.createUploadWidget(
             {
                 cloudName: 'diljcypxv',
-                uploadPreset: 'hobbverse',
+                uploadPreset: 'hobbverse_unsigned', // Usando el preset actualizado
+                apiKey: '823799319284266',
                 sources: ['local', 'url', 'camera'],
                 multiple: true,
-                maxFiles: 5
+                maxFiles: 5,
+                folder: 'hobbverse_products', // Organizar en carpeta
+                clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif'], // Formatos permitidos
+                showAdvancedOptions: false, // Simplificar interfaz
+                cropping: false // Desactivar recorte por defecto
             },
             (error, result) => {
                 if (error) {
                     console.error('Error en widget múltiple de Cloudinary:', error);
+                    alert('Error al cargar imágenes adicionales: ' + (error.message || 'Verifica tu conexión a internet'));
                 }
                 
                 if (!error && result && result.event === "success") {
@@ -138,7 +162,7 @@ function initializeCloudinary() {
         console.log('Cloudinary inicializado correctamente');
     } catch (error) {
         console.error('Error al inicializar Cloudinary:', error);
-        alert('No se pudo inicializar el cargador de imágenes. Algunas funciones pueden no estar disponibles.');
+        alert('No se pudo inicializar el cargador de imágenes. Asegúrate de que el script de Cloudinary esté cargado correctamente.');
     }
 }
 
