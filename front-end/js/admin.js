@@ -1,12 +1,15 @@
-const formatter = new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0
-});
+const defaultCategories = [
+    { id: 1, name: "Lectura" },
+    { id: 2, name: "Deportes" },
+    { id: 3, name: "Música" },
+    { id: 4, name: "Pintura" },
+    { id: 5, name: "Videojuegos" },
+    { id: 6, name: "Peliculas" },
+    { id: 7, name: "Crochet" }
+];
 
+let categories = [...defaultCategories];
 let products = [];
-let categories = [];
-let editingCategoryId = null;
 let editingProductId = null;
 let imageCount = 0;
 
@@ -393,19 +396,17 @@ function updateUI() {
 
 function updateCategoryList() {
     const categoryList = document.getElementById('categoryList');
-    if (!categoryList) return;
-    
+    if (!categoryList) {
+        console.warn('Contenedor de categorías no encontrado.');
+        return;
+    }
+
     categoryList.innerHTML = categories.map(category => `
-        <li class="category-item">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
             ${category.name}
-            <div>
-                <button class="btn btn-sm btn-outline-primary" onclick="editCategory(${category.id})">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${category.id})">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
+            <button class="btn btn-sm btn-danger" onclick="deleteCategory(${category.id})">
+                <i class="bi bi-trash"></i>
+            </button>
         </li>
     `).join('');
 }
@@ -547,12 +548,12 @@ function updateCategorySelect() {
     if (categorySelects.length === 0) return;
     
     const options = `
-        ${document.querySelector('#categoryFilter') ? '<option value="">Todas las categorías</option>' : ''}
-        ${categories.map(category => 
+        ${document.querySelector('#categoryFilter') ? '<option value="">Ver todas las categorías</option>' : ''}
+        ${categories.map(category =>
             `<option value="${category.name}">${category.name}</option>`
         ).join('')}
     `;
-    
+
     categorySelects.forEach(select => {
         const currentValue = select.value;
         select.innerHTML = options;
@@ -602,9 +603,8 @@ async function editProduct(productId) {
         return;
     }
 
-    const form = document.getElementById('productForm');
-    if (!form) {
-        console.error('Formulario no encontrado');
+    if (products.length === 0) {
+        productList.innerHTML = '<div class="text-center text-muted">No hay productos disponibles.</div>';
         return;
     }
     

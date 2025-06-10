@@ -1,4 +1,4 @@
-import * as adminFunctions from '/front-end/js/admin.js';
+import * as adminFunctions from '/front-end/js/admin.js'; // Importa todas las funciones exportadas de admin.js
 
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
@@ -15,23 +15,24 @@ const categoryIcons = {
     "crochet": "bi-scissors"
 };
 
-export default function renderCategory(category, name) {
-    // Obtener productos
-    const productosNuevos = JSON.parse(localStorage.getItem('productos') || '[]');
-    const productosAntiguos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
 
-    // Combinar productos y eliminar duplicados por ID
-    const todosLosProductos = [...productosNuevos, ...productosAntiguos].reduce((acc, producto) => {
-        if (!acc.find(p => p.id === producto.id)) {
-            acc.push(producto);
-        }
-        return acc;
-    }, []);
+
+// Modificamos la función `renderCategory` para que sea `async` y cargue los productos del backend
+export default async function renderCategory(category, name) {
+    // Si adminFunctions.products aún no está cargado (array vacío), espera un poco.
+    // Esto es una solución temporal. Idealmente, admin.js debería exportar una promesa
+    // que se resuelva cuando los productos estén listos.
+    let allProducts = adminFunctions.products;
+    while (!allProducts || allProducts.length === 0) {
+        console.log("Esperando que admin.js cargue los productos...");
+        await new Promise(resolve => setTimeout(resolve, 100)); // Espera 100ms
+        allProducts = adminFunctions.products;
+    }
 
     // Filtrar por categoría si se especifica
-    const productosFiltrados = name ? 
-        todosLosProductos.filter(p => p.category.toLowerCase() === name.toLowerCase()) : 
-        todosLosProductos;
+    const productosFiltrados = name ?
+        allProducts.filter(p => p.categoria?.toLowerCase() === name.toLowerCase()) :
+        allProducts; // Usa product.categoria, no product.category, según tu admin.js
 
     hobbieImageContainer.innerHTML = "";
 
@@ -39,46 +40,66 @@ export default function renderCategory(category, name) {
         productosFiltrados.forEach(producto => {
             const card = document.createElement("div");
             card.className = "producto-card";
+
+            // Las propiedades mainImage y additionalImages ya están en el producto
+            // gracias a que admin.js las adjuntó desde localStorage.
+            const mainImageUrl = producto.mainImage || 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen';
+            const additionalImages = producto.additionalImages || [];
+
+            let carouselIndicators = `
+                <button type="button" data-bs-target="#carousel-${producto.idProducto}"
+                        data-bs-slide-to="0" class="active"></button>
+            `;
+            additionalImages.forEach((_, index) => {
+                carouselIndicators += `
+                    <button type="button" data-bs-target="#carousel-${producto.idProducto}"
+                            data-bs-slide-to="${index + 1}"></button>
+                `;
+            });
+
+            let carouselItems = `
+                <div class="carousel-item active">
+                    <img src="${mainImageUrl}" class="d-block w-100"
+                            alt="${producto.nombreProducto}" style="object-fit: cover; height: 200px;">
+                </div>
+            `;
+            additionalImages.forEach(img => {
+                carouselItems += `
+                    <div class="carousel-item">
+                        <img src="${img}" class="d-block w-100" alt="Imagen adicional" style="object-fit: cover; height: 200px;">
+                    </div>
+                `;
+            });
+
+            const needsCarouselControls = (additionalImages.length > 0 || mainImageUrl !== 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen');
+
             card.innerHTML = `
-                <div id="carousel-${producto.id}" class="carousel slide" data-bs-ride="carousel">
+                <div id="carousel-${producto.idProducto}" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carousel-${producto.id}" 
-                                data-bs-slide-to="0" class="active"></button>
-                        ${(producto.additionalImages || []).map((_, index) => `
-                            <button type="button" data-bs-target="#carousel-${producto.id}" 
-                                    data-bs-slide-to="${index + 1}"></button>
-                        `).join('')}
+                        ${carouselIndicators}
                     </div>
                     <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="${producto.mainImage || producto.imagen}" class="d-block w-100" 
-                                 alt="${producto.name || producto.nombre}">
-                        </div>
-                        ${(producto.additionalImages || []).map(img => `
-                            <div class="carousel-item">
-                                <img src="${img}" class="d-block w-100" alt="Imagen adicional">
-                            </div>
-                        `).join('')}
+                        ${carouselItems}
                     </div>
-                    ${(producto.additionalImages || []).length > 0 ? `
-                        <button class="carousel-control-prev" type="button" 
-                                data-bs-target="#carousel-${producto.id}" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon"></span>
+                    ${needsCarouselControls ? `
+                        <button class="carousel-control-prev" type="button"
+                                data-bs-target="#carousel-${producto.idProducto}" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Anterior</span>
                         </button>
-                        <button class="carousel-control-next" type="button" 
-                                data-bs-target="#carousel-${producto.id}" data-bs-slide="next">
-                            <span class="carousel-control-next-icon"></span>
+                        <button class="carousel-control-next" type="button"
+                                data-bs-target="#carousel-${producto.idProducto}" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Siguiente</span>
                         </button>
                     ` : ''}
                 </div>
                 <div class="product-details">
-                    <h3>${producto.name || producto.nombre}</h3>
-                    ${producto.description ? `<p>${producto.description}</p>` : ''}
-                    <p class="price">$${(producto.price || producto.precio).toLocaleString()}</p>
+                    <h3>${producto.nombreProducto}</h3>
+                    ${producto.descripcion ? `<p>${producto.descripcion}</p>` : ''}
+                    <p class="price">${adminFunctions.formatter.format(producto.precio)}</p>
                     ${producto.featured ? '<span class="badge bg-warning">Destacado</span>' : ''}
-                    <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
+                    <button class="buy-button" onclick="agregarAlCarrito('${producto.idProducto}')">
                         Agregar al carrito
                     </button>
                 </div>
@@ -88,7 +109,7 @@ export default function renderCategory(category, name) {
     } else {
         hobbieImageContainer.innerHTML = `
             <div class="no-products">
-                <p>No hay productos disponibles en esta categoría</p>
+                <p>No hay productos disponibles en esta categoría.</p>
             </div>
         `;
     }
@@ -101,7 +122,7 @@ export default function renderCategory(category, name) {
 }
 
 Array.from(hobbieClicked).forEach(link => {
-    link.addEventListener("click", function(event) {
+    link.addEventListener("click", async function(event) { // Make the event listener async
         event.preventDefault();
 
         Array.from(hobbieClicked).forEach(item => item.classList.remove("selected"));
@@ -115,13 +136,13 @@ Array.from(hobbieClicked).forEach(link => {
 
         iconSelected.className = categoryIcons[category];
 
-        renderCategory(category, name);
+        await renderCategory(category, name); // Await the async function
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("Página cargada, verificando productos en localStorage...");
-    
+document.addEventListener("DOMContentLoaded", async function () { // Make DOMContentLoaded listener async
+    console.log("Página cargada, verificando productos de la base de datos...");
+
     const defaultCategoryLink = Array.from(hobbieClicked).find(link => link.textContent.trim() === "Lectura");
 
     if (defaultCategoryLink) {
@@ -131,27 +152,21 @@ document.addEventListener("DOMContentLoaded", function () {
         iconSelected.className = categoryIcons[defaultCategoryLink.dataset.category];
     }
 
-    renderCategory("lectura", "Lectura");
+    await renderCategory("lectura", "Lectura"); // Await the initial render
 });
 
 /**
- * Carga los productos destacados desde el almacenamiento local
+ * Carga los productos destacados desde la base de datos (vía adminFunctions.products)
  * @returns {Array} Array de productos destacados
  */
 export function cargarProductosDestacados() {
-    // Obtener productos del almacenamiento local
-    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
-    
-    
-    if (!productos.length) {
-        productos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
-    }
-    
+    let productsFromAdmin = adminFunctions.products || []; // Obtiene los productos de admin.js
+
     // Filtra solo los productos destacados
-    const destacados = productos.filter(producto => 
+    const destacados = productsFromAdmin.filter(producto =>
         producto.featured === true || producto.featured === 'on' || producto.featured === 'true'
     );
-    
+
     return destacados;
 }
 
@@ -160,75 +175,87 @@ export function cargarProductosDestacados() {
  * @param {string} productoId - ID del producto a agregar
  */
 export function agregarAlCarrito(productoId) {
-    // Obtener el carrito actual o crear uno nuevo
+    console.log("--- Inicia agregarAlCarrito ---");
+    console.log("ID del producto recibido:", productoId);
+
     const carrito = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
-    
-    // Obtener todos los productos
-    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
-    if (!productos.length) {
-        productos = JSON.parse(localStorage.getItem('hobbverse_products') || '[]');
-    }
-    
+    console.log("Carrito actual (desde localStorage):", carrito);
+
+    // Obtener todos los productos de adminFunctions.products
+    let allProducts = adminFunctions.products || [];
+    console.log("Todos los productos disponibles (desde adminFunctions.products):", allProducts);
+
     // Buscar el producto por ID
-    const producto = productos.find(p => p.id == productoId);
-    
+    const producto = allProducts.find(p => p.idProducto == productoId);
+
     if (producto) {
+        console.log("¡Producto encontrado!", producto);
         // Verificar si el producto ya está en el carrito
         const itemExistente = carrito.find(item => item.productoId == productoId);
-        
+
         if (itemExistente) {
             itemExistente.cantidad += 1;
+            console.log("Producto ya en el carrito, cantidad actualizada:", itemExistente.cantidad);
         } else {
-            carrito.push({
+            const newItem = {
                 productoId: productoId,
-                nombre: producto.name,
-                precio: producto.price,
-                imagen: producto.mainImage,
+                nombre: producto.nombreProducto,
+                precio: producto.precio,
+                imagen: producto.mainImage || 'https://via.placeholder.com/150',
                 cantidad: 1
-            });
+            };
+            carrito.push(newItem);
+            console.log("Nuevo producto añadido al carrito:", newItem);
         }
-        
-        localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
-        alert('Producto agregado al carrito');
-    } else {
-        console.error('Producto no encontrado:', productoId);
-    }
-}
 
+        localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
+        console.log("Carrito guardado en localStorage:", JSON.parse(localStorage.getItem('hobbverse_carrito')));
+        alert('Producto agregado al carrito');
+
+        // Llama a la función para actualizar el contador del carrito si la tienes
+        // updateCartCount();
+    } else {
+        console.error('Producto no encontrado en la lista de productos disponibles:', productoId);
+        // Si ves este error, el problema es que `allProducts` está vacío o el ID no coincide.
+    }
+    console.log("--- Termina agregarAlCarrito ---");
+}
 /**
  * Formatea un precio como moneda colombiana
  * @param {number} precio - El precio a formatear
  * @returns {string} El precio formateado
  */
 export function formatearPrecioCOP(precio) {
-    return new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        minimumFractionDigits: 0
-    }).format(precio);
+    // Usa el formatter exportado de adminFunctions
+    return adminFunctions.formatter.format(precio);
 }
 
 /**
- * Carga todos los productos desde el almacenamiento local
+ * Carga todos los productos desde la base de datos (vía adminFunctions.products)
  * @returns {Array} Array de todos los productos
  */
 export function cargarTodosLosProductos() {
-    let productos = JSON.parse(localStorage.getItem('productos') || '[]');
-    return productos;
+    return adminFunctions.products || []; // Obtiene los productos de admin.js
 }
 
 /**
  * Renderiza los productos en el contenedor especificado
  * @param {string} categoria - Categoría para filtrar los productos (opcional)
  */
-export function renderizarProductos(categoria = null) {
-    const productos = cargarTodosLosProductos();
-    const productosFiltrados = categoria ? 
-        productos.filter(p => p.category.toLowerCase() === categoria.toLowerCase()) : 
-        productos;
+export async function renderizarProductos(categoria = null) { // Make this async too
+    let productsToRender = adminFunctions.products;
+    while (!productsToRender || productsToRender.length === 0) {
+        console.log("Esperando que admin.js cargue los productos para renderizarProductos...");
+        await new Promise(resolve => setTimeout(resolve, 100)); // Espera 100ms
+        productsToRender = adminFunctions.products;
+    }
+
+    const productosFiltrados = categoria ?
+        productsToRender.filter(p => p.categoria?.toLowerCase() === categoria.toLowerCase()) :
+        productsToRender;
 
     const contenedor = document.getElementById('hobbieImageContainer');
-    
+
     if (!productosFiltrados.length) {
         contenedor.innerHTML = '<p class="text-center">No hay productos disponibles</p>';
         return;
@@ -237,16 +264,16 @@ export function renderizarProductos(categoria = null) {
     contenedor.innerHTML = productosFiltrados.map(producto => `
         <div class="producto-card ${producto.featured ? 'featured' : ''}">
             <div class="position-relative">
-                <img src="${producto.mainImage}" alt="${producto.name}">
-                ${producto.featured ? 
-                    '<span class="badge bg-warning position-absolute top-0 end-0 m-2">Destacado</span>' 
+                <img src="${producto.mainImage || 'https://via.placeholder.com/200/CCCCCC/000000?text=Sin+Imagen'}" alt="${producto.nombreProducto}" style="object-fit: cover; height: 200px;">
+                ${producto.featured ?
+                    '<span class="badge bg-warning position-absolute top-0 end-0 m-2">Destacado</span>'
                     : ''}
             </div>
             <div class="product-details">
-                <h3>${producto.name}</h3>
-                <p>${producto.description}</p>
-                <p class="price">$${producto.price.toLocaleString()}</p>
-                <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
+                <h3>${producto.nombreProducto}</h3>
+                <p>${producto.descripcion || ''}</p>
+                <p class="price">${adminFunctions.formatter.format(producto.precio)}</p>
+                <button class="buy-button" onclick="agregarAlCarrito('${producto.idProducto}')">
                     Agregar al carrito
                 </button>
             </div>
@@ -254,6 +281,9 @@ export function renderizarProductos(categoria = null) {
     `).join('');
 }
 
+// Esta función renderProducts parece ser un duplicado o una versión más antigua.
+// Si no la estás usando en ningún otro lugar, puedes considerar eliminarla.
+// Si la usas, también deberías adaptarla para usar adminFunctions.products y el formato correcto.
 function renderProducts(products) {
     const container = document.getElementById('hobbieImageContainer');
     container.innerHTML = products.map(product => `
@@ -262,7 +292,7 @@ function renderProducts(products) {
             <div class="product-details">
                 <h3>${product.name || product.nombre}</h3>
                 <p>${product.description || ''}</p>
-                <p class="price">$${(product.price || product.precio).toLocaleString()}</p>
+                <p class="price">${adminFunctions.formatter.format(product.price || product.precio)}</p>
                 <button class="buy-button" onclick="window.floatingCart.addToCart(${JSON.stringify(product)})">
                     Agregar al carrito
                 </button>
@@ -270,4 +300,3 @@ function renderProducts(products) {
         </div>
     `).join('');
 }
-

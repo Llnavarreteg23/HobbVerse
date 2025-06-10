@@ -220,6 +220,47 @@ background-color: var(--site-dark-orange); /*Fondo gris más claro al pasar el m
     background-color: #fff5e6;
   }
 
+  /* Contenedor del mensaje */
+.alert-message {
+    position: relative;
+    margin-top: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+/* Animación de entrada */
+.alert-message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Iconos de Font Awesome */
+.alert-message i {
+    font-size: 20px;
+}
+
+/* Mensaje de éxito */
+.alert-message.success {
+    background-color: #e6f9ec;
+    color: #2d7a46;
+    border: 1px solid #b6e3c5;
+}
+
+/* Mensaje de error */
+.alert-message.error {
+    background-color: #fcebea;
+    color: #a94442;
+    border: 1px solid #f5c6cb;
+}
+
 /* -------------------Responsive----------------------- */
 
 /* MEDIANAS PANTALLAS */

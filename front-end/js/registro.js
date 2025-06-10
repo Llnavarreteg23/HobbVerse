@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordError = document.getElementById('password-error');
     const password2Error = document.getElementById('password2-error');
 
+<<<<<<< HEAD
    let API_BASE_URL;
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     // URL local para desarrollo
@@ -24,6 +25,11 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     API_BASE_URL = 'https://9s68ixqgw5.us-east-1.awsapprunner.com';
 }
 
+=======
+    // URL del backend - Ajustar según tu configuración
+   
+    const API_BASE_URL = "https://9s68ixqgw5.us-east-1.awsapprunner.com"
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
 
     // Requisitos de contraseña
     const requisitosPasswordContainer = document.createElement('div');
@@ -196,7 +202,11 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         try {
             console.log('Enviando datos al backend:', userData);
             
+<<<<<<< HEAD
             const response = await fetch(`${API_BASE_URL}/usuarios/registro`, {
+=======
+            const response = await fetch(`${API_BASE_URL}/usuarios`, {
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -207,9 +217,13 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
                     email: userData.email,
                     telefono: userData.telefono,
                     contrasena: userData.password
+<<<<<<< HEAD
                 }),
                 // Agregar credenciales para cookies
                 credentials: 'include'
+=======
+                })
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
             });
 
             console.log('Respuesta status:', response.status);
@@ -220,8 +234,12 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
             
             let data;
             try {
+<<<<<<< HEAD
                 // Solo intentar parsear como JSON si el texto no está vacío
                 data = responseText ? JSON.parse(responseText) : {};
+=======
+                data = JSON.parse(responseText);
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
             } catch (parseError) {
                 console.error('Error parsing JSON:', parseError);
                 return { 
@@ -232,6 +250,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
             
             console.log('Respuesta data:', data);
             
+<<<<<<< HEAD
             if (response.ok) {
                 return { 
                     success: true, 
@@ -241,17 +260,33 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
                 return { 
                     success: false, 
                     error: data.mensaje || data.error || `Error del servidor: ${response.status}` 
+=======
+            if (response.ok && data.success) {
+                return { success: true, data: data };
+            } else {
+                return { 
+                    success: false, 
+                    error: data.error || `Error del servidor: ${response.status}` 
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
                 };
             }
             
         } catch (error) {
             console.error('Error de conexión:', error);
             
+<<<<<<< HEAD
             // Mensajes de error más descriptivos
             if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
                 return { 
                     success: false, 
                     error: 'No se pudo conectar con el servidor. Verifica la URL del backend y que CORS esté configurado correctamente.' 
+=======
+            // Verificar si es un error de CORS o de red
+            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                return { 
+                    success: false, 
+                    error: 'Error de conexión. Verifica que el servidor esté ejecutándose en http://localhost:8080 y que CORS esté configurado correctamente.' 
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
                 };
             }
             
@@ -276,6 +311,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         });
     }
 
+<<<<<<< HEAD
     if (passwordInput) {
         passwordInput.addEventListener('blur', function() {
             // Mantener visible los requisitos si la contraseña no es válida
@@ -288,6 +324,18 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
             }
         });
     }
+=======
+    passwordInput.addEventListener('blur', function() {
+        // Mantener visible los requisitos si la contraseña no es válida
+        if (!validarPassword()) {
+            requisitosPasswordContainer.style.display = 'block';
+        } else {
+            setTimeout(() => {
+                requisitosPasswordContainer.style.display = 'none';
+            }, 1000);
+        }
+    });
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
 
     // Funcionalidad mostrar/ocultar contraseña para ambos campos
     const togglePassword = document.getElementById('togglePassword');
@@ -361,7 +409,11 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
                 console.log('Resultado del registro:', result);
                 
                 if (result.success) {
+<<<<<<< HEAD
                     
+=======
+                    // También guardar en localStorage como respaldo
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
                     try {
                         let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
                         const localUserData = {
@@ -380,7 +432,11 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
 
                     console.log('Registro exitoso');
                     
+<<<<<<< HEAD
                     
+=======
+                    // Mostrar alerta de éxito y redirigir
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'success',
@@ -420,4 +476,8 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     } else {
         console.error('Botón de registro no encontrado');
     }
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 01f33c652de94d7ba235856309776aec3d7a6fc0
