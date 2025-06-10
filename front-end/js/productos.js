@@ -1,5 +1,5 @@
 
-import * as adminFunctions from './admin.js'; // Asegúrate que la ruta sea correcta desde productos.js a admin.js
+import * as adminFunctions from './admin.js'; 
 
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
