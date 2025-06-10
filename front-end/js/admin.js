@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFilters();
 });
 
-function setupEventListeners() {
+export function setupEventListeners() {
     document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
 
     document.getElementById('productList').addEventListener('click', function(event) {
@@ -53,7 +53,7 @@ function setupEventListeners() {
 
 // Funciones de Utilidad de la API
 
-async function apiFetch(baseUrl, endpoint, options = {}) {
+export async function apiFetch(baseUrl, endpoint, options = {}) {
     const url = `${baseUrl}${endpoint}`;
     console.log(`Realizando llamada a la API: ${url} con método: ${options.method || 'GET'}`);
 
@@ -92,7 +92,7 @@ async function apiFetch(baseUrl, endpoint, options = {}) {
 
 // --- NUEVAS FUNCIONES PARA MANEJAR IMÁGENES EN LOCAL STORAGE ---
 
-function saveProductImagesToLocalStorage(productId, mainImageUrl, additionalImageUrls) {
+export function saveProductImagesToLocalStorage(productId, mainImageUrl, additionalImageUrls) {
     if (!productId) {
         console.warn('No se puede guardar la imagen en localStorage sin un ID de producto.');
         return;
@@ -112,7 +112,7 @@ function saveProductImagesToLocalStorage(productId, mainImageUrl, additionalImag
     }
 }
 
-function getProductImagesFromLocalStorage(productId) {
+export function getProductImagesFromLocalStorage(productId) {
     try {
         const imageDataString = localStorage.getItem(`productImages_${productId}`);
         if (imageDataString) {
@@ -126,7 +126,7 @@ function getProductImagesFromLocalStorage(productId) {
 
 
 
-function removeProductImagesFromLocalStorage(productId) {
+export function removeProductImagesFromLocalStorage(productId) {
     try {
         localStorage.removeItem(`productImages_${productId}`);
         console.log(`Imágenes eliminadas de localStorage para producto ${productId}`);
@@ -138,7 +138,7 @@ function removeProductImagesFromLocalStorage(productId) {
 // --- FIN DE LAS NUEVAS FUNCIONES ---
 
 
-async function loadData() {
+export async function loadData() {
     try {
         products = await apiFetch(API_PRODUCT_BASE_URL, '');
         console.log('Todos los productos cargados desde el backend:', products);
@@ -176,7 +176,7 @@ async function loadData() {
     updateUI();
 }
 
-async function handleProductSubmit(e) {
+export async function handleProductSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
 
@@ -274,13 +274,13 @@ async function handleProductSubmit(e) {
     }
 }
 
-function updateUI() {
+export function updateUI() {
     updateProductList();
     updateCategorySelect();
     updateProductCount(products.length);
 }
 
-async function filterProducts() {
+export async function filterProducts() {
     const searchTerm = document.getElementById('searchProducts').value.toLowerCase().trim();
     const categoryFilter = document.getElementById('categoryFilter').value;
 
@@ -297,7 +297,7 @@ async function filterProducts() {
 }
 
 
-function updateProductList(productosToDisplay = null) {
+export function updateProductList(productosToDisplay = null) {
     const productList = document.getElementById('productList');
     if (!productList) return;
 
@@ -384,7 +384,7 @@ function updateProductList(productosToDisplay = null) {
     }).join('');
 }
 
-function updateProductCount(count) {
+export function updateProductCount(count) {
     const countElement = document.getElementById('productCount');
     if (countElement) {
         const totalProducts = products.length;
@@ -396,7 +396,7 @@ function updateProductCount(count) {
     }
 }
 
-function updateCategorySelect() {
+export function updateCategorySelect() {
     const categorySelects = document.querySelectorAll('select[name="category"], #categoryFilter');
     const options = `
         ${document.querySelector('#categoryFilter') ? '<option value="">Todas las categorías</option>' : ''}
@@ -410,7 +410,7 @@ function updateCategorySelect() {
     });
 }
 
-async function editProduct(productId) {
+export async function editProduct(productId) {
     try {
         const product = await apiFetch(API_PRODUCT_BASE_URL, `/${productId}`);
         console.log('Producto cargado para edición desde backend:', product);
@@ -475,7 +475,7 @@ async function editProduct(productId) {
     }
 }
 
-async function deleteProduct(productId) {
+export async function deleteProduct(productId) {
     if (confirm('¿Estás seguro de eliminar este producto?')) {
         try {
             await apiFetch(API_PRODUCT_BASE_URL, `/${productId}`, {
@@ -510,7 +510,7 @@ async function deleteProduct(productId) {
     }
 }
 
-async function toggleProductFavorite(productId) {
+export async function toggleProductFavorite(productId) {
     try {
         const productIndex = products.findIndex(p => p.idProducto === productId);
         if (productIndex === -1) {
@@ -546,7 +546,7 @@ const cloudinaryConfig = {
     uploadPreset: 'hobbverse_unsigned'
 };
 
-function initImageUpload() {
+export function initImageUpload() {
     const uploadImageBtn = document.getElementById('uploadImageBtn');
     const uploadMultipleBtn = document.getElementById('uploadMultipleBtn');
     const imagePreview = document.getElementById('imagePreview');
@@ -628,7 +628,7 @@ function initImageUpload() {
     };
 }
 
-function setupFilters() {
+export function setupFilters() {
     const searchInput = document.getElementById('searchProducts');
     const categoryFilter = document.getElementById('categoryFilter');
 
@@ -642,4 +642,3 @@ function setupFilters() {
         categoryFilter.addEventListener('change', filterProducts);
     }
 }
-export { getProductImagesFromLocalStorage,  products, apiFetch, formatter };
