@@ -642,4 +642,4 @@ function setupFilters() {
         categoryFilter.addEventListener('change', filterProducts);
     }
 }
-export { getProductImagesFromLocalStorage };
+//export { getProductImagesFromLocalStorage };
