@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', function() {
     // Obtener referencias a los elementos del DOM
     const nombreInput = document.getElementById('nombreCompleto');
@@ -16,8 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const password2Error = document.getElementById('password2-error');
 
     // URL del backend - Ajustar según tu configuración
-   
-    const API_BASE_URL = "https://9s68ixqgw5.us-east-1.awsapprunner.com"
+    const API_BASE_URL = "https://9s68ixqgw5.us-east-1.awsapprunner.com";
+    
+    // Variable para controlar tiempo máximo de espera para el backend
+    const BACKEND_TIMEOUT = 8000; // 8 segundos
 
     // Requisitos de contraseña
     const requisitosPasswordContainer = document.createElement('div');
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     }
 
-    // Function to redirect to login - ACTUALIZADA
+    // Function to redirect to login
     function redirigirAlLogin() {
         try {
             console.log('Redirigiendo a login...');
@@ -182,27 +182,106 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = '/front-end/html/login.html';
         } catch (error) {
             console.error('Error en redirección:', error);
+            // Intento alternativo si la ruta relativa falla
+            try {
+                window.location.href = 'login.html';
+            } catch (e) {
+                console.error('Error en redirección alternativa:', e);
+            }
         }
     }
 
-    // Función para registrar usuario en el backend
+    // Función para verificar si un correo ya existe en localStorage
+    function emailExisteEnLocalStorage(email) {
+        try {
+            const usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
+            return usuarios.some(user => user.email.toLowerCase() === email.toLowerCase());
+        } catch (error) {
+            console.error('Error al verificar email en localStorage:', error);
+            return false;
+        }
+    }
+
+    // Función para registrar usuario en localStorage
+    function registrarUsuarioLocalStorage(userData) {
+        try {
+            // Verificar si el correo ya existe
+            if (emailExisteEnLocalStorage(userData.email)) {
+                return {
+                    success: false,
+                    error: 'Este correo ya está registrado en el sistema'
+                };
+            }
+
+            // Obtener usuarios existentes o inicializar array
+            let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
+            
+            // Crear nuevo usuario
+            const nuevoUsuario = {
+                id: Date.now(), // Generar ID único basado en timestamp
+                nombre: userData.nombre,
+                email: userData.email,
+                telefono: userData.telefono,
+                password: userData.password, // Nota: en producción debería cifrarse
+                fechaRegistro: new Date().toISOString()
+            };
+            
+            // Añadir a la lista
+            usuarios.push(nuevoUsuario);
+            
+            // Guardar en localStorage
+            localStorage.setItem('hobbverse_usuarios', JSON.stringify(usuarios));
+            
+            console.log('Usuario registrado en localStorage:', nuevoUsuario);
+            
+            return {
+                success: true,
+                data: {
+                    usuario: nuevoUsuario,
+                    message: 'Usuario registrado exitosamente en modo local'
+                }
+            };
+        } catch (error) {
+            console.error('Error al registrar en localStorage:', error);
+            return {
+                success: false,
+                error: 'Error al guardar datos localmente: ' + error.message
+            };
+        }
+    }
+
+    // Función para registrar usuario en el backend con timeout
     async function registrarUsuarioBackend(userData) {
+        // Crear una promesa con timeout
+        const fetchWithTimeout = (url, options, timeout) => {
+            return Promise.race([
+                fetch(url, options),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout - El servidor tardó demasiado en responder')), timeout)
+                )
+            ]);
+        };
+
         try {
             console.log('Enviando datos al backend:', userData);
             
-            const response = await fetch(`${API_BASE_URL}/usuarios`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+            const response = await fetchWithTimeout(
+                `${API_BASE_URL}/usuarios`, 
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombreCompleto: userData.nombre,
+                        email: userData.email,
+                        telefono: userData.telefono,
+                        contrasena: userData.password
+                    })
                 },
-                body: JSON.stringify({
-                    nombreCompleto: userData.nombre,
-                    email: userData.email,
-                    telefono: userData.telefono,
-                    contrasena: userData.password
-                })
-            });
+                BACKEND_TIMEOUT
+            );
 
             console.log('Respuesta status:', response.status);
             
@@ -235,18 +314,20 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error de conexión:', error);
             
-            // Verificar si es un error de CORS o de red
+            // Verificar si es un error de CORS o de red o timeout
             if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                return { 
-                    success: false, 
-                    error: 'Error de conexión. Verifica que el servidor esté ejecutándose en http://localhost:8080 y que CORS esté configurado correctamente.' 
-                };
+                console.log('Error de conexión, usando localStorage como fallback');
+                return registrarUsuarioLocalStorage(userData);
             }
             
-            return { 
-                success: false, 
-                error: 'Error de conexión con el servidor: ' + error.message
-            };
+            if (error.message.includes('Timeout')) {
+                console.log('Timeout del servidor, usando localStorage como fallback');
+                return registrarUsuarioLocalStorage(userData);
+            }
+            
+            // Para cualquier otro error, intentar registro local
+            console.log('Error desconocido, usando localStorage como fallback');
+            return registrarUsuarioLocalStorage(userData);
         }
     }
 
@@ -264,16 +345,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    passwordInput.addEventListener('blur', function() {
-        // Mantener visible los requisitos si la contraseña no es válida
-        if (!validarPassword()) {
-            requisitosPasswordContainer.style.display = 'block';
-        } else {
-            setTimeout(() => {
-                requisitosPasswordContainer.style.display = 'none';
-            }, 1000);
-        }
-    });
+    if (passwordInput) {
+        passwordInput.addEventListener('blur', function() {
+            // Mantener visible los requisitos si la contraseña no es válida
+            if (!validarPassword()) {
+                requisitosPasswordContainer.style.display = 'block';
+            } else {
+                setTimeout(() => {
+                    requisitosPasswordContainer.style.display = 'none';
+                }, 1000);
+            }
+        });
+    }
 
     // Funcionalidad mostrar/ocultar contraseña para ambos campos
     const togglePassword = document.getElementById('togglePassword');
@@ -341,38 +424,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 console.log('Datos del usuario:', userData);
 
-                // Intentar registrar en el backend
+                // Intentar registrar en el backend con fallback a localStorage
                 const result = await registrarUsuarioBackend(userData);
                 
                 console.log('Resultado del registro:', result);
                 
                 if (result.success) {
-                    // También guardar en localStorage como respaldo
-                    try {
-                        let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
-                        const localUserData = {
-                            id: result.data.usuario ? result.data.usuario.id : Date.now(),
-                            nombre: userData.nombre,
-                            email: userData.email,
-                            telefono: userData.telefono,
-                            password: userData.password,
-                            fechaRegistro: new Date().toISOString()
-                        };
-                        usuarios.push(localUserData);
-                        localStorage.setItem('hobbverse_usuarios', JSON.stringify(usuarios));
-                    } catch (storageError) {
-                        console.warn('Error al guardar en localStorage:', storageError);
+                    // Comprobar si fue registro de backend o local
+                    const esRegistroLocal = result.data && result.data.message && 
+                                          result.data.message.includes('modo local');
+                    
+                    // Si fue registro exitoso de backend, guardar también en localStorage como respaldo
+                    if (!esRegistroLocal) {
+                        try {
+                            let usuarios = JSON.parse(localStorage.getItem('hobbverse_usuarios') || '[]');
+                            // Verificar si el email ya existe para evitar duplicados
+                            if (!usuarios.some(u => u.email === userData.email)) {
+                                const localUserData = {
+                                    id: result.data.usuario ? result.data.usuario.id : Date.now(),
+                                    nombre: userData.nombre,
+                                    email: userData.email,
+                                    telefono: userData.telefono,
+                                    password: userData.password,
+                                    fechaRegistro: new Date().toISOString()
+                                };
+                                usuarios.push(localUserData);
+                                localStorage.setItem('hobbverse_usuarios', JSON.stringify(usuarios));
+                                console.log('Usuario también guardado en localStorage como respaldo');
+                            }
+                        } catch (storageError) {
+                            console.warn('Error al guardar en localStorage:', storageError);
+                        }
                     }
 
                     console.log('Registro exitoso');
+                    
+                    // Mensaje personalizado según tipo de registro
+                    const mensajeExito = esRegistroLocal ? 
+                        '¡Registro Exitoso! Redirigiendo al login...' : 
+                        '¡Registro Exitoso! Redirigiendo al login...';
                     
                     // Mostrar alerta de éxito y redirigir
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'success',
                             title: '¡Registro Exitoso!',
-                            text: 'Redirigiendo al login...',
-                            timer: 2000,
+                            text: esRegistroLocal ? 'Registro en modo local (sin conexión)' : 'Registro completado en el servidor',
+                            footer: 'Redirigiendo al login...',
+                            timer: 2500,
                             timerProgressBar: true,
                             showConfirmButton: false
                         }).then(() => {
@@ -382,14 +481,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             redirigirAlLogin();
                         });
                     } else {
-                        mostrarAlertaPersonalizada('¡Registro Exitoso! Redirigiendo al login...', 'success', redirigirAlLogin);
+                        mostrarAlertaPersonalizada(mensajeExito, 'success', redirigirAlLogin);
                     }
                 } else {
                     console.log('Error en registro:', result.error);
                     
                     // Manejar errores específicos
                     if (result.error && result.error.includes('correo ya está registrado')) {
-                        errorEmail.textContent = result.error;
+                        if (errorEmail) errorEmail.textContent = result.error;
                     } else {
                         mostrarAlertaPersonalizada(result.error || 'Error desconocido', 'error');
                     }
