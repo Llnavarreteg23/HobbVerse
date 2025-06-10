@@ -1,12 +1,14 @@
 
-// Importaciones de admin.js
-import { API_BASE_URL, apiFetch, formatter, cloudinaryConfig, getCloudinaryImageUrl } from './admin.js'; 
-
+import * as adminFunctions from '/front-end/js/admin.js'; 
 
 const iconSelected = document.getElementById("iconSelected");
 const hobbieaSelected = document.querySelector(".hobbieaSelected");
 const hobbieClicked = document.getElementsByClassName("hobbiea");
 const hobbieImageContainer = document.getElementById("hobbieImageContainer");
+
+// Nueva Configuración de la API del Backend
+const API_BASE_URL = "https://9s68ixqgw5.us-east-1.awsapprunner.com";
+const API_PRODUCT_BASE_URL = `${API_BASE_URL}/productos`; // Usamos esta para productos
 
 const categoryIcons = {
     "lectura": "bi-book",
@@ -18,83 +20,87 @@ const categoryIcons = {
     "crochet": "bi-scissors"
 };
 
-// Variable para almacenar los productos cargados y evitar múltiples peticiones
-let cachedProducts = [];
+/**
+ * Función asíncrona para obtener productos filtrado por categoría.
+ * @param {string} categoriaNombre; 
+ * @returns {Array} 
+ */
 
-// **REFECTORIZADA: renderCategory para obtener productos del backend e integrar Cloudinary**
-export default async function renderCategory(category, name) {
-    hobbieImageContainer.innerHTML = ""; // Limpiar el contenedor antes de cargar
+async function productosCategoria(categoriaNombre) {
+    if (!categoriaNombre) {
+        console.warn("No se proporcionó un nombre de categoría. No se realizará la búsqueda.");
+        return [];
+    }
 
-    let productosFiltrados = [];
+    // Usamos la nueva constante para la URL base de productos
+    const url = new URL(API_PRODUCT_BASE_URL);
+    url.searchParams.append('categoria', categoriaNombre); // Añade el parámetro de consulta 'categoria'
 
     try {
-        let endpoint = `/productos`; // Endpoint relativo a API_PRODUCT_BASE_URL
-        if (name) {
-            endpoint = `/productos/categoria/${encodeURIComponent(name)}`;
+        const response = await fetch(url.toString());
+        
+        if (!response.ok) {
+            // Si el backend devuelve 204 (No Content) para una categoría sin productos,
+            // lo manejamos como un caso válido sin errores HTTP.
+            if (response.status === 204) {
+                console.log(`No hay productos para la categoría: ${categoriaNombre}`);
+                return []; 
+            }
+            throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
         
-
-        const data = await apiFetch(API_BASE_URL, endpoint); // Usar API_BASE_URL para que apiFetch construya bien la URL
-
-        if (!data || data.length === 0) {
-            productosFiltrados = [];
-        } else {
-            productosFiltrados = data.map(p => {
-                // Asumimos que el backend envía 'mainImagePublicId' y 'additionalImagePublicIds'
-                const mainImagePublicId = p.mainImagePublicId || null;
-                const additionalImagePublicIds = p.additionalImagePublicIds || [];
-
-                return {
-                    id: p.idProducto,
-                    name: p.nombreProducto,
-                    description: p.descripcion,
-                    price: p.precio,
-                    category: p.categoria,
-                    // **Integración de Cloudinary:** Genera las URLs de imagen usando publicId
-                    // Usar la función importada de admin.js
-                    mainImage: mainImagePublicId ? getCloudinaryImageUrl(mainImagePublicId, { width: 300, height: 200, crop: "fill" }) : 'https://via.placeholder.com/300x200?text=No+Image',
-                    additionalImages: additionalImagePublicIds.map(id => getCloudinaryImageUrl(id, { width: 300, height: 200, crop: "fill" })),
-                    featured: p.featured || false // Asegurarse de que featured esté presente
-                };
-            });
-            cachedProducts = productosFiltrados; // Cachear los productos cargados
-        }
+        const data = await response.json();
+        return data;
     } catch (error) {
-        console.error("Error al cargar productos del backend:", error);
-        hobbieImageContainer.innerHTML = `
-            <div class="error-loading">
-                <p>Ocurrió un error al cargar los productos. Inténtalo de nuevo más tarde.</p>
-            </div>
-        `;
-        return; 
+        console.error(`Error al obtener productos de la categoría '${categoriaNombre}':`, error);
+        return []; 
     }
+}
+
+/**
+ * Obtener productos de una categoría específica.
+ * @param {string} categoryData - El valor del atributo data-category del elemento clickeado
+ * @param {string} categoriaNombre - El nombre de la categoría 
+ */
+export default async function renderCategory(categoryData, categoriaNombre) {
+    hobbieImageContainer.innerHTML = ""; 
+
+    // Obtiene los productos filtrados por categoría.
+    const productosFiltrados = await productosCategoria(categoriaNombre);
 
     if (productosFiltrados.length > 0) {
         productosFiltrados.forEach(producto => {
             const card = document.createElement("div");
             card.className = "producto-card";
+            
+            // **IMPORTANTE:** Ajusta los nombres de las propiedades para que coincidan con tu backend (modelo Producto.java)
+            // Asegúrate de que tu modelo `Producto` en Spring Boot tenga campos como `mainImage` o `additionalImages`
+            // si los esperas aquí, o ajusta cómo se manejan las imágenes.
+            const mainImage = producto.mainImage || 'https://via.placeholder.com/300x200?text=Sin+Imagen'; 
+            const additionalImages = producto.additionalImages || [];
+
             card.innerHTML = `
                 <div id="carousel-${producto.id}" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-indicators">
                         <button type="button" data-bs-target="#carousel-${producto.id}" 
                                 data-bs-slide-to="0" class="active"></button>
-                        ${(producto.additionalImages || []).map((_, index) => `
+                        ${additionalImages.map((_, index) => `
                             <button type="button" data-bs-target="#carousel-${producto.id}" 
                                     data-bs-slide-to="${index + 1}"></button>
                         `).join('')}
                     </div>
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="${producto.mainImage}" class="d-block w-100" 
-                                 alt="${producto.name}" style="height: 200px; object-fit: cover;">
+                            <img src="${mainImage}" class="d-block w-100" 
+                                alt="${producto.nombreProducto}">
                         </div>
-                        ${(producto.additionalImages || []).map(img => `
+                        ${additionalImages.map(img => `
                             <div class="carousel-item">
-                                <img src="${img}" class="d-block w-100" alt="Imagen adicional" style="height: 200px; object-fit: cover;">
+                                <img src="${img}" class="d-block w-100" alt="Imagen adicional">
                             </div>
                         `).join('')}
                     </div>
-                    ${(producto.additionalImages || []).length > 0 || producto.mainImage !== 'https://via.placeholder.com/300x200?text=No+Image' ? `
+                    ${additionalImages.length > 0 ? `
                         <button class="carousel-control-prev" type="button" 
                                 data-bs-target="#carousel-${producto.id}" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
@@ -108,10 +114,10 @@ export default async function renderCategory(category, name) {
                     ` : ''}
                 </div>
                 <div class="product-details">
-                    <h3>${producto.name}</h3>
-                    ${producto.description ? `<p>${producto.description}</p>` : ''}
-                    <p class="price">${formatter.format(producto.price)}</p> 
-                    ${producto.featured ? '<span class="badge bg-warning">Destacado</span>' : ''}
+                    <h3>${producto.nombreProducto}</h3>
+                    ${producto.descripcion ? `<p>${producto.descripcion}</p>` : ''}
+                    <p class="price">${formatearPrecioCOP(producto.precio)}</p>
+                    ${producto.destacado ? '<span class="badge bg-warning">Destacado</span>' : ''}
                     <button class="buy-button" onclick="agregarAlCarrito('${producto.id}')">
                         Agregar al carrito
                     </button>
@@ -122,119 +128,101 @@ export default async function renderCategory(category, name) {
     } else {
         hobbieImageContainer.innerHTML = `
             <div class="no-products">
-                <p>No hay productos disponibles en esta categoría</p>
+                <p>No hay productos disponibles en esta categoría.</p>
             </div>
         `;
     }
 
-    // Actualizar ícono y título de categoría seleccionada
-    if (category && name) {
-        iconSelected.className = `bi ${categoryIcons[name.toLowerCase()] || 'bi-tag'}`;
-        hobbieaSelected.textContent = name;
+    // Actualiza el ícono y título de la categoría seleccionada en la UI
+    if (categoryData && categoriaNombre) {
+        iconSelected.className = `bi ${categoryIcons[categoryData.toLowerCase()] || 'bi-tag'}`;
+        hobbieaSelected.textContent = categoriaNombre;
     }
 }
 
-// Los listeners para hobbieClicked se mantienen igual
+// Event Listeners para los clics en las categorías (hobbies)
 Array.from(hobbieClicked).forEach(link => {
     link.addEventListener("click", function(event) {
         event.preventDefault();
 
+        // Remueve la clase 'selected' de todos los enlaces y la añade al clickeado
         Array.from(hobbieClicked).forEach(item => item.classList.remove("selected"));
-
         this.classList.add("selected");
 
-        const category = this.dataset.category;
-        const name = this.textContent.trim();
+        const category = this.dataset.category; // ej. "lectura"
+        const name = this.textContent.trim(); // ej. "Lectura"
 
+        // Actualiza el texto y el ícono de la categoría seleccionada
         hobbieaSelected.textContent = name;
-
         iconSelected.className = categoryIcons[category];
 
-        renderCategory(category, name);
+        renderCategory(category, name); // Llama a la función actualizada con la nueva categoría
     });
 });
 
-// DOMContentLoaded se mantiene igual
+// Cuando la página se carga, selecciona "Lectura" por defecto y renderiza
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Página cargada, verificando productos del backend...");
+    console.log("Página cargada. Obteniendo productos del backend...");
     
     const defaultCategoryLink = Array.from(hobbieClicked).find(link => link.textContent.trim() === "Lectura");
 
     if (defaultCategoryLink) {
-        defaultCategoryLink.classList.add("selected");
+        defaultCategoryLink.classList.add("selected"); // Marca como seleccionado
 
         hobbieaSelected.textContent = defaultCategoryLink.textContent.trim();
         iconSelected.className = categoryIcons[defaultCategoryLink.dataset.category];
     }
 
-    renderCategory("lectura", "Lectura");
+    renderCategory("lectura", "Lectura"); // Carga los productos de "Lectura" al iniciar
 });
 
-// cargarProductosDestacados se mantiene igual
-export function cargarProductosDestacados() {
-    // Los productos destacados se cargan ahora con 'featured' del backend
-    return cachedProducts.filter(producto => 
-        producto.featured === true
-    );
-}
-
-// agregarAlCarrito se mantiene igual
-export function agregarAlCarrito(productoId) {
+/**
+ * Agrega un producto al carrito de compras.
+ * Ahora obtiene los detalles del producto desde el backend por su ID.
+ * @param {string} productoId - ID del producto a agregar.
+ */
+export async function agregarAlCarrito(productoId) {
     const carrito = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
-    const producto = cachedProducts.find(p => p.id == productoId);
     
-    if (producto) {
-        const itemExistente = carrito.find(item => item.productoId == productoId);
-        
-        if (itemExistente) {
-            itemExistente.cantidad += 1;
-        } else {
-            carrito.push({
-                productoId: producto.id,
-                nombre: producto.name,
-                precio: producto.price,
-                imagen: producto.mainImage, // Usar la imagen principal 
-                cantidad: 1
-            });
+    try {
+        // Obtiene los detalles completos del producto desde el backend usando el endpoint /productos/{id}
+        const response = await fetch(`${API_PRODUCT_BASE_URL}/${productoId}`); // Usamos la nueva constante
+        if (!response.ok) {
+            throw new Error(`Error al obtener el producto (ID: ${productoId}): ${response.statusText}`);
         }
-        
-        localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
-        alert('Producto agregado al carrito');
-    } else {
-        console.error('Producto no encontrado en los productos cacheados:', productoId);
-        alert('No se pudo agregar el producto al carrito. Producto no encontrado.');
+        const producto = await response.json();
+
+        if (producto) {
+            const itemExistente = carrito.find(item => item.productoId == productoId);
+            
+            if (itemExistente) {
+                itemExistente.cantidad += 1;
+            } else {
+                carrito.push({
+                    productoId: producto.id,
+                    nombre: producto.nombreProducto, 
+                    precio: producto.precio,          
+                    imagen: producto.mainImage || 'https://via.placeholder.com/50x50?text=Img', // Asegúrate de tener esta propiedad o ajusta
+                    cantidad: 1
+                });
+            }
+            
+            localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
+            alert('Producto agregado al carrito');
+        } else {
+            console.error('Producto no encontrado en el backend con ID:', productoId);
+        }
+    } catch (error) {
+        console.error('Error al agregar producto al carrito:', error);
+        alert('Hubo un error al agregar el producto al carrito. Por favor, inténtalo de nuevo.');
     }
 }
 
-// agregarAlCarrito se mantiene igual
-export function agregarAlCarrito(productoId) {
-    const carrito = JSON.parse(localStorage.getItem('hobbverse_carrito') || '[]');
-    const producto = cachedProducts.find(p => p.id == productoId);
-    
-    if (producto) {
-        const itemExistente = carrito.find(item => item.productoId == productoId);
-        
-        if (itemExistente) {
-            itemExistente.cantidad += 1;
-        } else {
-            carrito.push({
-                productoId: producto.id,
-                nombre: producto.name,
-                precio: producto.price,
-                imagen: producto.mainImage, // Usar la imagen principal (ahora generada por Cloudinary)
-                cantidad: 1
-            });
-        }
-        
-        localStorage.setItem('hobbverse_carrito', JSON.stringify(carrito));
-        alert('Producto agregado al carrito');
-    } else {
-        console.error('Producto no encontrado en los productos cacheados:', productoId);
-        alert('No se pudo agregar el producto al carrito. Producto no encontrado.');
-    }
-}
-
-// formatearPrecioCOP se mantiene igual
+/**
+ * Formatea un precio como moneda colombiana (COP).
+ * @param {number} precio - El precio a formatear.
+ * @returns {string} El precio formateado.
+ */
 export function formatearPrecioCOP(precio) {
     return new Intl.NumberFormat('es-CO', {
         style: 'currency',
@@ -242,10 +230,3 @@ export function formatearPrecioCOP(precio) {
         minimumFractionDigits: 0
     }).format(precio);
 }
-
-// cargarTodosLosProductos se mantiene igual
-export function cargarTodosLosProductos() {
-    return cachedProducts;
-}
-
-// (Las funciones `renderizarProductos` y `renderProducts` fueron eliminadas en la refactorización anterior por ser redundantes.)
